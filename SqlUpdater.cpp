@@ -110,11 +110,11 @@ void SqlUpdater::readyRead()
 
 void SqlUpdater::connected()
 {
-    qDebug() << "Connected to server";
+    qDebug() << "Connected to SQL server";
     sendLastTradeno();
 }
 
 void SqlUpdater::disconnected()
 {
-    qDebug() << "Disconnected from server";
+    qDebug() << "Disconnected from SQL server";
 }

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<application>
-    <version>0.0.1</version>
-</application>
+<!--<application>-->
+    <version_major>0</version_major>
+    <version_minor>0</version_minor>
+    <version_maintenance>1</version_maintenance>
+<!--</application>-->
