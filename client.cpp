@@ -5,6 +5,7 @@ Client::Client(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Client)
 {
+    ui->setupUi(this);
 
     //проверка обновления
     socketUpdate = new QTcpSocket();
@@ -51,14 +52,16 @@ Client::Client(QWidget *parent)
     sqlUpdaterThread->start();
 
     readConfigFile();
-    ui->setupUi(this);
+
+    plotDrawer = new PlotDrawer();
+    plotDrawer->customPlot = ui->PlotWidget;
+    plotDrawer->drawPlot();
 }
 
 Client::~Client()
 {
     delete ui;
 }
-
 
 void Client::readConfigFile()
 {

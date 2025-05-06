@@ -61,11 +61,12 @@ public:
 
     QSqlDatabase db;
     QSqlQuery* requestQuery;
-
     QThread *sqlUpdaterThread;
     SqlUpdater *sqlUpdater;
-    Version ver;
 
+    PlotDrawer *plotDrawer;
+
+    Version ver;
     void readConfigFile();
 
 private:
