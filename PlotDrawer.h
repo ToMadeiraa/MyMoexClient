@@ -1,17 +1,28 @@
 #ifndef PLOTDRAWER_H
 #define PLOTDRAWER_H
 
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlError>
+#include  <QObject>
+#include <QDateTime>
 
 #include "qcustomplot.h"
 
-class PlotDrawer
+class PlotDrawer : public QObject
 {
+    Q_OBJECT
 public:
-    PlotDrawer();
+    PlotDrawer(QCustomPlot* cp);
     QCustomPlot* customPlot;
+
+    QVector<double> *priceData;
+    QVector<double> *timeData;
+    QVector<double> time, value;
+
+    QCPFinancial *candlesticks;
+    QDateTime start;
+    double startTime;
+    double binSize;
+
+public slots:
 
     void drawPlot();
 };

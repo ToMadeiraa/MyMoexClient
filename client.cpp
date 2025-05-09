@@ -6,6 +6,7 @@ Client::Client(QWidget *parent)
     , ui(new Ui::Client)
 {
     ui->setupUi(this);
+    readConfigFile();
 
     //проверка обновления
     socketUpdate = new QTcpSocket();
@@ -34,11 +35,13 @@ Client::Client(QWidget *parent)
         qDebug() << "Успешное подключение к базе данных";
     }
 
-    requestQuery = new QSqlQuery(db);
+    requestQueryUpdater = new QSqlQuery(db);
+    requestQuerySelector = new QSqlQuery(db);
 
+    ///////////////
     sqlUpdater = new SqlUpdater;
     sqlUpdater->db = this->db;
-    sqlUpdater->requestQuery = this->requestQuery;
+    sqlUpdater->requestQuery = requestQueryUpdater;
 
     sqlUpdaterThread = new QThread(this);
 
@@ -51,10 +54,31 @@ Client::Client(QWidget *parent)
 
     sqlUpdaterThread->start();
 
-    readConfigFile();
+    ///////////////
+    sqlSelector = new SqlSelector;
+    sqlSelector->db = this->db;
+    sqlSelector->requestQuery = requestQuerySelector;
+    sqlSelector->priceData = &this->priceData;
+    sqlSelector->timeData = &this->timeData;
 
-    plotDrawer = new PlotDrawer();
-    plotDrawer->customPlot = ui->PlotWidget;
+    sqlSelectorThread = new QThread(this);
+
+    sqlSelector->moveToThread(sqlSelectorThread);
+
+    connect(sqlSelectorThread, &QThread::finished, sqlSelectorThread, &QThread::deleteLater);
+
+    sqlSelectorThread->start();
+
+
+    ///////////////
+    plotDrawer = new PlotDrawer(ui->PlotWidget);
+    //plotDrawer->customPlot = ui->PlotWidget;
+    plotDrawer->priceData = &this->priceData;
+    plotDrawer->timeData = &this->timeData;
+
+    timerDraw = new QTimer;
+    connect(timerDraw, SIGNAL(timeout()), plotDrawer, SLOT(drawPlot()));
+    timerDraw->start(100);
     plotDrawer->drawPlot();
 }
 
@@ -104,7 +128,6 @@ void Client::update()
 
 void Client::readyRead()
 {
-    qDebug() << "NEW MESSAGE!";
     QByteArray versionData = socketUpdate->readAll();
     QDataStream ds(&versionData, QIODevice::ReadOnly);
 

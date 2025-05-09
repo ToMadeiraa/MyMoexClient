@@ -30,6 +30,7 @@ private:
     qintptr socketDescriptor;
     QHash<QString, long long int> LastTRADENOs;
     QHash<QString, ushort> SecID_Numbers;
+    long long int secsBefore2000;
 
 public slots:
     void process();

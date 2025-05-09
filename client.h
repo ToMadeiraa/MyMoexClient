@@ -17,8 +17,10 @@
 #include <QFile>
 #include <QDir>
 #include <QXmlStreamReader>
+#include <QTimer>
 
 #include "SqlUpdater.h"
+#include "SqlSelector.h"
 #include "PlotDrawer.h"
 
 struct Version {
@@ -60,18 +62,29 @@ public:
     void update();
 
     QSqlDatabase db;
-    QSqlQuery* requestQuery;
+    QSqlQuery* requestQueryUpdater;
+    QSqlQuery* requestQuerySelector;
+
     QThread *sqlUpdaterThread;
     SqlUpdater *sqlUpdater;
 
+    QThread *sqlSelectorThread;
+    SqlSelector *sqlSelector;
+    QVector<double> priceData;
+    QVector<double> timeData;
+
     PlotDrawer *plotDrawer;
+    QTimer *timerDraw;
 
     Version ver;
     void readConfigFile();
 
+
+
 private:
     QTcpSocket *socketUpdate;
     Ui::Client *ui;
+
 
 private slots:
     void readyRead();

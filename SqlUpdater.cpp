@@ -7,6 +7,8 @@ SqlUpdater::SqlUpdater()
     connect(socket, &QTcpSocket::readyRead, this, &SqlUpdater::readyRead);
     connect(socket, &QTcpSocket::connected, this, &SqlUpdater::connected);
     connect(socket, &QTcpSocket::disconnected, this, &SqlUpdater::disconnected);
+
+    secsBefore2000 = 946684800; //количество секунд, прошедших до 01.01.2000 00:00:00
 }
 
 void SqlUpdater::connectToServer(const QString &host, quint16 port)
@@ -40,7 +42,7 @@ void SqlUpdater::process()
     SecID_Numbers["AFLT"] = 1;
 
     //создали таблицу, если не существует
-    requestQuery->exec("CREATE TABLE IF NOT EXISTS moex_client ( TRADENO BIGINT UNIQUE, SECID SMALLINT, PRICE FLOAT, QUANTITY INTEGER, SYSTIME DATETIME, BUYSELL BOOLEAN );");
+    requestQuery->exec("CREATE TABLE IF NOT EXISTS moex_client ( TRADENO BIGINT UNIQUE, SECID SMALLINT, PRICE FLOAT, QUANTITY INTEGER, SYSTIME BIGINT, BUYSELL BOOLEAN );");
     requestQuery->first();
 
     for (auto i = SecID_Numbers.cbegin(), end = SecID_Numbers.cend(); i != end; i++){
@@ -48,7 +50,6 @@ void SqlUpdater::process()
         requestQuery->exec(req);
         requestQuery->first();
         LastTRADENOs[i.key()] = requestQuery->value(0).toLongLong();
-        qDebug() << "LAST TRADENO = " << LastTRADENOs[i.key()];
     }
 
     connectToServer("127.0.0.1", quint16(6666));
@@ -63,10 +64,9 @@ void SqlUpdater::readyRead()
     long long int tradeno_tmp = 0;
     float price_tmp = 0;
     int quantity_tmp = 0;
-    QDateTime dt_now;
+    long long int systime_tmp;
     bool buysell_tmp;
 
-    QDateTime dt_2000; dt_2000.setDate(QDate(2000,1,1)); dt_2000.setTime(QTime(0,0,0));
     uint secondsFrom2000;
 
     QString bigInsertString = "INSERT INTO moex_client (TRADENO, SECID, PRICE, QUANTITY, SYSTIME, BUYSELL) VALUES ";
@@ -80,30 +80,22 @@ void SqlUpdater::readyRead()
         ds >> quantity_tmp;
 
         ds >> secondsFrom2000;
-        dt_now = dt_2000.addSecs(secondsFrom2000);
+        systime_tmp = secondsFrom2000 + secsBefore2000;
 
-        qDebug() << tradeno_tmp;
-        qDebug() << secid_tmp;
-        qDebug() << price_tmp;
-        qDebug() << quantity_tmp;
-        qDebug() << dt_now;
-        qDebug() << buysell_tmp;
         QChar buysell_char = buysell_tmp == 1 ? '1' : '0';
-
 
         QString valuesInsertString = "(";
         valuesInsertString.append(QString::number(tradeno_tmp)); valuesInsertString.append(", ");
         valuesInsertString.append(QString::number(secid_tmp)); valuesInsertString.append(", ");
         valuesInsertString.append(QString::number(price_tmp)); valuesInsertString.append(", ");
         valuesInsertString.append(QString::number(quantity_tmp)); valuesInsertString.append(", '");
-        valuesInsertString.append(dt_now.toString()); valuesInsertString.append("', ");
+        valuesInsertString.append(QString::number(systime_tmp)); valuesInsertString.append("', ");
         valuesInsertString.append(buysell_char); valuesInsertString.append("),");
         bigInsertString.append(valuesInsertString);
     }
     bigInsertString.chop(1);
     bigInsertString.append(";");
 
-    qDebug() << bigInsertString;
     requestQuery->exec(bigInsertString);
     requestQuery->first();
 }

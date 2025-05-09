@@ -12,6 +12,7 @@ QMAKE_CXXFLAGS += -Wall -Wextra -Werror -O3 -g
 
 SOURCES += \
     PlotDrawer.cpp \
+    SqlSelector.cpp \
     SqlUpdater.cpp \
     main.cpp \
     client.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
 
 HEADERS += \
     PlotDrawer.h \
+    SqlSelector.h \
     SqlUpdater.h \
     client.h \
     qcustomplot.h
