@@ -80,6 +80,11 @@ Client::Client(QWidget *parent)
     connect(timerDraw, SIGNAL(timeout()), plotDrawer, SLOT(drawPlot()));
     timerDraw->start(100);
     plotDrawer->drawPlot();
+
+    connect(ui->checkBoxAutorescale, SIGNAL(stateChanged(int)), this, SLOT(setAutorescale()));
+    connect(ui->PlotWidget, SIGNAL(mouseWheel(QWheelEvent*)), plotDrawer, SLOT(setNewRange(QWheelEvent*)));
+    connect(ui->PlotWidget->xAxis, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeX()));
+
 }
 
 Client::~Client()
@@ -114,6 +119,7 @@ void Client::readConfigFile()
     file.close();
 }
 
+
 bool Client::checkNewVersion()
 {
 
@@ -147,3 +153,10 @@ void Client::disconnected()
 {
     qDebug() << "Disconnected from update server";
 }
+
+void Client::setAutorescale()
+{
+    if (ui->checkBoxAutorescale->isChecked()) plotDrawer->autoRescale = true;
+    else plotDrawer->autoRescale = false;
+}
+

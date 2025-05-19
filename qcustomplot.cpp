@@ -1830,7 +1830,9 @@ void QCPLayerable::mouseDoubleClickEvent(QMouseEvent *event, const QVariant &det
 */
 void QCPLayerable::wheelEvent(QWheelEvent *event)
 {
-  event->ignore();
+    event->ignore();
+    emit
+  //event->ignore();
 }
 /* end of 'src/layer.cpp' */
 

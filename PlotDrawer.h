@@ -1,12 +1,12 @@
 #ifndef PLOTDRAWER_H
 #define PLOTDRAWER_H
 
-#include  <QObject>
+#include <QObject>
 #include <QDateTime>
 
 #include "qcustomplot.h"
 
-class PlotDrawer : public QObject
+class PlotDrawer : public QWidget
 {
     Q_OBJECT
 public:
@@ -15,16 +15,20 @@ public:
 
     QVector<double> *priceData;
     QVector<double> *timeData;
-    QVector<double> time, value;
 
     QCPFinancial *candlesticks;
     QDateTime start;
     double startTime;
     double binSize;
 
-public slots:
+    bool autoRescale;
 
+public slots:
     void drawPlot();
+    void setNewRange(QWheelEvent* e);
+    void setNewRangeX();
+
+
 };
 
 #endif // PLOTDRAWER_H

@@ -19,6 +19,8 @@
 #include <QXmlStreamReader>
 #include <QTimer>
 
+#include <QWheelEvent>
+
 #include "SqlUpdater.h"
 #include "SqlSelector.h"
 #include "PlotDrawer.h"
@@ -79,8 +81,6 @@ public:
     Version ver;
     void readConfigFile();
 
-
-
 private:
     QTcpSocket *socketUpdate;
     Ui::Client *ui;
@@ -90,6 +90,7 @@ private slots:
     void readyRead();
     void connected();
     void disconnected();
+    void setAutorescale();
 
 };
 

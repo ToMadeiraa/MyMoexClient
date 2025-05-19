@@ -1,20 +1,16 @@
 #include "PlotDrawer.h"
 
 PlotDrawer::PlotDrawer(QCustomPlot* cp)
+    : binSize(60)
+    , autoRescale(true) //интервал в секундах
 {
     this->customPlot = cp;
-
-    time.resize(625*625);
-    value.resize(625*625);
 
     // generate two sets of random walk data (one for candlestick and one for ohlc chart):
     start = QDateTime(QDate(2025, 5, 3), QTime(9,59,50));
 
     start.setTimeSpec(Qt::UTC);
     startTime = start.currentSecsSinceEpoch();
-
-    qDebug() << startTime << "    START TIME";
-    binSize = 60; // интервал в секундах
 
     // create candlestick chart:
     candlesticks = new QCPFinancial(customPlot->xAxis, customPlot->yAxis);
@@ -29,25 +25,47 @@ PlotDrawer::PlotDrawer(QCustomPlot* cp)
     // configure axes of both main and bottom axis rect:
     QSharedPointer<QCPAxisTickerDateTime> dateTimeTicker(new QCPAxisTickerDateTime);
     dateTimeTicker->setDateTimeSpec(Qt::UTC);
-    dateTimeTicker->setDateTimeFormat("dd. MMMM hh:mm:ss");
+    dateTimeTicker->setDateTimeFormat("dd. MMMM. yyyy hh:mm:ss");
     customPlot->xAxis->setTicker(dateTimeTicker);
     customPlot->xAxis->scaleRange(1.025, customPlot->xAxis->range().center());
     customPlot->yAxis->scaleRange(1.1, customPlot->yAxis->range().center());
+    customPlot->xAxis->setRange(QCPRange(startTime, startTime+60));
     //customPlot->yAxis->setRange(60,70);
+    //QCPRange range = customPlot->yAxis->range();
+    //customPlot->setInteraction(QCP::iRangeZoom);
+    customPlot->setInteractions(QCP::iRangeDrag | QCP::iSelectAxes);
 }
 
-//1.74683e+09
 
 void PlotDrawer::drawPlot()
 {
-    // for (int i=0; i<625*625; ++i) {
-    //     time[i] = startTime+i;
-    //     value[i] = i;
-    // }
-    //candlesticks->data()->set(QCPFinancial::timeSeriesToOhlc(time, value, binSize, startTime));
-
-
     candlesticks->data()->set(QCPFinancial::timeSeriesToOhlc(*timeData, *priceData, binSize, startTime));
-    customPlot->rescaleAxes();
+
+    if (autoRescale) customPlot->rescaleAxes();
     customPlot->replot();
+}
+
+void PlotDrawer::setNewRange(QWheelEvent* e)
+{
+    QCPRange range = customPlot->xAxis->range();
+    double lower_tmp = range.lower;
+    double upper_tmp = range.upper;
+
+    if (e->angleDelta().y() < 0) //отдалить
+    {
+        lower_tmp-=100;
+        upper_tmp+=100;
+    }
+    else //приблизить
+    {
+        lower_tmp+=100;
+        upper_tmp-=100;
+    }
+    customPlot->xAxis->setRange(lower_tmp,upper_tmp);
+    customPlot->replot();
+}
+
+void PlotDrawer::setNewRangeX()
+{
+    qDebug() << "XXXXXX";
 }
