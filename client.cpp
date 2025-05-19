@@ -72,7 +72,6 @@ Client::Client(QWidget *parent)
 
     ///////////////
     plotDrawer = new PlotDrawer(ui->PlotWidget);
-    //plotDrawer->customPlot = ui->PlotWidget;
     plotDrawer->priceData = &this->priceData;
     plotDrawer->timeData = &this->timeData;
 
@@ -84,7 +83,10 @@ Client::Client(QWidget *parent)
     connect(ui->checkBoxAutorescale, SIGNAL(stateChanged(int)), this, SLOT(setAutorescale()));
     connect(ui->PlotWidget, SIGNAL(mouseWheel(QWheelEvent*)), plotDrawer, SLOT(setNewRange(QWheelEvent*)));
     connect(ui->PlotWidget->xAxis, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeX()));
+    connect(ui->PlotWidget->yAxis2, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeY()));
+    connect(ui->PlotWidget, SIGNAL(mouseMove(QMouseEvent *)), plotDrawer, SLOT(mouseMoved(QMouseEvent*)));
 
+    connect(ui->PlotWidget->yAxis2, SIGNAL(rangeChanged(QCPRange)), ui->PlotWidget->yAxis, SLOT(setRange(QCPRange))); // left axis only mirrors inner right axis
 }
 
 Client::~Client()

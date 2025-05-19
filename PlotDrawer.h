@@ -5,6 +5,7 @@
 #include <QDateTime>
 
 #include "qcustomplot.h"
+#include "AxisTag.h"
 
 class PlotDrawer : public QWidget
 {
@@ -17,16 +18,25 @@ public:
     QVector<double> *timeData;
 
     QCPFinancial *candlesticks;
+    QCPItemStraightLine *infLine;
+    AxisTag *mTag1;
+
     QDateTime start;
     double startTime;
     double binSize;
 
     bool autoRescale;
 
+private:
+    bool isXAxisChosen;
+    bool isYAxisChosen;
+
 public slots:
     void drawPlot();
     void setNewRange(QWheelEvent* e);
     void setNewRangeX();
+    void setNewRangeY();
+    void mouseMoved(QMouseEvent *e);
 
 
 };

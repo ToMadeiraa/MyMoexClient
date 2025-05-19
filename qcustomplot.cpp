@@ -18622,7 +18622,7 @@ void QCPAxisRect::mouseMoveEvent(QMouseEvent *event, const QPointF &startPos)
         }
       }
     }
-    
+
     if (mRangeDrag != 0) // if either vertical or horizontal drag was enabled, do a replot
     {
       if (mParentPlot->noAntialiasingOnDrag())
