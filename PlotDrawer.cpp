@@ -79,6 +79,7 @@ void PlotDrawer::drawPlot()
 
     if (autoRescale) customPlot->rescaleAxes();
     customPlot->replot();
+    qDebug() << &priceData << "     " << &timeData;
 }
 
 void PlotDrawer::setNewRange(QWheelEvent* e)

@@ -38,8 +38,10 @@ void SqlUpdater::sendLastTradeno()
 
 void SqlUpdater::process()
 {
+    mtx->lock();
+
     //заполняем таблицу secid/ushort, чтобы было дешевле отправлять по сети
-    SecID_Numbers["AFLT"] = 1;
+    SecID_Numbers["GAZP"] = 1;
 
     //создали таблицу, если не существует
     requestQuery->exec("CREATE TABLE IF NOT EXISTS moex_client ( TRADENO BIGINT UNIQUE, SECID SMALLINT, PRICE FLOAT, QUANTITY INTEGER, SYSTIME BIGINT, BUYSELL BOOLEAN );");
@@ -53,6 +55,8 @@ void SqlUpdater::process()
     }
 
     connectToServer("127.0.0.1", quint16(6666));
+
+    mtx->unlock();
 }
 
 void SqlUpdater::readyRead()
@@ -95,9 +99,14 @@ void SqlUpdater::readyRead()
     }
     bigInsertString.chop(1);
     bigInsertString.append(";");
+    //qDebug() << bigInsertString <<  "      INSERTING..." << QTime::currentTime();
+
+    mtx->lock();
 
     requestQuery->exec(bigInsertString);
     requestQuery->first();
+
+    mtx->unlock();
 }
 
 void SqlUpdater::connected()

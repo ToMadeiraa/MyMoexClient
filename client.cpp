@@ -35,16 +35,16 @@ Client::Client(QWidget *parent)
         qDebug() << "Успешное подключение к базе данных";
     }
 
-    requestQueryUpdater = new QSqlQuery(db);
-    requestQuerySelector = new QSqlQuery(db);
+    // requestQueryUpdater = new QSqlQuery(db);
+    // requestQuerySelector = new QSqlQuery(db);
+    requestQuery = new QSqlQuery(db);
 
     ///////////////
     sqlUpdater = new SqlUpdater;
-    sqlUpdater->db = this->db;
-    sqlUpdater->requestQuery = requestQueryUpdater;
-
+    //sqlUpdater->db = this->db;
+    sqlUpdater->requestQuery = this->requestQuery;
+    sqlUpdater->mtx = &this->mtx;
     sqlUpdaterThread = new QThread(this);
-
     sqlUpdater->moveToThread(sqlUpdaterThread);
 
     connect(sqlUpdaterThread, &QThread::started, sqlUpdater, &SqlUpdater::process);
@@ -56,13 +56,12 @@ Client::Client(QWidget *parent)
 
     ///////////////
     sqlSelector = new SqlSelector;
-    sqlSelector->db = this->db;
-    sqlSelector->requestQuery = requestQuerySelector;
+    //sqlSelector->db = this->db;
+    sqlSelector->requestQuery = this->requestQuery;
     sqlSelector->priceData = &this->priceData;
     sqlSelector->timeData = &this->timeData;
-
+    sqlSelector->mtx = &this->mtx;
     sqlSelectorThread = new QThread(this);
-
     sqlSelector->moveToThread(sqlSelectorThread);
 
     connect(sqlSelectorThread, &QThread::finished, sqlSelectorThread, &QThread::deleteLater);

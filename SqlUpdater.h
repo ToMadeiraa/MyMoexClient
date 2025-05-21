@@ -4,10 +4,9 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QDebug>
-#include <QThread>
-//#include <QTimer>
+#include <QMutex>
 
-#include <QSqlDatabase>
+//#include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
 
@@ -22,8 +21,9 @@ public:
     void connectToServer(const QString &host, quint16 port);
     void sendLastTradeno();
 
-    QSqlDatabase db;
+    //QSqlDatabase db;
     QSqlQuery* requestQuery;
+    QMutex* mtx;
 
 private:
     QTcpSocket *socket;

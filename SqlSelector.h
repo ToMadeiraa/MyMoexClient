@@ -4,8 +4,9 @@
 #include <QObject>
 #include <QDebug>
 #include <QDateTime>
+#include <QMutex>
 
-#include <QSqlDatabase>
+//#include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QTimer>
@@ -16,9 +17,10 @@ class SqlSelector : public QObject
 public:
     SqlSelector();
 
-    QSqlDatabase db;
+    //QSqlDatabase db;
     QSqlQuery* requestQuery;
     QTimer* timerSelectData;
+    QMutex* mtx;
 
     QVector<double> *priceData;
     QVector<double> *timeData;

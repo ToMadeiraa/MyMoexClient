@@ -8,6 +8,7 @@
 #include <QTcpSocket>
 #include <QDebug>
 #include <QThread>
+#include <QMutex>
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -64,14 +65,17 @@ public:
     void update();
 
     QSqlDatabase db;
-    QSqlQuery* requestQueryUpdater;
-    QSqlQuery* requestQuerySelector;
+    // QSqlQuery* requestQueryUpdater;
+    // QSqlQuery* requestQuerySelector;
+    QSqlQuery* requestQuery;
+    QMutex mtx;
 
     QThread *sqlUpdaterThread;
     SqlUpdater *sqlUpdater;
 
     QThread *sqlSelectorThread;
     SqlSelector *sqlSelector;
+
     QVector<double> priceData;
     QVector<double> timeData;
 
