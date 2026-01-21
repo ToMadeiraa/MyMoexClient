@@ -5,6 +5,8 @@
 #include <QTcpSocket>
 #include <QDebug>
 #include <QMutex>
+#include <QDataStream>
+#include <QDateTime>
 
 //#include <QSqlDatabase>
 #include <QSqlQuery>

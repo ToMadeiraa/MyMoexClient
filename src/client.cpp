@@ -5,6 +5,10 @@ Client::Client(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Client)
 {
+    //заполняем таблицу secid/ushort, чтобы было дешевле отправлять по сети
+//    SecID_Numbers["GAZP"]   = 1;
+
+
     ui->setupUi(this);
     readConfigFile();
 
@@ -22,26 +26,23 @@ Client::Client(QWidget *parent)
         qDebug() << "Обновление не требуется";
     }
 
-    //подключение к БД
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    QString homeDir = QDir::homePath();
-    homeDir.append("/MyClient/MyMoexClient/MyDatabase/moex_client.db");
-    db.setDatabaseName(homeDir);
+    //подключились к БД
+    db = QSqlDatabase::addDatabase("QPSQL");
+    db.setHostName("localhost");
+    db.setPort(5432);
+    db.setDatabaseName("testdb_client");
+    db.setUserName("postgres");
+    db.setPassword("1234");
 
     if (!db.open()) {
-        qDebug() << "Ошибка подключения к базе данных: " << db.lastError().text();
-        return;
+        qDebug() << "Ошибка подключения к базе данных:" << db.lastError().text();
     } else {
-        qDebug() << "Успешное подключение к базе данных";
+        qDebug() << "ПОДКЛЮЧЕНО";
     }
 
-    // requestQueryUpdater = new QSqlQuery(db);
-    // requestQuerySelector = new QSqlQuery(db);
     requestQuery = new QSqlQuery(db);
 
-    ///////////////
     sqlUpdater = new SqlUpdater;
-    //sqlUpdater->db = this->db;
     sqlUpdater->requestQuery = this->requestQuery;
     sqlUpdater->mtx = &this->mtx;
     sqlUpdaterThread = new QThread(this);
@@ -54,9 +55,7 @@ Client::Client(QWidget *parent)
 
     sqlUpdaterThread->start();
 
-    ///////////////
     sqlSelector = new SqlSelector;
-    //sqlSelector->db = this->db;
     sqlSelector->requestQuery = this->requestQuery;
     sqlSelector->priceData = &this->priceData;
     sqlSelector->timeData = &this->timeData;
@@ -123,7 +122,6 @@ void Client::readConfigFile()
 
 bool Client::checkNewVersion()
 {
-
     socketUpdate->connectToHost("127.0.0.1", quint16(6667));
     return true;
 }

@@ -64,6 +64,7 @@ public:
     bool checkNewVersion();
     void update();
 
+//    QMap<QString, ushort> SecID_Numbers;
     QSqlDatabase db;
     // QSqlQuery* requestQueryUpdater;
     // QSqlQuery* requestQuerySelector;

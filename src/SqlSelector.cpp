@@ -23,7 +23,7 @@ void SqlSelector::selectData()
     while (requestQuery->next()) {
         LastTradeno = requestQuery->value(0).toLongLong();
         priceData->push_back(requestQuery->value(1).toDouble());
-        dateTimeInSec = requestQuery->value(2).toDouble();
+        dateTimeInSec = requestQuery->value(2).toDateTime().toSecsSinceEpoch();
         timeData->push_back(dateTimeInSec);
     }
 
