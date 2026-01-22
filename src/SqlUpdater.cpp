@@ -127,7 +127,7 @@ void SqlUpdater::readyRead()
 
         if (flagString == false)
         {
-            secid_tmp = tradeno_tmp & 0b1111111111; tradeno_tmp = (tradeno_tmp >> 10);
+            secid_tmp = tradeno_tmp & 0b1111111111;
             QString companyName;
             for (const auto &key : SecID_Numbers.keys())
             {
@@ -142,6 +142,8 @@ void SqlUpdater::readyRead()
 
             flagString = true;
         }
+
+        tradeno_tmp = (tradeno_tmp >> 10);
 
         ds >> price_tmp;
         ds >> quantity_tmp;
