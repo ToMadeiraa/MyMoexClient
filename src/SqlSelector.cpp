@@ -12,7 +12,7 @@ void SqlSelector::selectData()
 {
     mtx->lock();
 
-    QString reqString = "SELECT TRADENO, PRICE, SYSTIME FROM moex_client WHERE TRADENO > " + QString::number(LastTradeno) + " LIMIT 100;";
+    QString reqString = "SELECT TRADENO, PRICE, SYSTIME FROM moex_client WHERE TRADENO > " + QString::number(LastTradeno) + ";";
     if (LastTradeno == 0) return;
 
     requestQuery->exec(reqString);
@@ -20,7 +20,8 @@ void SqlSelector::selectData()
 
     double dateTimeInSec;
 
-    while (requestQuery->next()) {
+    while (requestQuery->next())
+    {
         LastTradeno = requestQuery->value(0).toLongLong();
         priceData->push_back(requestQuery->value(1).toDouble());
         dateTimeInSec = requestQuery->value(2).toDateTime().toSecsSinceEpoch();

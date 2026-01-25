@@ -155,7 +155,12 @@ void Client::disconnected()
 
 void Client::setAutorescale()
 {
-    if (ui->checkBoxAutorescale->isChecked()) plotDrawer->autoRescale = true;
-    else plotDrawer->autoRescale = false;
+    if (ui->checkBoxAutorescale->isChecked())
+    {
+        plotDrawer->autoRescale = true;
+    }
+    else
+    {
+        plotDrawer->autoRescale = false;
+    }
 }
-

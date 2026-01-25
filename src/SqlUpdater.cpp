@@ -20,6 +20,8 @@ void SqlUpdater::sendLastTradeno()
 {
     QByteArray ba;
     QDataStream ds(&ba, QIODevice::WriteOnly);
+    ds.setByteOrder(QDataStream::BigEndian);
+    ds.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
     for (const auto &key : LastTRADENOs.keys())
     {
@@ -107,8 +109,28 @@ void SqlUpdater::process()
 void SqlUpdater::readyRead()
 {
     qDebug() << "GOT MSG ";
-    QByteArray data = socket->readAll();
+    if (sizeOfCompanyPack == -1)
+    {
+        socket->read((char*)&sizeOfCompanyPack, 4);
+        qDebug() << "sizeOfCompanyPack = " << sizeOfCompanyPack;
+    }
+    QByteArray data;
+    //ждем оставшуюся часть пакета
+    if (sizeOfCompanyPack > socket->bytesAvailable())
+    {
+        return;
+    }
+    else
+    {
+        //socket->read(&data, sizeOfCompanyPack);
+        data = socket->read(sizeOfCompanyPack);
+        qDebug() << "data.size() == " << data.size();
+        sizeOfCompanyPack = -1;
+    }
+
     QDataStream ds(&data, QIODevice::ReadOnly);
+    ds.setByteOrder(QDataStream::BigEndian);
+    ds.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
     ushort secid_tmp = 0;
     long long int tradeno_tmp = 0;
@@ -167,7 +189,8 @@ void SqlUpdater::readyRead()
 
     mtx->lock();
 
-    qDebug() << bigInsertString;
+    //qDebug() << bigInsertString;
+    //qDebug() << "===========================================";
     requestQuery->exec(bigInsertString);
     requestQuery->first();
 

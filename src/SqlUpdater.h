@@ -26,6 +26,7 @@ public:
     //QSqlDatabase db;
     QSqlQuery* requestQuery;
     QMutex* mtx;
+    int sizeOfCompanyPack = -1;
 
 private:
     QTcpSocket *socket;
