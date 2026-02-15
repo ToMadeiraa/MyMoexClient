@@ -11,7 +11,6 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QMainWindow>
@@ -25,9 +24,8 @@ class Ui_Client
 public:
     QWidget *centralwidget;
     QGridLayout *gridLayout;
-    QCheckBox *checkBoxAutorescale;
-    QComboBox *comboBox;
     QCustomPlot *PlotWidget;
+    QComboBox *comboBox_currentSec;
 
     void setupUi(QMainWindow *Client)
     {
@@ -39,22 +37,15 @@ public:
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         gridLayout = new QGridLayout(centralwidget);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        checkBoxAutorescale = new QCheckBox(centralwidget);
-        checkBoxAutorescale->setObjectName(QString::fromUtf8("checkBoxAutorescale"));
-        checkBoxAutorescale->setChecked(true);
-
-        gridLayout->addWidget(checkBoxAutorescale, 0, 1, 1, 1);
-
-        comboBox = new QComboBox(centralwidget);
-        comboBox->addItem(QString());
-        comboBox->setObjectName(QString::fromUtf8("comboBox"));
-
-        gridLayout->addWidget(comboBox, 0, 0, 1, 1);
-
         PlotWidget = new QCustomPlot(centralwidget);
         PlotWidget->setObjectName(QString::fromUtf8("PlotWidget"));
 
         gridLayout->addWidget(PlotWidget, 1, 0, 1, 2);
+
+        comboBox_currentSec = new QComboBox(centralwidget);
+        comboBox_currentSec->setObjectName(QString::fromUtf8("comboBox_currentSec"));
+
+        gridLayout->addWidget(comboBox_currentSec, 0, 0, 1, 2);
 
         Client->setCentralWidget(centralwidget);
 
@@ -66,9 +57,6 @@ public:
     void retranslateUi(QMainWindow *Client)
     {
         Client->setWindowTitle(QCoreApplication::translate("Client", "Client", nullptr));
-        checkBoxAutorescale->setText(QCoreApplication::translate("Client", "Autorescale", nullptr));
-        comboBox->setItemText(0, QCoreApplication::translate("Client", "GAZP", nullptr));
-
     } // retranslateUi
 
 };

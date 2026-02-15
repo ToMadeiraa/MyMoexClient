@@ -27,12 +27,13 @@ public:
     QSqlQuery* requestQuery;
     QMutex* mtx;
     int sizeOfCompanyPack = -1;
+    QHash<QString, ushort> SecID_Numbers;
 
 private:
     QTcpSocket *socket;
     qintptr socketDescriptor;
     QHash<QString, long long int> LastTRADENOs;
-    QHash<QString, ushort> SecID_Numbers;
+
     long long int secsBefore2000;
 
 public slots:

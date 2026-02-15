@@ -5,10 +5,6 @@ Client::Client(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Client)
 {
-    //заполняем таблицу secid/ushort, чтобы было дешевле отправлять по сети
-//    SecID_Numbers["GAZP"]   = 1;
-
-
     ui->setupUi(this);
     readConfigFile();
 
@@ -42,6 +38,7 @@ Client::Client(QWidget *parent)
 
     requestQuery = new QSqlQuery(db);
 
+    //data update
     sqlUpdater = new SqlUpdater;
     sqlUpdater->requestQuery = this->requestQuery;
     sqlUpdater->mtx = &this->mtx;
@@ -55,6 +52,8 @@ Client::Client(QWidget *parent)
 
     sqlUpdaterThread->start();
 
+
+    //data for drawing
     sqlSelector = new SqlSelector;
     sqlSelector->requestQuery = this->requestQuery;
     sqlSelector->priceData = &this->priceData;
@@ -68,7 +67,7 @@ Client::Client(QWidget *parent)
     sqlSelectorThread->start();
 
 
-    ///////////////
+    //drawer
     plotDrawer = new PlotDrawer(ui->PlotWidget);
     plotDrawer->priceData = &this->priceData;
     plotDrawer->timeData = &this->timeData;
@@ -77,6 +76,15 @@ Client::Client(QWidget *parent)
     connect(timerDraw, SIGNAL(timeout()), plotDrawer, SLOT(drawPlot()));
     timerDraw->start(100);
     plotDrawer->drawPlot();
+
+
+    //ui
+    for (const auto &k : sqlUpdater->SecID_Numbers.keys())
+    {
+
+    }
+
+
 
     connect(ui->checkBoxAutorescale, SIGNAL(stateChanged(int)), this, SLOT(setAutorescale()));
     connect(ui->PlotWidget, SIGNAL(mouseWheel(QWheelEvent*)), plotDrawer, SLOT(setNewRange(QWheelEvent*)));

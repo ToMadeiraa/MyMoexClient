@@ -8,7 +8,7 @@ PlotDrawer::PlotDrawer(QCustomPlot* cp)
 {
     this->customPlot = cp;
 
-    start = QDateTime(QDate(2025, 5, 3), QTime(9,59,50));
+    start = QDateTime(QDate(2026, 1, 1), QTime(9,59,50));
 
     start.setTimeSpec(Qt::UTC);
     startTime = start.currentSecsSinceEpoch();
