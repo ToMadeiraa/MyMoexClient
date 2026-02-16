@@ -81,7 +81,6 @@ public:
     QVector<double> timeData;
 
     PlotDrawer *plotDrawer;
-    QTimer *timerDraw;
 
     Version ver;
     void readConfigFile();
@@ -95,7 +94,8 @@ private slots:
     void readyRead();
     void connected();
     void disconnected();
-    void setAutorescale();
+    void drawNewPlot();
+    //void setAutorescale();
 
 };
 

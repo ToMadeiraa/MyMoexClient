@@ -27,7 +27,7 @@ public:
     QSqlQuery* requestQuery;
     QMutex* mtx;
     int sizeOfCompanyPack = -1;
-    QHash<QString, ushort> SecID_Numbers;
+    QMap<QString, ushort> SecID_Numbers;
 
 private:
     QTcpSocket *socket;

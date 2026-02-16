@@ -19,15 +19,15 @@ public:
 
     //QSqlDatabase db;
     QSqlQuery* requestQuery;
-    QTimer* timerSelectData;
     QMutex* mtx;
 
     QVector<double> *priceData;
     QVector<double> *timeData;
     long long int LastTradeno;
 
+    void selectData(QString sec);
+
 public slots:
-    void selectData();
 
 };
 

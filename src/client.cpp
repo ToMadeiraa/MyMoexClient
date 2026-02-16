@@ -71,22 +71,24 @@ Client::Client(QWidget *parent)
     plotDrawer = new PlotDrawer(ui->PlotWidget);
     plotDrawer->priceData = &this->priceData;
     plotDrawer->timeData = &this->timeData;
+    plotDrawer->autoRescale = true;
 
-    timerDraw = new QTimer;
-    connect(timerDraw, SIGNAL(timeout()), plotDrawer, SLOT(drawPlot()));
-    timerDraw->start(100);
-    plotDrawer->drawPlot();
+
 
 
     //ui
+    QString path = "/home/osboxes/Downloads/PetProject/MyMoexClient/src/gazp.png";
+    QIcon ic(path);
     for (const auto &k : sqlUpdater->SecID_Numbers.keys())
     {
-
+        ui->comboBox_currentSec->insertItem(ui->comboBox_currentSec->count(), ic, k);
     }
 
+    connect(ui->comboBox_currentSec, SIGNAL(currentIndexChanged(int)), this, SLOT(drawNewPlot()));
 
 
-    connect(ui->checkBoxAutorescale, SIGNAL(stateChanged(int)), this, SLOT(setAutorescale()));
+
+    //connect(ui->checkBoxAutorescale, SIGNAL(stateChanged(int)), this, SLOT(setAutorescale()));
     connect(ui->PlotWidget, SIGNAL(mouseWheel(QWheelEvent*)), plotDrawer, SLOT(setNewRange(QWheelEvent*)));
     connect(ui->PlotWidget->xAxis, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeX()));
     connect(ui->PlotWidget->yAxis2, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeY()));
@@ -161,14 +163,21 @@ void Client::disconnected()
     qDebug() << "Disconnected from update server";
 }
 
-void Client::setAutorescale()
+void Client::drawNewPlot()
 {
-    if (ui->checkBoxAutorescale->isChecked())
-    {
-        plotDrawer->autoRescale = true;
-    }
-    else
-    {
-        plotDrawer->autoRescale = false;
-    }
+    QString currentSec = ui->comboBox_currentSec->currentText().toLower() + "_client";
+    sqlSelector->selectData(currentSec);
+    plotDrawer->drawPlot();
 }
+
+//void Client::setAutorescale()
+//{
+//    if (ui->checkBoxAutorescale->isChecked())
+//    {
+//        plotDrawer->autoRescale = true;
+//    }
+//    else
+//    {
+//        plotDrawer->autoRescale = false;
+//    }
+//}

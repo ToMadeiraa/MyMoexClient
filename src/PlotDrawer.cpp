@@ -6,6 +6,7 @@ PlotDrawer::PlotDrawer(QCustomPlot* cp)
     , isXAxisChosen(false)
     , isYAxisChosen(false)
 {
+
     this->customPlot = cp;
 
     start = QDateTime(QDate(2026, 1, 1), QTime(9,59,50));
@@ -69,9 +70,9 @@ void PlotDrawer::drawPlot()
     infLine->point2->setCoords(startTime*100, priceData->last());
 
     // update the vertical axis tag positions and texts to match the rightmost data point of the graphs:
-    //customPlot->xAxis->rescale();
-    //candlesticks->rescaleValueAxis(false, true);
-    //customPlot->xAxis->setRange(customPlot->xAxis->range().upper, 100, Qt::AlignRight);
+    customPlot->xAxis->rescale();
+    candlesticks->rescaleValueAxis(false, true);
+    customPlot->xAxis->setRange(customPlot->xAxis->range().upper, 100, Qt::AlignRight);
 
     // update the vertical axis tag positions and texts to match the rightmost data point of the graphs:
     mTag1->updatePosition(priceData->last());
@@ -79,7 +80,6 @@ void PlotDrawer::drawPlot()
 
     if (autoRescale) customPlot->rescaleAxes();
     customPlot->replot();
-    qDebug() << &priceData << "     " << &timeData;
 }
 
 void PlotDrawer::setNewRange(QWheelEvent* e)
@@ -91,13 +91,13 @@ void PlotDrawer::setNewRange(QWheelEvent* e)
 
         if (e->angleDelta().y() < 0) //отдалить
         {
-            lower_tmp_x-=100;
-            upper_tmp_x+=100;
+            lower_tmp_x-=10000;
+            upper_tmp_x+=10000;
         }
         else //приблизить
         {
-            lower_tmp_x+=100;
-            upper_tmp_x-=100;
+            lower_tmp_x+=10000;
+            upper_tmp_x-=10000;
         }
         customPlot->xAxis->setRange(lower_tmp_x,upper_tmp_x);
     } else if (isYAxisChosen) {
@@ -107,13 +107,13 @@ void PlotDrawer::setNewRange(QWheelEvent* e)
 
         if (e->angleDelta().y() < 0) //отдалить
         {
-            lower_tmp_y*=0.99;
-            upper_tmp_y*=1.01;
+            lower_tmp_y*=0.9;
+            upper_tmp_y*=1.1;
         }
         else //приблизить
         {
-            lower_tmp_y*=1.01;
-            upper_tmp_y*=0.99;
+            lower_tmp_y*=1.1;
+            upper_tmp_y*=0.9;
         }
         customPlot->yAxis2->setRange(lower_tmp_y,upper_tmp_y);
     } else {
@@ -123,13 +123,13 @@ void PlotDrawer::setNewRange(QWheelEvent* e)
 
         if (e->angleDelta().y() < 0) //отдалить
         {
-            lower_tmp_x-=100;
-            upper_tmp_x+=100;
+            lower_tmp_x-=10000;
+            upper_tmp_x+=10000;
         }
         else //приблизить
         {
-            lower_tmp_x+=100;
-            upper_tmp_x-=100;
+            lower_tmp_x+=10000;
+            upper_tmp_x-=10000;
         }
         customPlot->xAxis->setRange(lower_tmp_x,upper_tmp_x);
         QCPRange range_y = customPlot->yAxis2->range();
@@ -138,13 +138,13 @@ void PlotDrawer::setNewRange(QWheelEvent* e)
 
         if (e->angleDelta().y() < 0) //отдалить
         {
-            lower_tmp_y*=0.99;
-            upper_tmp_y*=1.01;
+            lower_tmp_y*=0.9;
+            upper_tmp_y*=1.1;
         }
         else //приблизить
         {
-            lower_tmp_y*=1.01;
-            upper_tmp_y*=0.99;
+            lower_tmp_y*=1.1;
+            upper_tmp_y*=0.9;
         }
         customPlot->yAxis2->setRange(lower_tmp_y,upper_tmp_y);
     }

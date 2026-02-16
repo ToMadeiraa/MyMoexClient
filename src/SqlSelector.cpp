@@ -1,34 +1,25 @@
 #include "SqlSelector.h"
 
-SqlSelector::SqlSelector()
+SqlSelector::SqlSelector() :
+    LastTradeno(0)
 {
-    LastTradeno = 1;
-    timerSelectData = new QTimer;
-    connect(timerSelectData, SIGNAL(timeout()), this, SLOT(selectData()));
-    timerSelectData->start(100);
 }
 
-void SqlSelector::selectData()
+void SqlSelector::selectData(QString sec)
 {
-    mtx->lock();
-
-    QString reqString = "SELECT TRADENO, PRICE, SYSTIME FROM moex_client WHERE TRADENO > " + QString::number(LastTradeno) + ";";
-    if (LastTradeno == 0) return;
+    QString reqString = "SELECT TRADENO, PRICE, SYSTIME FROM " + sec + " WHERE TRADENO > " + QString::number(LastTradeno) + ";";
 
     requestQuery->exec(reqString);
     requestQuery->first();
 
-    double dateTimeInSec;
+    double dateTimeInSec = 0;
 
-    while (requestQuery->next())
-    {
-        LastTradeno = requestQuery->value(0).toLongLong();
-        priceData->push_back(requestQuery->value(1).toDouble());
+    do {
+        if (dateTimeInSec > requestQuery->value(2).toDateTime().toSecsSinceEpoch()) continue;
         dateTimeInSec = requestQuery->value(2).toDateTime().toSecsSinceEpoch();
+        priceData->push_back(requestQuery->value(1).toDouble());
         timeData->push_back(dateTimeInSec);
-    }
-
-    mtx->unlock();
+    } while (requestQuery->next());
 }
 
 
