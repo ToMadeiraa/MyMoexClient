@@ -16,7 +16,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_QML_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -Wall -Wextra -O3 -g -g -std=gnu++1z -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -Wall -Wextra -O0 -g -g -std=gnu++1z -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I../src -I. -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
@@ -56,18 +56,21 @@ SOURCES       = ../src/AxisTag.cpp \
 		../src/PlotDrawer.cpp \
 		../src/SqlSelector.cpp \
 		../src/SqlUpdater.cpp \
+		../src/bincombobox.cpp \
 		../src/main.cpp \
 		../src/client.cpp \
 		../src/qcustomplot.cpp moc_AxisTag.cpp \
 		moc_PlotDrawer.cpp \
 		moc_SqlSelector.cpp \
 		moc_SqlUpdater.cpp \
+		moc_bincombobox.cpp \
 		moc_client.cpp \
 		moc_qcustomplot.cpp
 OBJECTS       = AxisTag.o \
 		PlotDrawer.o \
 		SqlSelector.o \
 		SqlUpdater.o \
+		bincombobox.o \
 		main.o \
 		client.o \
 		qcustomplot.o \
@@ -75,6 +78,7 @@ OBJECTS       = AxisTag.o \
 		moc_PlotDrawer.o \
 		moc_SqlSelector.o \
 		moc_SqlUpdater.o \
+		moc_bincombobox.o \
 		moc_client.o \
 		moc_qcustomplot.o
 DIST          = ../src/config.xml \
@@ -160,11 +164,13 @@ DIST          = ../src/config.xml \
 		../src/PlotDrawer.h \
 		../src/SqlSelector.h \
 		../src/SqlUpdater.h \
+		../src/bincombobox.h \
 		../src/client.h \
 		../src/qcustomplot.h ../src/AxisTag.cpp \
 		../src/PlotDrawer.cpp \
 		../src/SqlSelector.cpp \
 		../src/SqlUpdater.cpp \
+		../src/bincombobox.cpp \
 		../src/main.cpp \
 		../src/client.cpp \
 		../src/qcustomplot.cpp
@@ -353,8 +359,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../src/AxisTag.h ../src/PlotDrawer.h ../src/SqlSelector.h ../src/SqlUpdater.h ../src/client.h ../src/qcustomplot.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../src/AxisTag.cpp ../src/PlotDrawer.cpp ../src/SqlSelector.cpp ../src/SqlUpdater.cpp ../src/main.cpp ../src/client.cpp ../src/qcustomplot.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../src/AxisTag.h ../src/PlotDrawer.h ../src/SqlSelector.h ../src/SqlUpdater.h ../src/bincombobox.h ../src/client.h ../src/qcustomplot.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../src/AxisTag.cpp ../src/PlotDrawer.cpp ../src/SqlSelector.cpp ../src/SqlUpdater.cpp ../src/bincombobox.cpp ../src/main.cpp ../src/client.cpp ../src/qcustomplot.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../src/client.ui $(DISTDIR)/
 
 
@@ -385,11 +391,11 @@ compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
-	g++ -pipe -Wall -Wextra -O3 -g -g -std=gnu++1z -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
+	g++ -pipe -Wall -Wextra -O0 -g -g -std=gnu++1z -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_AxisTag.cpp moc_PlotDrawer.cpp moc_SqlSelector.cpp moc_SqlUpdater.cpp moc_client.cpp moc_qcustomplot.cpp
+compiler_moc_header_make_all: moc_AxisTag.cpp moc_PlotDrawer.cpp moc_SqlSelector.cpp moc_SqlUpdater.cpp moc_bincombobox.cpp moc_client.cpp moc_qcustomplot.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_AxisTag.cpp moc_PlotDrawer.cpp moc_SqlSelector.cpp moc_SqlUpdater.cpp moc_client.cpp moc_qcustomplot.cpp
+	-$(DEL_FILE) moc_AxisTag.cpp moc_PlotDrawer.cpp moc_SqlSelector.cpp moc_SqlUpdater.cpp moc_bincombobox.cpp moc_client.cpp moc_qcustomplot.cpp
 moc_AxisTag.cpp: ../src/AxisTag.h \
 		../src/qcustomplot.h \
 		moc_predefs.h \
@@ -413,12 +419,18 @@ moc_SqlUpdater.cpp: ../src/SqlUpdater.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/osboxes/Downloads/PetProject/MyMoexClient/build-MyClient-Desktop-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/osboxes/Downloads/PetProject/MyMoexClient/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/SqlUpdater.h -o moc_SqlUpdater.cpp
 
+moc_bincombobox.cpp: ../src/bincombobox.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/osboxes/Downloads/PetProject/MyMoexClient/build-MyClient-Desktop-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/osboxes/Downloads/PetProject/MyMoexClient/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/bincombobox.h -o moc_bincombobox.cpp
+
 moc_client.cpp: ../src/client.h \
 		../src/SqlUpdater.h \
 		../src/SqlSelector.h \
 		../src/PlotDrawer.h \
 		../src/qcustomplot.h \
 		../src/AxisTag.h \
+		../src/bincombobox.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/osboxes/Downloads/PetProject/MyMoexClient/build-MyClient-Desktop-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/osboxes/Downloads/PetProject/MyMoexClient/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/client.h -o moc_client.cpp
@@ -465,12 +477,16 @@ SqlSelector.o: ../src/SqlSelector.cpp ../src/SqlSelector.h
 SqlUpdater.o: ../src/SqlUpdater.cpp ../src/SqlUpdater.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SqlUpdater.o ../src/SqlUpdater.cpp
 
+bincombobox.o: ../src/bincombobox.cpp ../src/bincombobox.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o bincombobox.o ../src/bincombobox.cpp
+
 main.o: ../src/main.cpp ../src/client.h \
 		../src/SqlUpdater.h \
 		../src/SqlSelector.h \
 		../src/PlotDrawer.h \
 		../src/qcustomplot.h \
-		../src/AxisTag.h
+		../src/AxisTag.h \
+		../src/bincombobox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../src/main.cpp
 
 client.o: ../src/client.cpp ../src/client.h \
@@ -479,7 +495,8 @@ client.o: ../src/client.cpp ../src/client.h \
 		../src/PlotDrawer.h \
 		../src/qcustomplot.h \
 		../src/AxisTag.h \
-		../src/ui_client.h
+		../src/bincombobox.h \
+		ui_client.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o client.o ../src/client.cpp
 
 qcustomplot.o: ../src/qcustomplot.cpp ../src/qcustomplot.h
@@ -496,6 +513,9 @@ moc_SqlSelector.o: moc_SqlSelector.cpp
 
 moc_SqlUpdater.o: moc_SqlUpdater.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_SqlUpdater.o moc_SqlUpdater.cpp
+
+moc_bincombobox.o: moc_bincombobox.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_bincombobox.o moc_bincombobox.cpp
 
 moc_client.o: moc_client.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_client.o moc_client.cpp

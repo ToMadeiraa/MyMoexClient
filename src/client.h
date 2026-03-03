@@ -25,6 +25,7 @@
 #include "SqlUpdater.h"
 #include "SqlSelector.h"
 #include "PlotDrawer.h"
+#include "bincombobox.h"
 
 struct Version {
     ushort Major;
@@ -79,8 +80,11 @@ public:
 
     QVector<double> priceData;
     QVector<double> timeData;
+    QVector<uint>   quantityData;
+    QVector<bool>   buysellData;
 
     PlotDrawer *plotDrawer;
+    BinComboBox *binCB;
 
     Version ver;
     void readConfigFile();

@@ -58,6 +58,8 @@ Client::Client(QWidget *parent)
     sqlSelector->requestQuery = this->requestQuery;
     sqlSelector->priceData = &this->priceData;
     sqlSelector->timeData = &this->timeData;
+    sqlSelector->quantityData = &this->quantityData;
+    sqlSelector->buysellData = &this->buysellData;
     sqlSelector->mtx = &this->mtx;
     sqlSelectorThread = new QThread(this);
     sqlSelector->moveToThread(sqlSelectorThread);
@@ -71,10 +73,14 @@ Client::Client(QWidget *parent)
     plotDrawer = new PlotDrawer(ui->PlotWidget);
     plotDrawer->priceData = &this->priceData;
     plotDrawer->timeData = &this->timeData;
+    plotDrawer->quantityData = &this->quantityData;
+    plotDrawer->buysellData = &this->buysellData;
     plotDrawer->autoRescale = true;
 
 
-
+    //bin combobox
+    binCB = new BinComboBox(ui->comboBox_binSize);
+    connect(binCB, SIGNAL(changedBinSize_signal(uint)), plotDrawer, SLOT(redrawPlotByBinSize_slot(uint)));
 
     //ui
     QString path = "/home/osboxes/Downloads/PetProject/MyMoexClient/src/gazp.png";
@@ -85,7 +91,6 @@ Client::Client(QWidget *parent)
     }
 
     connect(ui->comboBox_currentSec, SIGNAL(currentIndexChanged(int)), this, SLOT(drawNewPlot()));
-
 
 
     //connect(ui->checkBoxAutorescale, SIGNAL(stateChanged(int)), this, SLOT(setAutorescale()));
@@ -166,6 +171,9 @@ void Client::disconnected()
 void Client::drawNewPlot()
 {
     QString currentSec = ui->comboBox_currentSec->currentText().toLower() + "_client";
+    plotDrawer->timeData->clear();
+    plotDrawer->priceData->clear();
+    plotDrawer->candlesticks->data().clear();
     sqlSelector->selectData(currentSec);
     plotDrawer->drawPlot();
 }

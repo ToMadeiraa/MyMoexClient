@@ -4,7 +4,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 
-QMAKE_CXXFLAGS += -Wall -Wextra -O3 -g
+QMAKE_CXXFLAGS += -Wall -Wextra -O0 -g
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -15,6 +15,7 @@ SOURCES += \
     PlotDrawer.cpp \
     SqlSelector.cpp \
     SqlUpdater.cpp \
+    bincombobox.cpp \
     main.cpp \
     client.cpp \
     qcustomplot.cpp
@@ -24,6 +25,7 @@ HEADERS += \
     PlotDrawer.h \
     SqlSelector.h \
     SqlUpdater.h \
+    bincombobox.h \
     client.h \
     qcustomplot.h
 

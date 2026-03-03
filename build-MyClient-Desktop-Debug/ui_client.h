@@ -24,8 +24,9 @@ class Ui_Client
 public:
     QWidget *centralwidget;
     QGridLayout *gridLayout;
-    QCustomPlot *PlotWidget;
     QComboBox *comboBox_currentSec;
+    QComboBox *comboBox_binSize;
+    QCustomPlot *PlotWidget;
 
     void setupUi(QMainWindow *Client)
     {
@@ -37,15 +38,20 @@ public:
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         gridLayout = new QGridLayout(centralwidget);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        PlotWidget = new QCustomPlot(centralwidget);
-        PlotWidget->setObjectName(QString::fromUtf8("PlotWidget"));
-
-        gridLayout->addWidget(PlotWidget, 1, 0, 1, 2);
-
         comboBox_currentSec = new QComboBox(centralwidget);
         comboBox_currentSec->setObjectName(QString::fromUtf8("comboBox_currentSec"));
 
-        gridLayout->addWidget(comboBox_currentSec, 0, 0, 1, 2);
+        gridLayout->addWidget(comboBox_currentSec, 0, 0, 1, 3);
+
+        comboBox_binSize = new QComboBox(centralwidget);
+        comboBox_binSize->setObjectName(QString::fromUtf8("comboBox_binSize"));
+
+        gridLayout->addWidget(comboBox_binSize, 0, 3, 1, 1);
+
+        PlotWidget = new QCustomPlot(centralwidget);
+        PlotWidget->setObjectName(QString::fromUtf8("PlotWidget"));
+
+        gridLayout->addWidget(PlotWidget, 1, 0, 1, 4);
 
         Client->setCentralWidget(centralwidget);
 

@@ -23,7 +23,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Client_t {
     QByteArrayData data[6];
-    char stringdata0[56];
+    char stringdata0[53];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -37,11 +37,11 @@ QT_MOC_LITERAL(1, 7, 9), // "readyRead"
 QT_MOC_LITERAL(2, 17, 0), // ""
 QT_MOC_LITERAL(3, 18, 9), // "connected"
 QT_MOC_LITERAL(4, 28, 12), // "disconnected"
-QT_MOC_LITERAL(5, 41, 14) // "setAutorescale"
+QT_MOC_LITERAL(5, 41, 11) // "drawNewPlot"
 
     },
     "Client\0readyRead\0\0connected\0disconnected\0"
-    "setAutorescale"
+    "drawNewPlot"
 };
 #undef QT_MOC_LITERAL
 
@@ -82,7 +82,7 @@ void Client::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 0: _t->readyRead(); break;
         case 1: _t->connected(); break;
         case 2: _t->disconnected(); break;
-        case 3: _t->setAutorescale(); break;
+        case 3: _t->drawNewPlot(); break;
         default: ;
         }
     }

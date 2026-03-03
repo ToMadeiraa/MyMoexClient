@@ -23,7 +23,8 @@ public:
 
     QVector<double> *priceData;
     QVector<double> *timeData;
-    long long int LastTradeno;
+    QVector<uint>   *quantityData;
+    QVector<bool>   *buysellData;
 
     void selectData(QString sec);
 
