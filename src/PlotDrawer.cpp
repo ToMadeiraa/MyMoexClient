@@ -56,12 +56,10 @@ PlotDrawer::PlotDrawer(QCustomPlot* cp)
     customPlot->setMouseTracking(true);
 }
 
-bool PlotDrawer::isMouseOverBar(double x_value)
+void PlotDrawer::isMouseOverBar(double x_value)
 {
-    QDateTime qdt = QDateTime::fromSecsSinceEpoch(x_value);
-    qDebug() << "isMouseOverBar     " << qdt;
-
-    for (long long int i = 0; i < candles.size(); ++i)
+    qDebug() << "candles.size() = " << candles.size();
+    for (uint i = 0; i < candles.size(); ++i)
     {
         if (x_value > candles[i].timeCandleStart && x_value <= candles[i].timeCandleEnd)
         {
@@ -69,47 +67,37 @@ bool PlotDrawer::isMouseOverBar(double x_value)
             qDebug() << "candle low = " << candles[i].low;
         }
     }
-//    for (auto it = dataContainer.constBegin(); it != dataContainer.constEnd(); ++it)
-//    {
-//        const QCPFinancialData &dataPoint = *it;
-//        if (x_value == dataPoint.key)
-//        {
-//            qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!";
-//        }
-//        else
-//        {
-//            QDateTime asd = QDateTime::fromSecsSinceEpoch(dataPoint.key);
-//            qDebug() << asd;
-//        }
-//    }
-    return true;
 }
 
 void PlotDrawer::collectCandleInfo()
 {
     candles.clear();
     Candle c;
-    long long int currentTime = timeData->first()/binSize;
-    c.timeCandleStart = currentTime;
+    double previousTime = timeData->first();
+    c.timeCandleStart = previousTime;
+    c.open = priceData->first();
     for (uint i = 0; i < timeData->size(); ++i)
     {
         double currentPrice = priceData->at(i);
         c.high = std::max(c.high, currentPrice);
         c.low = std::min(c.low, currentPrice);
-        if ((long long int)timeData->at(i)/binSize == currentTime) [[likely]]
+        if (timeData->at(i) - previousTime < binSize) [[likely]]
         {
-            currentTime = (long long int)(timeData->at(i)/binSize);
+            //previousTime = timeData->at(i)/binSize;
         }
         else [[unlikely]]
         {
             c.timeCandleEnd = timeData->at(i);
-            c.close = priceData->at(i);
+            c.close = currentPrice;
             candles.push_back(c);
+            //at least one more candle
             if (i != timeData->size()-1)
             {
-                c.timeCandleStart = timeData->at(i+1);
-                c.open = priceData->at(i);
+                previousTime = timeData->at(i+1);
+                c.timeCandleStart = previousTime;
+                c.open = currentPrice;
                 c.high = 0;
+                c.low = 999999999;
                 c.close = 0;
             }
         }
@@ -124,6 +112,7 @@ void PlotDrawer::drawPlot()
     //задаем данные главному графику
     dataContainer = QCPFinancial::timeSeriesToOhlc(*timeData, *priceData, binSize, startTime);
     candlesticks->data()->set(dataContainer);
+    collectCandleInfo();
 
     //рисуем горизонтальную линию последней цены
     infLine->point1->setCoords(0, priceData->last());
@@ -230,7 +219,7 @@ void PlotDrawer::mouseMoved(QMouseEvent *e)
     double x_value = customPlot->xAxis->pixelToCoord(x_pixel);
 
     QString toolTipText;
-    if (isMouseOverBar(x_value))
+    isMouseOverBar(x_value);
     {
     }
     // qDebug() << e->position().x();

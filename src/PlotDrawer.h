@@ -15,7 +15,7 @@ public:
     double timeCandleEnd = 0;
     double open = 0;
     double high = 0;
-    double low = 0;
+    double low = 999999999;
     double close = 0;
 };
 
@@ -24,7 +24,7 @@ class PlotDrawer : public QWidget
     Q_OBJECT
 public:
     PlotDrawer(QCustomPlot* cp);
-    bool isMouseOverBar(double x_value);
+    void isMouseOverBar(double x_value);
     QCustomPlot* customPlot;
 
     QVector<double> *priceData;
