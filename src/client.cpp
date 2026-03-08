@@ -26,14 +26,14 @@ Client::Client(QWidget *parent)
     db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("localhost");
     db.setPort(5432);
-    db.setDatabaseName("testdb_client");
+    db.setDatabaseName("db_client");
     db.setUserName("postgres");
-    db.setPassword("1234");
+    db.setPassword("12345678");
 
     if (!db.open()) {
         qDebug() << "Ошибка подключения к базе данных:" << db.lastError().text();
     } else {
-        qDebug() << "ПОДКЛЮЧЕНО";
+        qDebug() << "ПОДКЛЮЧЕНОaa";
     }
 
     requestQuery = new QSqlQuery(db);

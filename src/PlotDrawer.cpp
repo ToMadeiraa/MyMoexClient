@@ -58,7 +58,7 @@ PlotDrawer::PlotDrawer(QCustomPlot* cp)
 
 void PlotDrawer::isMouseOverBar(double x_value)
 {
-    qDebug() << "candles.size() = " << candles.size();
+    //qDebug() << "candles.size() = " << candles.size();
     for (uint i = 0; i < candles.size(); ++i)
     {
         if (x_value > candles[i].timeCandleStart && x_value <= candles[i].timeCandleEnd)

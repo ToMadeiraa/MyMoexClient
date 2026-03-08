@@ -1,0 +1,17 @@
+debug/AxisTag.o
+debug/PlotDrawer.o
+debug/SqlSelector.o
+debug/SqlUpdater.o
+debug/bincombobox.o
+debug/leftwidget.o
+debug/main.o
+debug/client.o
+debug/topwidget.o
+debug/moc_AxisTag.o
+debug/moc_PlotDrawer.o
+debug/moc_SqlSelector.o
+debug/moc_SqlUpdater.o
+debug/moc_bincombobox.o
+debug/moc_client.o
+debug/moc_leftwidget.o
+debug/moc_topwidget.o

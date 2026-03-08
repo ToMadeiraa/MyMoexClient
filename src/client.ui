@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1038</width>
+    <height>693</height>
    </rect>
   </property>
   <property name="baseSize">
@@ -21,14 +21,20 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="1" colspan="4">
+     <widget class="QCustomPlot" name="PlotWidget" native="true"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="LeftWidget" name="widget" native="true"/>
+    </item>
     <item row="0" column="0" colspan="3">
      <widget class="QComboBox" name="comboBox_currentSec"/>
     </item>
-    <item row="0" column="3">
+    <item row="0" column="3" colspan="2">
      <widget class="QComboBox" name="comboBox_binSize"/>
     </item>
-    <item row="1" column="0" colspan="4">
-     <widget class="QCustomPlot" name="PlotWidget" native="true"/>
+    <item row="1" column="0" colspan="5">
+     <widget class="TopWidget" name="widget_2" native="true"/>
     </item>
    </layout>
   </widget>
@@ -38,6 +44,18 @@
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
    <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LeftWidget</class>
+   <extends>QWidget</extends>
+   <header>leftwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TopWidget</class>
+   <extends>QWidget</extends>
+   <header>topwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
