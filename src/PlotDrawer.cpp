@@ -14,35 +14,8 @@ PlotDrawer::PlotDrawer(QCustomPlot* cp)
     start.setTimeSpec(Qt::UTC);
     startTime = start.currentSecsSinceEpoch();
 
-    candlesticks = new QCPFinancial(customPlot->xAxis, customPlot->yAxis2);
-
-    candlesticks->setChartStyle(QCPFinancial::csCandlestick);
-    candlesticks->setWidth(binSize*0.8); //расстояния между свечками
-    candlesticks->setTwoColored(true);
-    candlesticks->setBrushPositive(QColor(0, 215, 0));
-    candlesticks->setBrushNegative(QColor(240, 0, 0));
-
-    QSharedPointer<QCPAxisTickerDateTime> dateTimeTicker(new QCPAxisTickerDateTime);
-    dateTimeTicker->setDateTimeSpec(Qt::UTC);
-    dateTimeTicker->setDateTimeFormat("dd. MM. yyyy\n hh:mm:ss");
-    customPlot->xAxis->setTicker(dateTimeTicker);
-    customPlot->xAxis->setRange(QCPRange(startTime, startTime+60));
-    customPlot->xAxis->scaleRange(1.025, customPlot->xAxis->range().center());
-    customPlot->yAxis->scaleRange(1.1, customPlot->yAxis2->range().center());
-    customPlot->yAxis2->scaleRange(1.1, customPlot->yAxis2->range().center());
-
-    customPlot->yAxis->setVisible(true);
-    customPlot->yAxis->setTickLabels(false);
-    customPlot->yAxis2->setVisible(true);
-    customPlot->axisRect()->axis(QCPAxis::atRight, 0)->setPadding(30); // add some padding to have space for tags
-    //customPlot->axisRect()->axis(QCPAxis::atRight, 1)->setPadding(30); // add some padding to have space for tags
-
-
-    QList<QCPAxis *> draggableAxes = {customPlot->xAxis,customPlot->yAxis2};
-    QList<QCPAxis *> zoomableAxes = {customPlot->xAxis,customPlot->yAxis2};
-    customPlot->axisRect()->setRangeDragAxes(draggableAxes);
-    customPlot->axisRect()->setRangeZoomAxes(zoomableAxes);
-
+    initMainChart();
+    initVolChart();
 
     //линия текущей цены
     // create tags with newly introduced AxisTag class (see axistag.h/.cpp):
@@ -53,34 +26,6 @@ PlotDrawer::PlotDrawer(QCustomPlot* cp)
 
     customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     customPlot->setMouseTracking(true);
-
-
-    // create bottom axis rect for volume bar chart:
-    QCPAxisRect *volumeAxisRect = new QCPAxisRect(customPlot);
-    customPlot->plotLayout()->addElement(1, 0, volumeAxisRect);
-    volumeAxisRect->setMaximumSize(QSize(QWIDGETSIZE_MAX, 100));
-    volumeAxisRect->axis(QCPAxis::atBottom)->setLayer("axes");
-    volumeAxisRect->axis(QCPAxis::atBottom)->grid()->setLayer("grid");
-
-
-    // bring bottom and main axis rect closer together:
-    customPlot->plotLayout()->setRowSpacing(0);
-    volumeAxisRect->setAutoMargins(QCP::msLeft|QCP::msRight|QCP::msBottom);
-    volumeAxisRect->setMargins(QMargins(0, 0, 0, 0));
-
-    // create two bar plottables, for positive (green) and negative (red) volume bars:
-    customPlot->setAutoAddPlottableToLegend(false);
-    volumePos = new QCPBars(volumeAxisRect->axis(QCPAxis::atBottom), volumeAxisRect->axis(QCPAxis::atRight));
-    volumeNeg = new QCPBars(volumeAxisRect->axis(QCPAxis::atBottom), volumeAxisRect->axis(QCPAxis::atRight));
-
-    volumePos->setPen(Qt::NoPen);
-    volumePos->setBrush(QColor(100, 180, 110));
-    volumeNeg->setPen(Qt::NoPen);
-    volumeNeg->setBrush(QColor(180, 90, 90));
-
-    volumeAxisRect->axis(QCPAxis::atBottom)->setTicker(dateTimeTicker);
-    volumeAxisRect->axis(QCPAxis::atLeft)->setVisible(false);
-    volumeAxisRect->axis(QCPAxis::atRight)->setVisible(true);
 }
 
 void PlotDrawer::isMouseOverBar(double x_value)
@@ -127,16 +72,100 @@ void PlotDrawer::collectCandleInfo()
             }
         }
     }
+
+    open.clear();
+    high.clear();
+    low.clear();
+    close.clear();
+    time.clear();
+    volume.clear();
+
+    open.resize(candles.size());
+    high.resize(candles.size());
+    low.resize(candles.size());
+    close.resize(candles.size());
+    time.resize(candles.size());
+    volume.resize(candles.size());
+
+    for (int i = 0; i < candles.size(); ++i)
+    {
+        open[i] = candles[i].open;
+        high[i] = candles[i].high;
+        low[i] = candles[i].low;
+        close[i] = candles[i].close;
+        time[i] = candles[i].timeCandleStart;
+        volume[i] = candles[i].volume;
+    }
 }
 
 void PlotDrawer::initMainChart()
 {
+    candlesticks = new QCPFinancial(customPlot->xAxis, customPlot->yAxis2);
 
+    candlesticks->setName("Candles");
+    candlesticks->setChartStyle(QCPFinancial::csCandlestick);
+    candlesticks->setWidth(binSize*0.8); //расстояния между свечками
+    candlesticks->setTwoColored(true);
+    candlesticks->setBrushPositive(QColor(0, 215, 0));
+    candlesticks->setBrushNegative(QColor(240, 0, 0));
+
+    //QSharedPointer<QCPAxisTickerDateTime> dateTimeTicker(new QCPAxisTickerDateTime);
+    //dateTimeTicker->setDateTimeSpec(Qt::UTC);
+    //dateTimeTicker->setDateTimeFormat("dd. MM. yyyy\n hh:mm:ss");
+    //customPlot->xAxis->setTicker(dateTimeTicker);
+    customPlot->xAxis->setRange(QCPRange(startTime, startTime+60));
+    customPlot->xAxis->scaleRange(1.025, customPlot->xAxis->range().center());
+    // customPlot->yAxis->scaleRange(1.1, customPlot->yAxis2->range().center());
+    customPlot->yAxis2->scaleRange(1.1, customPlot->yAxis2->range().center());
+
+    customPlot->yAxis->setVisible(true);
+    customPlot->yAxis2->setVisible(true);
+    customPlot->axisRect()->axis(QCPAxis::atRight, 0)->setPadding(30); // add some padding to have space for tags
+    //customPlot->axisRect()->axis(QCPAxis::atRight, 1)->setPadding(30); // add some padding to have space for tags
+
+    QList<QCPAxis *> draggableAxes = {customPlot->xAxis,customPlot->yAxis2};
+    QList<QCPAxis *> zoomableAxes = {customPlot->xAxis,customPlot->yAxis2};
+    customPlot->axisRect()->setRangeDragAxes(draggableAxes);
+    customPlot->axisRect()->setRangeZoomAxes(zoomableAxes);
 }
 
 void PlotDrawer::initVolChart()
 {
+    volumeBars = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+    volumeBars->setName("Volume");
+    volumeBars->setBrush(QColor(100, 150, 255, 100));
+    volumeBars->setWidth(0.8);
 
+    customPlot->xAxis->grid()->setVisible(true);
+    customPlot->yAxis->grid()->setVisible(true);
+
+    // // create bottom axis rect for volume bar chart:
+    // QCPAxisRect *volumeAxisRect = new QCPAxisRect(customPlot);
+
+    // customPlot->plotLayout()->addElement(1, 0, volumeAxisRect);
+    // volumeAxisRect->setMaximumSize(QSize(QWIDGETSIZE_MAX, 100));
+    // volumeAxisRect->axis(QCPAxis::atBottom)->setLayer("axes");
+    // volumeAxisRect->axis(QCPAxis::atBottom)->grid()->setLayer("grid");
+
+
+    // // bring bottom and main axis rect closer together:
+    // customPlot->plotLayout()->setRowSpacing(0);
+    // volumeAxisRect->setAutoMargins(QCP::msLeft|QCP::msRight|QCP::msBottom);
+    // volumeAxisRect->setMargins(QMargins(0, 0, 0, 0));
+
+    // // create two bar plottables, for positive (green) and negative (red) volume bars:
+    // customPlot->setAutoAddPlottableToLegend(false);
+    // volumePos = new QCPBars(volumeAxisRect->axis(QCPAxis::atBottom), volumeAxisRect->axis(QCPAxis::atRight));
+    // volumeNeg = new QCPBars(volumeAxisRect->axis(QCPAxis::atBottom), volumeAxisRect->axis(QCPAxis::atRight));
+
+    // volumePos->setPen(Qt::NoPen);
+    // volumePos->setBrush(QColor(100, 180, 110));
+    // volumeNeg->setPen(Qt::NoPen);
+    // volumeNeg->setBrush(QColor(180, 90, 90));
+
+    // //volumeAxisRect->axis(QCPAxis::atBottom)->setTicker(dateTimeTicker);
+    // volumeAxisRect->axis(QCPAxis::atLeft)->setVisible(false);
+    // volumeAxisRect->axis(QCPAxis::atRight)->setVisible(true);
 }
 
 
@@ -144,27 +173,27 @@ void PlotDrawer::drawPlot()
 {
     if (priceData->isEmpty() || timeData->isEmpty()) return;
 
-    //задаем данные главному графику
-    dataContainer = QCPFinancial::timeSeriesToOhlc(*timeData, *priceData, binSize, startTime);
-    candlesticks->data()->set(dataContainer);
-    collectCandleInfo();
-    volumeNeg->setWidth(binSize);
-    volumePos->setWidth(binSize);
+    // //задаем данные главному графику
+    // dataContainer = QCPFinancial::timeSeriesToOhlc(*timeData, *priceData, binSize, startTime);
+    // candlesticks->data()->set(dataContainer);
+
+    // volumeNeg->setWidth(binSize);
+    // volumePos->setWidth(binSize);
 
     //задаем данные графику объемов
 
-    for (int i=0; i<candles.size(); ++i)
-    {
-        long long v = candles[i].volume;
-        if (candles[i].open > candles[i].close)
-        {
-            volumeNeg->addData(candles[i].timeCandleStart, qAbs(v));
-        }
-        else
-        {
-            volumePos->addData(candles[i].timeCandleStart, qAbs(v));
-        }
-    }
+    // for (int i=0; i<candles.size(); ++i)
+    // {
+    //     long long v = candles[i].volume;
+    //     if (candles[i].open > candles[i].close)
+    //     {
+    //         volumeNeg->addData(candles[i].timeCandleStart, qAbs(v));
+    //     }
+    //     else
+    //     {
+    //         volumePos->addData(candles[i].timeCandleStart, qAbs(v));
+    //     }
+    // }
 
     //рисуем горизонтальную линию последней цены
     infLine->point1->setCoords(0, priceData->last());
@@ -280,32 +309,40 @@ void PlotDrawer::mouseMoved(QMouseEvent *e)
     // qDebug() << e->position().y();
 }
 
-void PlotDrawer::redrawPlotByBinSize_slot(uint bs)
+void PlotDrawer::redrawPlotByBinSizeChange_slot(uint bs)
 {
     binSize = bs;
+    candlesticks->data().clear();
     collectCandleInfo();
     //задаем данные графику объемов
-    volumePos->data().clear();
-    volumeNeg->data().clear();
-    for (int i=0; i<candles.size(); ++i)
-    {
-        long long v = candles[i].volume;
-        if (candles[i].open > candles[i].close)
-        {
-            volumeNeg->addData(candles[i].timeCandleStart, qAbs(v));
-        }
-        else
-        {
-            volumePos->addData(candles[i].timeCandleStart, qAbs(v));
-        }
-    }
+    // volumePos->data().clear();
+    // volumeNeg->data().clear();
+    // for (int i=0; i<candles.size(); ++i)
+    // {
+    //     long long v = candles[i].volume;
+    //     if (candles[i].open > candles[i].close)
+    //     {
+    //         volumeNeg->addData(candles[i].timeCandleStart, qAbs(v));
+    //     }
+    //     else
+    //     {
+    //         volumePos->addData(candles[i].timeCandleStart, qAbs(v));
+    //     }
+    // }
 
-    volumeNeg->setWidth(binSize);
-    volumePos->setWidth(binSize);
+    // volumeNeg->setWidth(binSize);
+    // volumePos->setWidth(binSize);
 
     candlesticks->setWidth(binSize*0.8); //расстояния между свечками
-    dataContainer = QCPFinancial::timeSeriesToOhlc(*timeData, *priceData, binSize, startTime);
-    candlesticks->data()->set(dataContainer);
+
+    candlesticks->setData(time,
+                          open,
+                          high,
+                          low,
+                          close);
+
+    volumeBars->setData(time,
+                        volume);
 
     customPlot->rescaleAxes(true);
     customPlot->replot();

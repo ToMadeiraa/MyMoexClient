@@ -113,10 +113,8 @@ void Client::connectSlots()
     connect(sqlUpdater, &SqlUpdater::finished, sqlUpdater, &SqlUpdater::deleteLater);
     connect(sqlUpdaterThread, &QThread::finished, sqlUpdaterThread, &QThread::deleteLater);
 
-
-    //connect(getTopWidget()->getComboBoxBinSize(), SIGNAL(currentIndexChanged(int)), plotDrawer, SLOT(redrawPlotByBinSize_slot(uint)));
-    connect(getTopWidget()->getComboBoxBinSize(), SIGNAL(binSizeChanged_signal(uint)), plotDrawer, SLOT(redrawPlotByBinSize_slot(uint)));
-    connect(getTopWidget()->getComboBoxSecurities(), SIGNAL(currentIndexChanged(int)), this, SLOT(drawNewPlot()));
+    connect(getTopWidget()->getComboBoxBinSize(), SIGNAL(binSizeChanged_signal(uint)), plotDrawer, SLOT(redrawPlotByBinSizeChange_slot(uint)));
+    connect(getTopWidget()->getComboBoxSecurities(), SIGNAL(currentIndexChanged(int)), this, SLOT(redrawPlotBySecurityChange_slot()));
 
     connect(ui->PlotWidget, SIGNAL(mouseWheel(QWheelEvent*)), plotDrawer, SLOT(setNewRange(QWheelEvent*)));
     connect(ui->PlotWidget->xAxis, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeX()));
@@ -170,16 +168,28 @@ void Client::disconnected()
     qDebug() << "Disconnected from update server";
 }
 
-void Client::drawNewPlot()
+void Client::redrawPlotBySecurityChange_slot()
 {
     QString currentSec = getTopWidget()->getComboBoxSecurities()->currentText().toLower() + "_client";
+
     plotDrawer->timeData->clear();
     plotDrawer->priceData->clear();
+    plotDrawer->quantityData->clear();
+    plotDrawer->buysellData->clear();
     plotDrawer->candlesticks->data().clear();
-    plotDrawer->volumePos->data().clear();
-    plotDrawer->volumeNeg->data().clear();
 
     sqlSelector->selectData(currentSec);
+    plotDrawer->collectCandleInfo();
+
+    plotDrawer->candlesticks->setData(plotDrawer->time,
+                                      plotDrawer->open,
+                                      plotDrawer->high,
+                                      plotDrawer->low,
+                                      plotDrawer->close);
+    plotDrawer->volumeBars->setData(plotDrawer->time,
+                                    plotDrawer->volume);
+
+
     plotDrawer->drawPlot();
 }
 

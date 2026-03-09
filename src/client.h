@@ -98,7 +98,7 @@ private slots:
     void readyRead();
     void connected();
     void disconnected();
-    void drawNewPlot();
+    void redrawPlotBySecurityChange_slot();
 
 };
 

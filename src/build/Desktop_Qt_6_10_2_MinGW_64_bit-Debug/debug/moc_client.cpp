@@ -45,7 +45,7 @@ template <> constexpr inline auto Client::qt_create_metaobjectdata<qt_meta_tag_Z
         "",
         "connected",
         "disconnected",
-        "drawNewPlot"
+        "redrawPlotBySecurityChange_slot"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -55,7 +55,7 @@ template <> constexpr inline auto Client::qt_create_metaobjectdata<qt_meta_tag_Z
         QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'disconnected'
         QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'drawNewPlot'
+        // Slot 'redrawPlotBySecurityChange_slot'
         QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
@@ -83,7 +83,7 @@ void Client::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 0: _t->readyRead(); break;
         case 1: _t->connected(); break;
         case 2: _t->disconnected(); break;
-        case 3: _t->drawNewPlot(); break;
+        case 3: _t->redrawPlotBySecurityChange_slot(); break;
         default: ;
         }
     }
