@@ -21,16 +21,28 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QComboBox" name="comboBox"/>
+    <widget class="MyComboBoxSecurity" name="comboBoxSecurities"/>
    </item>
    <item>
-    <widget class="QComboBox" name="comboBox_2"/>
+    <widget class="MyComboBoxBinSize" name="comboBoxBinSize"/>
    </item>
    <item>
-    <widget class="QComboBox" name="comboBox_3"/>
+    <widget class="QComboBox" name="comboBoxIndicators"/>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MyComboBoxBinSize</class>
+   <extends>QComboBox</extends>
+   <header location="global">GuiElements/mycomboboxbinsize.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MyComboBoxSecurity</class>
+   <extends>QComboBox</extends>
+   <header location="global">GuiElements/mycomboboxsecurity.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -28,10 +28,10 @@ PlotDrawer::PlotDrawer(QCustomPlot* cp)
     customPlot->xAxis->setTicker(dateTimeTicker);
     customPlot->xAxis->setRange(QCPRange(startTime, startTime+60));
     customPlot->xAxis->scaleRange(1.025, customPlot->xAxis->range().center());
-
+    customPlot->yAxis->scaleRange(1.1, customPlot->yAxis2->range().center());
     customPlot->yAxis2->scaleRange(1.1, customPlot->yAxis2->range().center());
 
-    customPlot->yAxis->setVisible(false);
+    customPlot->yAxis->setVisible(true);
     customPlot->yAxis->setTickLabels(false);
     customPlot->yAxis2->setVisible(true);
     customPlot->axisRect()->axis(QCPAxis::atRight, 0)->setPadding(30); // add some padding to have space for tags
@@ -51,9 +51,36 @@ PlotDrawer::PlotDrawer(QCustomPlot* cp)
 
     infLine = new QCPItemStraightLine(customPlot);
 
-
     customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
     customPlot->setMouseTracking(true);
+
+
+    // create bottom axis rect for volume bar chart:
+    QCPAxisRect *volumeAxisRect = new QCPAxisRect(customPlot);
+    customPlot->plotLayout()->addElement(1, 0, volumeAxisRect);
+    volumeAxisRect->setMaximumSize(QSize(QWIDGETSIZE_MAX, 100));
+    volumeAxisRect->axis(QCPAxis::atBottom)->setLayer("axes");
+    volumeAxisRect->axis(QCPAxis::atBottom)->grid()->setLayer("grid");
+
+
+    // bring bottom and main axis rect closer together:
+    customPlot->plotLayout()->setRowSpacing(0);
+    volumeAxisRect->setAutoMargins(QCP::msLeft|QCP::msRight|QCP::msBottom);
+    volumeAxisRect->setMargins(QMargins(0, 0, 0, 0));
+
+    // create two bar plottables, for positive (green) and negative (red) volume bars:
+    customPlot->setAutoAddPlottableToLegend(false);
+    volumePos = new QCPBars(volumeAxisRect->axis(QCPAxis::atBottom), volumeAxisRect->axis(QCPAxis::atRight));
+    volumeNeg = new QCPBars(volumeAxisRect->axis(QCPAxis::atBottom), volumeAxisRect->axis(QCPAxis::atRight));
+
+    volumePos->setPen(Qt::NoPen);
+    volumePos->setBrush(QColor(100, 180, 110));
+    volumeNeg->setPen(Qt::NoPen);
+    volumeNeg->setBrush(QColor(180, 90, 90));
+
+    volumeAxisRect->axis(QCPAxis::atBottom)->setTicker(dateTimeTicker);
+    volumeAxisRect->axis(QCPAxis::atLeft)->setVisible(false);
+    volumeAxisRect->axis(QCPAxis::atRight)->setVisible(true);
 }
 
 void PlotDrawer::isMouseOverBar(double x_value)
@@ -63,8 +90,8 @@ void PlotDrawer::isMouseOverBar(double x_value)
     {
         if (x_value > candles[i].timeCandleStart && x_value <= candles[i].timeCandleEnd)
         {
-            qDebug() << "candle high = " << candles[i].high;
-            qDebug() << "candle low = " << candles[i].low;
+            // qDebug() << "candle high = " << candles[i].high;
+            // qDebug() << "candle low = " << candles[i].low;
         }
     }
 }
@@ -81,11 +108,8 @@ void PlotDrawer::collectCandleInfo()
         double currentPrice = priceData->at(i);
         c.high = std::max(c.high, currentPrice);
         c.low = std::min(c.low, currentPrice);
-        if (timeData->at(i) - previousTime < binSize) [[likely]]
-        {
-            //previousTime = timeData->at(i)/binSize;
-        }
-        else [[unlikely]]
+        c.volume += quantityData->at(i);
+        if (timeData->at(i) - previousTime > binSize || timeData->at(i) - previousTime == binSize)
         {
             c.timeCandleEnd = timeData->at(i);
             c.close = currentPrice;
@@ -99,9 +123,20 @@ void PlotDrawer::collectCandleInfo()
                 c.high = 0;
                 c.low = 999999999;
                 c.close = 0;
+                c.volume = 0;
             }
         }
     }
+}
+
+void PlotDrawer::initMainChart()
+{
+
+}
+
+void PlotDrawer::initVolChart()
+{
+
 }
 
 
@@ -113,6 +148,23 @@ void PlotDrawer::drawPlot()
     dataContainer = QCPFinancial::timeSeriesToOhlc(*timeData, *priceData, binSize, startTime);
     candlesticks->data()->set(dataContainer);
     collectCandleInfo();
+    volumeNeg->setWidth(binSize);
+    volumePos->setWidth(binSize);
+
+    //задаем данные графику объемов
+
+    for (int i=0; i<candles.size(); ++i)
+    {
+        long long v = candles[i].volume;
+        if (candles[i].open > candles[i].close)
+        {
+            volumeNeg->addData(candles[i].timeCandleStart, qAbs(v));
+        }
+        else
+        {
+            volumePos->addData(candles[i].timeCandleStart, qAbs(v));
+        }
+    }
 
     //рисуем горизонтальную линию последней цены
     infLine->point1->setCoords(0, priceData->last());
@@ -127,7 +179,9 @@ void PlotDrawer::drawPlot()
     mTag1->updatePosition(priceData->last());
     mTag1->setText(QString::number(priceData->last(), 'f', 2));
 
-    if (autoRescale) customPlot->rescaleAxes();
+    if (autoRescale)
+        customPlot->rescaleAxes();
+
     customPlot->replot();
 }
 
@@ -230,21 +284,30 @@ void PlotDrawer::redrawPlotByBinSize_slot(uint bs)
 {
     binSize = bs;
     collectCandleInfo();
-    candlesticks->setWidth(binSize*0.8); //расстояния между свечками
-    dataContainer = QCPFinancial::timeSeriesToOhlc(*timeData, *priceData, binSize, startTime);
-    for (auto it = dataContainer.constBegin(); it != dataContainer.constEnd(); ++it)
+    //задаем данные графику объемов
+    volumePos->data().clear();
+    volumeNeg->data().clear();
+    for (int i=0; i<candles.size(); ++i)
     {
-        const QCPFinancialData &dataPoint = *it;
-//        qDebug() << dataPoint.high;
-//        qDebug() << dataPoint.low;
-//        qDebug() << dataPoint.open;
-//        qDebug() << dataPoint.close;
-//        QDateTime qdt = QDateTime::fromSecsSinceEpoch(dataPoint.key);
-//        qDebug() << qdt;
-//        qDebug() << "=======================";
+        long long v = candles[i].volume;
+        if (candles[i].open > candles[i].close)
+        {
+            volumeNeg->addData(candles[i].timeCandleStart, qAbs(v));
+        }
+        else
+        {
+            volumePos->addData(candles[i].timeCandleStart, qAbs(v));
+        }
     }
 
+    volumeNeg->setWidth(binSize);
+    volumePos->setWidth(binSize);
+
+    candlesticks->setWidth(binSize*0.8); //расстояния между свечками
+    dataContainer = QCPFinancial::timeSeriesToOhlc(*timeData, *priceData, binSize, startTime);
     candlesticks->data()->set(dataContainer);
+
+    customPlot->rescaleAxes(true);
     customPlot->replot();
 //    drawPlot();
 }

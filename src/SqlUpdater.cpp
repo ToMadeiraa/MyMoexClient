@@ -9,39 +9,6 @@ SqlUpdater::SqlUpdater()
     connect(socket, &QTcpSocket::disconnected, this, &SqlUpdater::disconnected);
 
     secsBefore2000 = 946684800; //количество секунд, прошедших до 01.01.2000 00:00:00
-}
-
-void SqlUpdater::connectToServer(const QString &host, quint16 port)
-{
-    socket->connectToHost(host, port);
-}
-
-void SqlUpdater::sendLastTradeno()
-{
-    QByteArray ba;
-    QDataStream ds(&ba, QIODevice::WriteOnly);
-    ds.setByteOrder(QDataStream::BigEndian);
-    ds.setFloatingPointPrecision(QDataStream::SinglePrecision);
-
-    for (const auto &key : LastTRADENOs.keys())
-    {
-        ushort key_ushort = SecID_Numbers[key];
-        long long int LastTradeno_tmp = LastTRADENOs[key];
-
-        LastTradeno_tmp = LastTradeno_tmp << 10; //сдвигаем на 10 бит влево
-        LastTradeno_tmp = LastTradeno_tmp | key_ushort;
-
-        ds << LastTradeno_tmp;
-    }
-
-    if (socket->state() == QTcpSocket::ConnectedState) {
-        socket->write(ba);
-    }
-}
-
-void SqlUpdater::process()
-{
-    mtx->lock();
 
     //заполняем таблицу secid/ushort, чтобы было дешевле отправлять по сети
     SecID_Numbers["GAZP"]   = 1;
@@ -82,6 +49,39 @@ void SqlUpdater::process()
     SecID_Numbers["FLOT"]   = 36;
     SecID_Numbers["YDEX"]   = 37;
     SecID_Numbers["ASTR"]   = 38;
+}
+
+void SqlUpdater::connectToServer(const QString &host, quint16 port)
+{
+    socket->connectToHost(host, port);
+}
+
+void SqlUpdater::sendLastTradeno()
+{
+    QByteArray ba;
+    QDataStream ds(&ba, QIODevice::WriteOnly);
+    ds.setByteOrder(QDataStream::BigEndian);
+    ds.setFloatingPointPrecision(QDataStream::SinglePrecision);
+
+    for (const auto &key : LastTRADENOs.keys())
+    {
+        ushort key_ushort = SecID_Numbers[key];
+        long long int LastTradeno_tmp = LastTRADENOs[key];
+
+        LastTradeno_tmp = LastTradeno_tmp << 10; //сдвигаем на 10 бит влево
+        LastTradeno_tmp = LastTradeno_tmp | key_ushort;
+
+        ds << LastTradeno_tmp;
+    }
+
+    if (socket->state() == QTcpSocket::ConnectedState) {
+        socket->write(ba);
+    }
+}
+
+void SqlUpdater::process()
+{
+    mtx->lock();
 
     //создали таблицу, если не существует
     for (const auto &key : SecID_Numbers.keys())

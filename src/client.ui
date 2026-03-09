@@ -21,20 +21,28 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="1" colspan="4">
-     <widget class="QCustomPlot" name="PlotWidget" native="true"/>
-    </item>
-    <item row="2" column="0">
-     <widget class="LeftWidget" name="widget" native="true"/>
+    <item row="1" column="0">
+     <widget class="LeftWidget" name="leftWidget" native="true">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item row="0" column="0" colspan="3">
-     <widget class="QComboBox" name="comboBox_currentSec"/>
+     <widget class="TopWidget" name="topWidget" native="true">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>40</height>
+       </size>
+      </property>
+     </widget>
     </item>
-    <item row="0" column="3" colspan="2">
-     <widget class="QComboBox" name="comboBox_binSize"/>
-    </item>
-    <item row="1" column="0" colspan="5">
-     <widget class="TopWidget" name="widget_2" native="true"/>
+    <item row="1" column="1" colspan="2">
+     <widget class="QCustomPlot" name="PlotWidget" native="true"/>
     </item>
    </layout>
   </widget>

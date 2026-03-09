@@ -3,8 +3,6 @@
 
 #include <QObject>
 #include <QDateTime>
-
-#include <algorithm>
 #include "qcustomplot.h"
 #include "AxisTag.h"
 
@@ -17,6 +15,7 @@ public:
     double high = 0;
     double low = 999999999;
     double close = 0;
+    long long int volume = 0;
 };
 
 class PlotDrawer : public QWidget
@@ -27,13 +26,20 @@ public:
     void isMouseOverBar(double x_value);
     QCustomPlot* customPlot;
 
+    //data
     QVector<double> *priceData;
     QVector<double> *timeData;
     QVector<uint>   *quantityData;
     QVector<bool>   *buysellData;
     QVector<Candle> candles;
 
+    //charts
     QCPFinancial *candlesticks;
+    QCPAxisRect *volumeAxisRect;
+    QCPBars *volumePos;
+    QCPBars *volumeNeg;
+
+
     QCPItemStraightLine *infLine;
     AxisTag *mTag1;
     QCPFinancialDataContainer dataContainer;
@@ -48,6 +54,8 @@ private:
     bool isXAxisChosen;
     bool isYAxisChosen;
     void collectCandleInfo();
+    void initMainChart();
+    void initVolChart();
 
 public slots:
     void drawPlot();
@@ -59,5 +67,15 @@ public slots:
 
 
 };
+
+inline void PlotDrawer::initMainChart()
+{
+
+}
+
+inline void PlotDrawer::initVolChart()
+{
+
+}
 
 #endif // PLOTDRAWER_H

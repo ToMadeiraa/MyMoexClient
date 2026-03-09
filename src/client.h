@@ -25,7 +25,8 @@
 #include "SqlUpdater.h"
 #include "SqlSelector.h"
 #include "PlotDrawer.h"
-#include "bincombobox.h"
+#include "topwidget.h"
+#include "leftwidget.h"
 
 struct Version {
     ushort Major;
@@ -65,10 +66,7 @@ public:
     bool checkNewVersion();
     void update();
 
-//    QMap<QString, ushort> SecID_Numbers;
     QSqlDatabase db;
-    // QSqlQuery* requestQueryUpdater;
-    // QSqlQuery* requestQuerySelector;
     QSqlQuery* requestQuery;
     QMutex mtx;
 
@@ -84,13 +82,15 @@ public:
     QVector<bool>   buysellData;
 
     PlotDrawer *plotDrawer;
-    BinComboBox *binCB;
 
     Version ver;
     void readConfigFile();
 
 private:
+    void connectSlots();
     QTcpSocket *socketUpdate;
+    TopWidget *getTopWidget();
+    LeftWidget *getLeftWidget();
     Ui::Client *ui;
 
 
@@ -99,7 +99,6 @@ private slots:
     void connected();
     void disconnected();
     void drawNewPlot();
-    //void setAutorescale();
 
 };
 

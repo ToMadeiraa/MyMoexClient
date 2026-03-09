@@ -9,6 +9,8 @@
 #ifndef UI_TOPWIDGET_H
 #define UI_TOPWIDGET_H
 
+#include <GuiElements/mycomboboxbinsize.h>
+#include <GuiElements/mycomboboxsecurity.h>
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QComboBox>
@@ -21,9 +23,9 @@ class Ui_TopWidget
 {
 public:
     QHBoxLayout *horizontalLayout;
-    QComboBox *comboBox;
-    QComboBox *comboBox_2;
-    QComboBox *comboBox_3;
+    MyComboBoxSecurity *comboBoxSecurities;
+    MyComboBoxBinSize *comboBoxBinSize;
+    QComboBox *comboBoxIndicators;
 
     void setupUi(QWidget *TopWidget)
     {
@@ -33,20 +35,20 @@ public:
         TopWidget->setMaximumSize(QSize(16777215, 42));
         horizontalLayout = new QHBoxLayout(TopWidget);
         horizontalLayout->setObjectName("horizontalLayout");
-        comboBox = new QComboBox(TopWidget);
-        comboBox->setObjectName("comboBox");
+        comboBoxSecurities = new MyComboBoxSecurity(TopWidget);
+        comboBoxSecurities->setObjectName("comboBoxSecurities");
 
-        horizontalLayout->addWidget(comboBox);
+        horizontalLayout->addWidget(comboBoxSecurities);
 
-        comboBox_2 = new QComboBox(TopWidget);
-        comboBox_2->setObjectName("comboBox_2");
+        comboBoxBinSize = new MyComboBoxBinSize(TopWidget);
+        comboBoxBinSize->setObjectName("comboBoxBinSize");
 
-        horizontalLayout->addWidget(comboBox_2);
+        horizontalLayout->addWidget(comboBoxBinSize);
 
-        comboBox_3 = new QComboBox(TopWidget);
-        comboBox_3->setObjectName("comboBox_3");
+        comboBoxIndicators = new QComboBox(TopWidget);
+        comboBoxIndicators->setObjectName("comboBoxIndicators");
 
-        horizontalLayout->addWidget(comboBox_3);
+        horizontalLayout->addWidget(comboBoxIndicators);
 
 
         retranslateUi(TopWidget);

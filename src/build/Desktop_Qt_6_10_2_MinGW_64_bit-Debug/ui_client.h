@@ -11,7 +11,6 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QComboBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QWidget>
@@ -26,11 +25,9 @@ class Ui_Client
 public:
     QWidget *centralwidget;
     QGridLayout *gridLayout;
+    LeftWidget *leftWidget;
+    TopWidget *topWidget;
     QCustomPlot *PlotWidget;
-    LeftWidget *widget;
-    QComboBox *comboBox_currentSec;
-    QComboBox *comboBox_binSize;
-    TopWidget *widget_2;
 
     void setupUi(QMainWindow *Client)
     {
@@ -42,30 +39,22 @@ public:
         centralwidget->setObjectName("centralwidget");
         gridLayout = new QGridLayout(centralwidget);
         gridLayout->setObjectName("gridLayout");
+        leftWidget = new LeftWidget(centralwidget);
+        leftWidget->setObjectName("leftWidget");
+        leftWidget->setMaximumSize(QSize(40, 16777215));
+
+        gridLayout->addWidget(leftWidget, 1, 0, 1, 1);
+
+        topWidget = new TopWidget(centralwidget);
+        topWidget->setObjectName("topWidget");
+        topWidget->setMaximumSize(QSize(16777215, 40));
+
+        gridLayout->addWidget(topWidget, 0, 0, 1, 3);
+
         PlotWidget = new QCustomPlot(centralwidget);
         PlotWidget->setObjectName("PlotWidget");
 
-        gridLayout->addWidget(PlotWidget, 2, 1, 1, 4);
-
-        widget = new LeftWidget(centralwidget);
-        widget->setObjectName("widget");
-
-        gridLayout->addWidget(widget, 2, 0, 1, 1);
-
-        comboBox_currentSec = new QComboBox(centralwidget);
-        comboBox_currentSec->setObjectName("comboBox_currentSec");
-
-        gridLayout->addWidget(comboBox_currentSec, 0, 0, 1, 3);
-
-        comboBox_binSize = new QComboBox(centralwidget);
-        comboBox_binSize->setObjectName("comboBox_binSize");
-
-        gridLayout->addWidget(comboBox_binSize, 0, 3, 1, 2);
-
-        widget_2 = new TopWidget(centralwidget);
-        widget_2->setObjectName("widget_2");
-
-        gridLayout->addWidget(widget_2, 1, 0, 1, 5);
+        gridLayout->addWidget(PlotWidget, 1, 1, 1, 2);
 
         Client->setCentralWidget(centralwidget);
 

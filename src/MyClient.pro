@@ -25,25 +25,27 @@ LIBS += -L"C:/Users/User/Documents/PetProjects/MyMoexClient/include" -l$$QCP_LIB
 
 SOURCES += \
     AxisTag.cpp \
+    GuiElements/mycomboboxbinsize.cpp \
+    GuiElements/mycomboboxsecurity.cpp \
     PlotDrawer.cpp \
     SqlSelector.cpp \
     SqlUpdater.cpp \
-    bincombobox.cpp \
     leftwidget.cpp \
     main.cpp \
     client.cpp \
- \#    qcustomplot.cpp
+    GuiElements/mypushbutton.cpp \
     topwidget.cpp
 
 HEADERS += \
     AxisTag.h \
+    GuiElements/mycomboboxbinsize.h \
+    GuiElements/mycomboboxsecurity.h \
     PlotDrawer.h \
     SqlSelector.h \
     SqlUpdater.h \
-    bincombobox.h \
     client.h \
- \#    qcustomplot.h
     leftwidget.h \
+    GuiElements/mypushbutton.h \
     topwidget.h
 
 FORMS += \

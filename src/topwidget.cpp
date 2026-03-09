@@ -12,3 +12,18 @@ TopWidget::~TopWidget()
 {
     delete ui;
 }
+
+MyComboBoxSecurity *TopWidget::getComboBoxSecurities()
+{
+    return ui->comboBoxSecurities;
+}
+
+MyComboBoxBinSize *TopWidget::getComboBoxBinSize()
+{
+    return ui->comboBoxBinSize;
+}
+
+QComboBox *TopWidget::getComboBoxIndicators()
+{
+    return ui->comboBoxIndicators;
+}

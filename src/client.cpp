@@ -33,7 +33,7 @@ Client::Client(QWidget *parent)
     if (!db.open()) {
         qDebug() << "Ошибка подключения к базе данных:" << db.lastError().text();
     } else {
-        qDebug() << "ПОДКЛЮЧЕНОaa";
+        qDebug() << "ПОДКЛЮЧЕНО";
     }
 
     requestQuery = new QSqlQuery(db);
@@ -45,13 +45,7 @@ Client::Client(QWidget *parent)
     sqlUpdaterThread = new QThread(this);
     sqlUpdater->moveToThread(sqlUpdaterThread);
 
-    connect(sqlUpdaterThread, &QThread::started, sqlUpdater, &SqlUpdater::process);
-    connect(sqlUpdater, &SqlUpdater::finished, sqlUpdaterThread, &QThread::quit);
-    connect(sqlUpdater, &SqlUpdater::finished, sqlUpdater, &SqlUpdater::deleteLater);
-    connect(sqlUpdaterThread, &QThread::finished, sqlUpdaterThread, &QThread::deleteLater);
-
     sqlUpdaterThread->start();
-
 
     //data for drawing
     sqlSelector = new SqlSelector;
@@ -64,10 +58,7 @@ Client::Client(QWidget *parent)
     sqlSelectorThread = new QThread(this);
     sqlSelector->moveToThread(sqlSelectorThread);
 
-    connect(sqlSelectorThread, &QThread::finished, sqlSelectorThread, &QThread::deleteLater);
-
     sqlSelectorThread->start();
-
 
     //drawer
     plotDrawer = new PlotDrawer(ui->PlotWidget);
@@ -77,29 +68,9 @@ Client::Client(QWidget *parent)
     plotDrawer->buysellData = &this->buysellData;
     plotDrawer->autoRescale = true;
 
-
-    //bin combobox
-    binCB = new BinComboBox(ui->comboBox_binSize);
-    connect(binCB, SIGNAL(changedBinSize_signal(uint)), plotDrawer, SLOT(redrawPlotByBinSize_slot(uint)));
-
     //ui
-    QString path = "/home/osboxes/Downloads/PetProject/MyMoexClient/src/gazp.png";
-    QIcon ic(path);
-    for (const auto &k : sqlUpdater->SecID_Numbers.keys())
-    {
-        ui->comboBox_currentSec->insertItem(ui->comboBox_currentSec->count(), ic, k);
-    }
-
-    connect(ui->comboBox_currentSec, SIGNAL(currentIndexChanged(int)), this, SLOT(drawNewPlot()));
-
-
-    //connect(ui->checkBoxAutorescale, SIGNAL(stateChanged(int)), this, SLOT(setAutorescale()));
-    connect(ui->PlotWidget, SIGNAL(mouseWheel(QWheelEvent*)), plotDrawer, SLOT(setNewRange(QWheelEvent*)));
-    connect(ui->PlotWidget->xAxis, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeX()));
-    connect(ui->PlotWidget->yAxis2, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeY()));
-    connect(ui->PlotWidget, SIGNAL(mouseMove(QMouseEvent *)), plotDrawer, SLOT(mouseMoved(QMouseEvent*)));
-
-    connect(ui->PlotWidget->yAxis2, SIGNAL(rangeChanged(QCPRange)), ui->PlotWidget->yAxis, SLOT(setRange(QCPRange))); // left axis only mirrors inner right axis
+    getTopWidget()->getComboBoxSecurities()->fillComboBox(sqlUpdater->SecID_Numbers);
+    connectSlots();
 }
 
 Client::~Client()
@@ -132,6 +103,37 @@ void Client::readConfigFile()
     }
 
     file.close();
+}
+
+void Client::connectSlots()
+{
+    connect(sqlSelectorThread, &QThread::finished, sqlSelectorThread, &QThread::deleteLater);
+    connect(sqlUpdaterThread, &QThread::started, sqlUpdater, &SqlUpdater::process);
+    connect(sqlUpdater, &SqlUpdater::finished, sqlUpdaterThread, &QThread::quit);
+    connect(sqlUpdater, &SqlUpdater::finished, sqlUpdater, &SqlUpdater::deleteLater);
+    connect(sqlUpdaterThread, &QThread::finished, sqlUpdaterThread, &QThread::deleteLater);
+
+
+    //connect(getTopWidget()->getComboBoxBinSize(), SIGNAL(currentIndexChanged(int)), plotDrawer, SLOT(redrawPlotByBinSize_slot(uint)));
+    connect(getTopWidget()->getComboBoxBinSize(), SIGNAL(binSizeChanged_signal(uint)), plotDrawer, SLOT(redrawPlotByBinSize_slot(uint)));
+    connect(getTopWidget()->getComboBoxSecurities(), SIGNAL(currentIndexChanged(int)), this, SLOT(drawNewPlot()));
+
+    connect(ui->PlotWidget, SIGNAL(mouseWheel(QWheelEvent*)), plotDrawer, SLOT(setNewRange(QWheelEvent*)));
+    connect(ui->PlotWidget->xAxis, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeX()));
+    connect(ui->PlotWidget->yAxis2, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeY()));
+    connect(ui->PlotWidget, SIGNAL(mouseMove(QMouseEvent *)), plotDrawer, SLOT(mouseMoved(QMouseEvent*)));
+
+    connect(ui->PlotWidget->yAxis2, SIGNAL(rangeChanged(QCPRange)), ui->PlotWidget->yAxis, SLOT(setRange(QCPRange))); // left axis only mirrors inner right axis
+}
+
+TopWidget *Client::getTopWidget()
+{
+    return ui->topWidget;
+}
+
+LeftWidget *Client::getLeftWidget()
+{
+    return ui->leftWidget;
 }
 
 
@@ -170,10 +172,13 @@ void Client::disconnected()
 
 void Client::drawNewPlot()
 {
-    QString currentSec = ui->comboBox_currentSec->currentText().toLower() + "_client";
+    QString currentSec = getTopWidget()->getComboBoxSecurities()->currentText().toLower() + "_client";
     plotDrawer->timeData->clear();
     plotDrawer->priceData->clear();
     plotDrawer->candlesticks->data().clear();
+    plotDrawer->volumePos->data().clear();
+    plotDrawer->volumeNeg->data().clear();
+
     sqlSelector->selectData(currentSec);
     plotDrawer->drawPlot();
 }

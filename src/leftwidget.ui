@@ -36,7 +36,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="MyPushButton" name="pushButton">
      <property name="minimumSize">
       <size>
        <width>40</width>
@@ -50,45 +50,7 @@
       </size>
      </property>
      <property name="text">
-      <string>1</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="minimumSize">
-      <size>
-       <width>40</width>
-       <height>40</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>40</width>
-       <height>40</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>2</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButton_3">
-     <property name="minimumSize">
-      <size>
-       <width>40</width>
-       <height>40</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>40</width>
-       <height>40</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>3</string>
+      <string/>
      </property>
     </widget>
    </item>
@@ -107,6 +69,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MyPushButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">GuiElements/mypushbutton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

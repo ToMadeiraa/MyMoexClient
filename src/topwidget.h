@@ -2,6 +2,8 @@
 #define TOPWIDGET_H
 
 #include <QWidget>
+#include "GuiElements/mycomboboxbinsize.h"
+#include "GuiElements/mycomboboxsecurity.h"
 
 namespace Ui {
 class TopWidget;
@@ -14,6 +16,10 @@ class TopWidget : public QWidget
 public:
     explicit TopWidget(QWidget *parent = nullptr);
     ~TopWidget();
+
+    MyComboBoxSecurity *getComboBoxSecurities();
+    MyComboBoxBinSize *getComboBoxBinSize();
+    QComboBox* getComboBoxIndicators();
 
 private:
     Ui::TopWidget *ui;
