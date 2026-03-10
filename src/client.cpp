@@ -117,9 +117,9 @@ void Client::connectSlots()
     connect(getTopWidget()->getComboBoxSecurities(), SIGNAL(currentIndexChanged(int)), this, SLOT(redrawPlotBySecurityChange_slot()));
 
     connect(ui->PlotWidget, SIGNAL(mouseWheel(QWheelEvent*)), plotDrawer, SLOT(setNewRange(QWheelEvent*)));
-    connect(ui->PlotWidget->xAxis, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeX()));
-    connect(ui->PlotWidget->yAxis2, SIGNAL(selectionChanged(const QCPAxis::SelectableParts&)), plotDrawer, SLOT(setNewRangeY()));
     connect(ui->PlotWidget, SIGNAL(mouseMove(QMouseEvent *)), plotDrawer, SLOT(mouseMoved(QMouseEvent*)));
+    connect(ui->PlotWidget, SIGNAL(mousePress(QMouseEvent *)), plotDrawer, SLOT(mousePressed(QMouseEvent*)));
+    connect(ui->PlotWidget, SIGNAL(mouseRelease(QMouseEvent *)), plotDrawer, SLOT(mouseReleased(QMouseEvent*)));
 
     connect(ui->PlotWidget->yAxis2, SIGNAL(rangeChanged(QCPRange)), ui->PlotWidget->yAxis, SLOT(setRange(QCPRange))); // left axis only mirrors inner right axis
 }
@@ -186,9 +186,12 @@ void Client::redrawPlotBySecurityChange_slot()
                                       plotDrawer->high,
                                       plotDrawer->low,
                                       plotDrawer->close);
-    plotDrawer->volumeBars->setData(plotDrawer->time,
-                                    plotDrawer->volume);
 
+    plotDrawer->volumeBarsPositive->setData(plotDrawer->timePositive,
+                                            plotDrawer->volumePositive);
+
+    plotDrawer->volumeBarsNegative->setData(plotDrawer->timeNegative,
+                                            plotDrawer->volumeNegative);
 
     plotDrawer->drawPlot();
 }

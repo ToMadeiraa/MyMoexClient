@@ -25,6 +25,7 @@ public:
     PlotDrawer(QCustomPlot* cp);
     void isMouseOverBar(double x_value);
     void collectCandleInfo();
+
     QCustomPlot* customPlot;
 
     //data
@@ -40,12 +41,16 @@ public:
     QVector<double> low;
     QVector<double> close;
     QVector<double> time;
-    QVector<double> volume;
+
+    //for volume
+    QVector<double> timePositive;
+    QVector<double> volumePositive;
+    QVector<double> timeNegative;
+    QVector<double> volumeNegative;
 
 
     //charts
     QCPFinancial *candlesticks;
-    // QCPBars *volumeBars;
     QCPBars *volumeBarsPositive;
     QCPBars *volumeBarsNegative;
 
@@ -59,21 +64,23 @@ public:
 
     bool autoRescale;
 
-private:
-    bool isXAxisChosen;
-    bool isYAxisChosen;
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
 
+    bool mDraggingCustomItem;
+    QPoint mDragStartPos;
+
+private:
     void initMainChart();
     void initVolChart();
 
 public slots:
     void drawPlot();
     void setNewRange(QWheelEvent* e);
-    void setNewRangeX();
-    void setNewRangeY();
     void mouseMoved(QMouseEvent *e);
+    void mousePressed(QMouseEvent *e);
+    void mouseReleased(QMouseEvent *e);
     void redrawPlotByBinSizeChange_slot(uint bs);
-
 
 };
 

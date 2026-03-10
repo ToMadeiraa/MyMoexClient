@@ -3,8 +3,6 @@
 PlotDrawer::PlotDrawer(QCustomPlot* cp)
     : binSize(60) //интервал в секундах
     , autoRescale(true)
-    , isXAxisChosen(false)
-    , isYAxisChosen(false)
 {
 
     this->customPlot = cp;
@@ -17,6 +15,11 @@ PlotDrawer::PlotDrawer(QCustomPlot* cp)
     initMainChart();
     initVolChart();
 
+    customPlot->yAxis->setVisible(true);
+    customPlot->yAxis2->setVisible(true);
+    customPlot->xAxis->grid()->setVisible(true);
+    customPlot->yAxis->grid()->setVisible(true);
+
     //линия текущей цены
     // create tags with newly introduced AxisTag class (see axistag.h/.cpp):
     mTag1 = new AxisTag(candlesticks->valueAxis());
@@ -24,8 +27,10 @@ PlotDrawer::PlotDrawer(QCustomPlot* cp)
 
     infLine = new QCPItemStraightLine(customPlot);
 
-    customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    customPlot->setInteractions(/*QCP::iRangeDrag |*/ QCP::iRangeZoom);
     customPlot->setMouseTracking(true);
+
+    mDraggingCustomItem = false;
 }
 
 void PlotDrawer::isMouseOverBar(double x_value)
@@ -78,14 +83,24 @@ void PlotDrawer::collectCandleInfo()
     low.clear();
     close.clear();
     time.clear();
-    volume.clear();
 
     open.resize(candles.size());
     high.resize(candles.size());
     low.resize(candles.size());
     close.resize(candles.size());
     time.resize(candles.size());
-    volume.resize(candles.size());
+
+    //for volume
+    volumePositive.clear();
+    timePositive.clear();
+    volumeNegative.clear();
+    timeNegative.clear();
+
+    volumePositive.resize(candles.size());
+    timePositive.resize(candles.size());
+    volumeNegative.resize(candles.size());
+    timeNegative.resize(candles.size());
+
 
     for (int i = 0; i < candles.size(); ++i)
     {
@@ -94,7 +109,40 @@ void PlotDrawer::collectCandleInfo()
         low[i] = candles[i].low;
         close[i] = candles[i].close;
         time[i] = candles[i].timeCandleStart;
-        volume[i] = candles[i].volume;
+
+        //for volume
+        if (candles[i].open > candles[i].close)
+        {
+            timeNegative[i] = candles[i].timeCandleStart;
+            volumeNegative[i] = candles[i].volume;
+
+            timePositive[i] = candles[i].timeCandleStart;
+            volumePositive[i] = 0;
+        }
+        else
+        {
+            timeNegative[i] = candles[i].timeCandleStart;
+            volumeNegative[i] = 0;
+
+            timePositive[i] = candles[i].timeCandleStart;
+            volumePositive[i] = candles[i].volume;
+        }
+    }
+}
+
+void PlotDrawer::mousePressEvent(QMouseEvent *event)
+{
+    QPoint globalPos = QCursor::pos();
+    qDebug() << globalPos;
+    QWidget *clickedItem = QApplication::widgetAt(globalPos);
+
+    //
+    if (clickedItem == customPlot)
+     {
+         qDebug() << "QWEQWEQWEQWE";
+        mDraggingCustomItem = true;
+        mDragStartPos = event->pos();
+        // ... initialize your drag state
     }
 }
 
@@ -109,17 +157,16 @@ void PlotDrawer::initMainChart()
     candlesticks->setBrushPositive(QColor(0, 215, 0));
     candlesticks->setBrushNegative(QColor(240, 0, 0));
 
-    //QSharedPointer<QCPAxisTickerDateTime> dateTimeTicker(new QCPAxisTickerDateTime);
-    //dateTimeTicker->setDateTimeSpec(Qt::UTC);
-    //dateTimeTicker->setDateTimeFormat("dd. MM. yyyy\n hh:mm:ss");
-    //customPlot->xAxis->setTicker(dateTimeTicker);
+    QSharedPointer<QCPAxisTickerDateTime> dateTimeTicker(new QCPAxisTickerDateTime);
+    dateTimeTicker->setDateTimeSpec(Qt::UTC);
+    dateTimeTicker->setDateTimeFormat("dd. MM. yyyy\n hh:mm:ss");
+    customPlot->xAxis->setTicker(dateTimeTicker);
     customPlot->xAxis->setRange(QCPRange(startTime, startTime+60));
     customPlot->xAxis->scaleRange(1.025, customPlot->xAxis->range().center());
     // customPlot->yAxis->scaleRange(1.1, customPlot->yAxis2->range().center());
     customPlot->yAxis2->scaleRange(1.1, customPlot->yAxis2->range().center());
 
-    customPlot->yAxis->setVisible(true);
-    customPlot->yAxis2->setVisible(true);
+
     customPlot->axisRect()->axis(QCPAxis::atRight, 0)->setPadding(30); // add some padding to have space for tags
     //customPlot->axisRect()->axis(QCPAxis::atRight, 1)->setPadding(30); // add some padding to have space for tags
 
@@ -131,13 +178,17 @@ void PlotDrawer::initMainChart()
 
 void PlotDrawer::initVolChart()
 {
-    volumeBars = new QCPBars(customPlot->xAxis, customPlot->yAxis);
-    volumeBars->setName("Volume");
-    volumeBars->setBrush(QColor(100, 150, 255, 100));
-    volumeBars->setWidth(0.8);
+    //pos
+    volumeBarsPositive = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+    volumeBarsPositive->setBrush(QColor(100, 180, 110, 255));
+    volumeBarsPositive->setWidth(0.8*binSize);//??
+    volumeBarsPositive->setPen(Qt::NoPen);
 
-    customPlot->xAxis->grid()->setVisible(true);
-    customPlot->yAxis->grid()->setVisible(true);
+    //neg
+    volumeBarsNegative = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+    volumeBarsNegative->setWidth(0.8*binSize);//??
+    volumeBarsNegative->setBrush(QColor(180, 90, 90, 255));
+    volumeBarsNegative->setPen(Qt::NoPen);
 
     // // create bottom axis rect for volume bar chart:
     // QCPAxisRect *volumeAxisRect = new QCPAxisRect(customPlot);
@@ -173,28 +224,6 @@ void PlotDrawer::drawPlot()
 {
     if (priceData->isEmpty() || timeData->isEmpty()) return;
 
-    // //задаем данные главному графику
-    // dataContainer = QCPFinancial::timeSeriesToOhlc(*timeData, *priceData, binSize, startTime);
-    // candlesticks->data()->set(dataContainer);
-
-    // volumeNeg->setWidth(binSize);
-    // volumePos->setWidth(binSize);
-
-    //задаем данные графику объемов
-
-    // for (int i=0; i<candles.size(); ++i)
-    // {
-    //     long long v = candles[i].volume;
-    //     if (candles[i].open > candles[i].close)
-    //     {
-    //         volumeNeg->addData(candles[i].timeCandleStart, qAbs(v));
-    //     }
-    //     else
-    //     {
-    //         volumePos->addData(candles[i].timeCandleStart, qAbs(v));
-    //     }
-    // }
-
     //рисуем горизонтальную линию последней цены
     infLine->point1->setCoords(0, priceData->last());
     infLine->point2->setCoords(startTime*100, priceData->last());
@@ -216,84 +245,82 @@ void PlotDrawer::drawPlot()
 
 void PlotDrawer::setNewRange(QWheelEvent* e)
 {
-    if (isXAxisChosen) {
-        QCPRange range_x = customPlot->xAxis->range();
-        double lower_tmp_x = range_x.lower;
-        double upper_tmp_x = range_x.upper;
+    QCPRange range_y_good = customPlot->yAxis->range();
 
-        if (e->angleDelta().y() < 0) //отдалить
-        {
-            lower_tmp_x-=1000;
-            upper_tmp_x+=1000;
-        }
-        else //приблизить
-        {
-            lower_tmp_x+=1000;
-            upper_tmp_x-=1000;
-        }
-        customPlot->xAxis->setRange(lower_tmp_x,upper_tmp_x);
-    } else if (isYAxisChosen) {
-        QCPRange range_y = customPlot->yAxis2->range();
-        double lower_tmp_y = range_y.lower;
-        double upper_tmp_y = range_y.upper;
-
-        if (e->angleDelta().y() < 0) //отдалить
-        {
-            lower_tmp_y*=0.99;
-            upper_tmp_y*=1.01;
-        }
-        else //приблизить
-        {
-            lower_tmp_y*=1.01;
-            upper_tmp_y*=0.99;
-        }
-        customPlot->yAxis2->setRange(lower_tmp_y,upper_tmp_y);
-    } else {
-        QCPRange range_x = customPlot->xAxis->range();
-        double lower_tmp_x = range_x.lower;
-        double upper_tmp_x = range_x.upper;
-
-        if (e->angleDelta().y() < 0) //отдалить
-        {
-            lower_tmp_x-=1000;
-            upper_tmp_x+=1000;
-        }
-        else //приблизить
-        {
-            lower_tmp_x+=1000;
-            upper_tmp_x-=1000;
-        }
-        customPlot->xAxis->setRange(lower_tmp_x,upper_tmp_x);
-        QCPRange range_y = customPlot->yAxis2->range();
-        double lower_tmp_y = range_y.lower;
-        double upper_tmp_y = range_y.upper;
-
-        if (e->angleDelta().y() < 0) //отдалить
-        {
-            lower_tmp_y*=0.99;
-            upper_tmp_y*=1.01;
-        }
-        else //приблизить
-        {
-            lower_tmp_y*=1.01;
-            upper_tmp_y*=0.99;
-        }
-        customPlot->yAxis2->setRange(lower_tmp_y,upper_tmp_y);
+    QCPRange range_y = customPlot->yAxis2->range();
+    double upper_tmp_y = range_y.upper;
+    double lower_tmp_y = range_y.lower;
+    if (e->angleDelta().y() < 0) //отдалить
+    {
+        customPlot->yAxis2->setRange(lower_tmp_y*0.99,upper_tmp_y*1.01);
     }
+    customPlot->yAxis->setRange(range_y_good);
+    // if (isXAxisChosen) {
+    //     QCPRange range_x = customPlot->xAxis->range();
+    //     double lower_tmp_x = range_x.lower;
+    //     double upper_tmp_x = range_x.upper;
+
+    //     if (e->angleDelta().y() < 0) //отдалить
+    //     {
+    //         lower_tmp_x-=1000;
+    //         upper_tmp_x+=1000;
+    //     }
+    //     else //приблизить
+    //     {
+    //         lower_tmp_x+=1000;
+    //         upper_tmp_x-=1000;
+    //     }
+    //     customPlot->xAxis->setRange(lower_tmp_x,upper_tmp_x);
+    // } else if (isYAxisChosen) {
+    //     QCPRange range_y = customPlot->yAxis2->range();
+    //     double lower_tmp_y = range_y.lower;
+    //     double upper_tmp_y = range_y.upper;
+
+    //     if (e->angleDelta().y() < 0) //отдалить
+    //     {
+    //         lower_tmp_y*=0.99;
+    //         upper_tmp_y*=1.01;
+    //     }
+    //     else //приблизить
+    //     {
+    //         lower_tmp_y*=1.01;
+    //         upper_tmp_y*=0.99;
+    //     }
+    //     customPlot->yAxis2->setRange(lower_tmp_y,upper_tmp_y);
+    // } else {
+    //     QCPRange range_x = customPlot->xAxis->range();
+    //     double lower_tmp_x = range_x.lower;
+    //     double upper_tmp_x = range_x.upper;
+
+    //     if (e->angleDelta().y() < 0) //отдалить
+    //     {
+    //         lower_tmp_x-=1000;
+    //         upper_tmp_x+=1000;
+    //     }
+    //     else //приблизить
+    //     {
+    //         lower_tmp_x+=1000;
+    //         upper_tmp_x-=1000;
+    //     }
+    //     customPlot->xAxis->setRange(lower_tmp_x,upper_tmp_x);
+    //     QCPRange range_y = customPlot->yAxis2->range();
+    //     double lower_tmp_y = range_y.lower;
+    //     double upper_tmp_y = range_y.upper;
+
+    //     if (e->angleDelta().y() < 0) //отдалить
+    //     {
+    //         lower_tmp_y*=0.99;
+    //         upper_tmp_y*=1.01;
+    //     }
+    //     else //приблизить
+    //     {
+    //         lower_tmp_y*=1.01;
+    //         upper_tmp_y*=0.99;
+    //     }
+    //     customPlot->yAxis2->setRange(lower_tmp_y,upper_tmp_y);
+    // }
 
     customPlot->replot();
-}
-
-void PlotDrawer::setNewRangeX()
-{
-    isXAxisChosen = true;
-    isYAxisChosen = false;
-}
-
-void PlotDrawer::setNewRangeY()
-{
-    isXAxisChosen = false;
-    isYAxisChosen = true;
 }
 
 void PlotDrawer::mouseMoved(QMouseEvent *e)
@@ -307,6 +334,43 @@ void PlotDrawer::mouseMoved(QMouseEvent *e)
     }
     // qDebug() << e->position().x();
     // qDebug() << e->position().y();
+
+    //drag and drop
+    if (mDraggingCustomItem)
+    {
+        QCPRange niceRange = customPlot->yAxis->range();
+
+        double upper_y = customPlot->yAxis2->range().upper;
+        double lower_y = customPlot->yAxis2->range().lower;
+
+        double upper_x = customPlot->xAxis->range().upper;
+        double lower_x = customPlot->xAxis->range().lower;
+
+        double current_x = e->pos().x();
+        double current_y = e->pos().y();
+
+        double step_x = mDragStartPos.x() - current_x;
+        double step_y = mDragStartPos.y() - current_y;
+
+        customPlot->xAxis->setRange(lower_x - step_x, upper_x - step_x);
+        customPlot->yAxis2->setRange(lower_y - step_y, upper_y - step_y);
+
+        mDragStartPos = e->pos();
+
+        customPlot->yAxis->setRange(niceRange);
+        customPlot->replot();
+    }
+}
+
+void PlotDrawer::mousePressed(QMouseEvent *e)
+{
+    mDraggingCustomItem = true;
+    mDragStartPos = e->pos();
+}
+
+void PlotDrawer::mouseReleased(QMouseEvent *e)
+{
+    mDraggingCustomItem = false;
 }
 
 void PlotDrawer::redrawPlotByBinSizeChange_slot(uint bs)
@@ -341,8 +405,13 @@ void PlotDrawer::redrawPlotByBinSizeChange_slot(uint bs)
                           low,
                           close);
 
-    volumeBars->setData(time,
-                        volume);
+    volumeBarsPositive->setData(timePositive,
+                                volumePositive);
+    volumeBarsPositive->setWidth(binSize*0.8);
+
+    volumeBarsNegative->setData(timeNegative,
+                                volumeNegative);
+    volumeBarsNegative->setWidth(binSize*0.8);
 
     customPlot->rescaleAxes(true);
     customPlot->replot();

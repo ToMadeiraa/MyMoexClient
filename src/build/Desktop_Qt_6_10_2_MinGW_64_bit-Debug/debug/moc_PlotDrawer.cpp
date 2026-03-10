@@ -46,10 +46,10 @@ template <> constexpr inline auto PlotDrawer::qt_create_metaobjectdata<qt_meta_t
         "setNewRange",
         "QWheelEvent*",
         "e",
-        "setNewRangeX",
-        "setNewRangeY",
         "mouseMoved",
         "QMouseEvent*",
+        "mousePressed",
+        "mouseReleased",
         "redrawPlotByBinSizeChange_slot",
         "bs"
     };
@@ -61,13 +61,17 @@ template <> constexpr inline auto PlotDrawer::qt_create_metaobjectdata<qt_meta_t
         QtMocHelpers::SlotData<void(QWheelEvent *)>(3, 2, QMC::AccessPublic, QMetaType::Void, {{
             { 0x80000000 | 4, 5 },
         }}),
-        // Slot 'setNewRangeX'
-        QtMocHelpers::SlotData<void()>(6, 2, QMC::AccessPublic, QMetaType::Void),
-        // Slot 'setNewRangeY'
-        QtMocHelpers::SlotData<void()>(7, 2, QMC::AccessPublic, QMetaType::Void),
         // Slot 'mouseMoved'
+        QtMocHelpers::SlotData<void(QMouseEvent *)>(6, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { 0x80000000 | 7, 5 },
+        }}),
+        // Slot 'mousePressed'
         QtMocHelpers::SlotData<void(QMouseEvent *)>(8, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { 0x80000000 | 9, 5 },
+            { 0x80000000 | 7, 5 },
+        }}),
+        // Slot 'mouseReleased'
+        QtMocHelpers::SlotData<void(QMouseEvent *)>(9, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { 0x80000000 | 7, 5 },
         }}),
         // Slot 'redrawPlotByBinSizeChange_slot'
         QtMocHelpers::SlotData<void(uint)>(10, 2, QMC::AccessPublic, QMetaType::Void, {{
@@ -98,9 +102,9 @@ void PlotDrawer::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         switch (_id) {
         case 0: _t->drawPlot(); break;
         case 1: _t->setNewRange((*reinterpret_cast<std::add_pointer_t<QWheelEvent*>>(_a[1]))); break;
-        case 2: _t->setNewRangeX(); break;
-        case 3: _t->setNewRangeY(); break;
-        case 4: _t->mouseMoved((*reinterpret_cast<std::add_pointer_t<QMouseEvent*>>(_a[1]))); break;
+        case 2: _t->mouseMoved((*reinterpret_cast<std::add_pointer_t<QMouseEvent*>>(_a[1]))); break;
+        case 3: _t->mousePressed((*reinterpret_cast<std::add_pointer_t<QMouseEvent*>>(_a[1]))); break;
+        case 4: _t->mouseReleased((*reinterpret_cast<std::add_pointer_t<QMouseEvent*>>(_a[1]))); break;
         case 5: _t->redrawPlotByBinSizeChange_slot((*reinterpret_cast<std::add_pointer_t<uint>>(_a[1]))); break;
         default: ;
         }
