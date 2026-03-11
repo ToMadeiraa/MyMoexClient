@@ -40,43 +40,10 @@ template <> constexpr inline auto PlotDrawer::qt_create_metaobjectdata<qt_meta_t
 {
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
-        "PlotDrawer",
-        "drawPlot",
-        "",
-        "setNewRange",
-        "QWheelEvent*",
-        "e",
-        "mouseMoved",
-        "QMouseEvent*",
-        "mousePressed",
-        "mouseReleased",
-        "redrawPlotByBinSizeChange_slot",
-        "bs"
+        "PlotDrawer"
     };
 
     QtMocHelpers::UintData qt_methods {
-        // Slot 'drawPlot'
-        QtMocHelpers::SlotData<void()>(1, 2, QMC::AccessPublic, QMetaType::Void),
-        // Slot 'setNewRange'
-        QtMocHelpers::SlotData<void(QWheelEvent *)>(3, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { 0x80000000 | 4, 5 },
-        }}),
-        // Slot 'mouseMoved'
-        QtMocHelpers::SlotData<void(QMouseEvent *)>(6, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { 0x80000000 | 7, 5 },
-        }}),
-        // Slot 'mousePressed'
-        QtMocHelpers::SlotData<void(QMouseEvent *)>(8, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { 0x80000000 | 7, 5 },
-        }}),
-        // Slot 'mouseReleased'
-        QtMocHelpers::SlotData<void(QMouseEvent *)>(9, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { 0x80000000 | 7, 5 },
-        }}),
-        // Slot 'redrawPlotByBinSizeChange_slot'
-        QtMocHelpers::SlotData<void(uint)>(10, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::UInt, 11 },
-        }}),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -98,17 +65,10 @@ Q_CONSTINIT const QMetaObject PlotDrawer::staticMetaObject = { {
 void PlotDrawer::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     auto *_t = static_cast<PlotDrawer *>(_o);
-    if (_c == QMetaObject::InvokeMetaMethod) {
-        switch (_id) {
-        case 0: _t->drawPlot(); break;
-        case 1: _t->setNewRange((*reinterpret_cast<std::add_pointer_t<QWheelEvent*>>(_a[1]))); break;
-        case 2: _t->mouseMoved((*reinterpret_cast<std::add_pointer_t<QMouseEvent*>>(_a[1]))); break;
-        case 3: _t->mousePressed((*reinterpret_cast<std::add_pointer_t<QMouseEvent*>>(_a[1]))); break;
-        case 4: _t->mouseReleased((*reinterpret_cast<std::add_pointer_t<QMouseEvent*>>(_a[1]))); break;
-        case 5: _t->redrawPlotByBinSizeChange_slot((*reinterpret_cast<std::add_pointer_t<uint>>(_a[1]))); break;
-        default: ;
-        }
-    }
+    (void)_t;
+    (void)_c;
+    (void)_id;
+    (void)_a;
 }
 
 const QMetaObject *PlotDrawer::metaObject() const
@@ -127,18 +87,6 @@ void *PlotDrawer::qt_metacast(const char *_clname)
 int PlotDrawer::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QWidget::qt_metacall(_c, _id, _a);
-    if (_id < 0)
-        return _id;
-    if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
-            qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
-    }
-    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
-            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 6;
-    }
     return _id;
 }
 QT_WARNING_POP

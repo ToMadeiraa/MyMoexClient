@@ -4,10 +4,13 @@ debug/mycomboboxsecurity.o
 debug/PlotDrawer.o
 debug/SqlSelector.o
 debug/SqlUpdater.o
+debug/financialplot.o
+debug/volumeplot.o
 debug/leftwidget.o
 debug/main.o
 debug/client.o
 debug/mypushbutton.o
+debug/plotsdrawer.o
 debug/topwidget.o
 debug/moc_AxisTag.o
 debug/moc_mycomboboxbinsize.o
@@ -15,7 +18,10 @@ debug/moc_mycomboboxsecurity.o
 debug/moc_PlotDrawer.o
 debug/moc_SqlSelector.o
 debug/moc_SqlUpdater.o
+debug/moc_financialplot.o
+debug/moc_volumeplot.o
 debug/moc_client.o
 debug/moc_leftwidget.o
 debug/moc_mypushbutton.o
+debug/moc_plotsdrawer.o
 debug/moc_topwidget.o

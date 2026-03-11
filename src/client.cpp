@@ -60,13 +60,13 @@ Client::Client(QWidget *parent)
 
     sqlSelectorThread->start();
 
-    //drawer
-    plotDrawer = new PlotDrawer(ui->PlotWidget);
-    plotDrawer->priceData = &this->priceData;
-    plotDrawer->timeData = &this->timeData;
-    plotDrawer->quantityData = &this->quantityData;
-    plotDrawer->buysellData = &this->buysellData;
-    plotDrawer->autoRescale = true;
+    //new
+    plotsDrawer = ui->PlotsWidget;
+    plotsDrawer->priceData = &this->priceData;
+    plotsDrawer->timeData = &this->timeData;
+    plotsDrawer->quantityData = &this->quantityData;
+    plotsDrawer->buysellData = &this->buysellData;
+    plotsDrawer->autoRescale = true;
 
     //ui
     getTopWidget()->getComboBoxSecurities()->fillComboBox(sqlUpdater->SecID_Numbers);
@@ -77,6 +77,57 @@ Client::~Client()
 {
     delete ui;
 }
+
+void Client::connectSlots()
+{
+    connect(sqlSelectorThread, &QThread::finished, sqlSelectorThread, &QThread::deleteLater);
+    connect(sqlUpdaterThread, &QThread::started, sqlUpdater, &SqlUpdater::process);
+    connect(sqlUpdater, &SqlUpdater::finished, sqlUpdaterThread, &QThread::quit);
+    connect(sqlUpdater, &SqlUpdater::finished, sqlUpdater, &SqlUpdater::deleteLater);
+    connect(sqlUpdaterThread, &QThread::finished, sqlUpdaterThread, &QThread::deleteLater);
+
+    connect(getTopWidget()->getComboBoxBinSize(), SIGNAL(binSizeChanged_signal(uint)), plotsDrawer, SLOT(redrawPlotByBinSizeChange_slot(uint)));
+    connect(getTopWidget()->getComboBoxSecurities(), SIGNAL(currentIndexChanged(int)), this, SLOT(redrawPlotBySecurityChange_slot()));
+
+    //new
+    //connect(ui->PlotsWidget, SIGNAL(mouseWheel(QWheelEvent*)), plotDrawer, SLOT(setNewRange(QWheelEvent*)));
+    connect(ui->PlotsWidget, SIGNAL(mouseMove(QMouseEvent *)), plotsDrawer, SLOT(mouseMoved(QMouseEvent*)));
+    connect(ui->PlotsWidget, SIGNAL(mousePress(QMouseEvent *)), plotsDrawer, SLOT(mousePressed(QMouseEvent*)));
+    connect(ui->PlotsWidget, SIGNAL(mouseRelease(QMouseEvent *)), plotsDrawer, SLOT(mouseReleased(QMouseEvent*)));
+    //connect(ui->PlotsWidget->yAxis2, SIGNAL(rangeChanged(QCPRange)), ui->PlotWidget->yAxis, SLOT(setRange(QCPRange))); // left axis only mirrors inner right axis
+
+
+}
+
+TopWidget *Client::getTopWidget()
+{
+    return ui->topWidget;
+}
+
+LeftWidget *Client::getLeftWidget()
+{
+    return ui->leftWidget;
+}
+
+
+
+void Client::redrawPlotBySecurityChange_slot()
+{
+    QString currentSec = getTopWidget()->getComboBoxSecurities()->currentText().toLower() + "_client";
+
+    plotsDrawer->clearSecurityData();
+    sqlSelector->selectData(currentSec);
+    plotsDrawer->collectCandleInfo();
+    plotsDrawer->finPlot->setCandlesData();
+    plotsDrawer->volPlot->setCandlesData();
+
+    plotsDrawer->finPlot->customPlotFinancial->rescaleAxes(true);
+    plotsDrawer->volPlot->customPlotVolume->rescaleAxes(true);
+
+    plotsDrawer->drawPlot();
+}
+
+
 
 void Client::readConfigFile()
 {
@@ -105,36 +156,6 @@ void Client::readConfigFile()
     file.close();
 }
 
-void Client::connectSlots()
-{
-    connect(sqlSelectorThread, &QThread::finished, sqlSelectorThread, &QThread::deleteLater);
-    connect(sqlUpdaterThread, &QThread::started, sqlUpdater, &SqlUpdater::process);
-    connect(sqlUpdater, &SqlUpdater::finished, sqlUpdaterThread, &QThread::quit);
-    connect(sqlUpdater, &SqlUpdater::finished, sqlUpdater, &SqlUpdater::deleteLater);
-    connect(sqlUpdaterThread, &QThread::finished, sqlUpdaterThread, &QThread::deleteLater);
-
-    connect(getTopWidget()->getComboBoxBinSize(), SIGNAL(binSizeChanged_signal(uint)), plotDrawer, SLOT(redrawPlotByBinSizeChange_slot(uint)));
-    connect(getTopWidget()->getComboBoxSecurities(), SIGNAL(currentIndexChanged(int)), this, SLOT(redrawPlotBySecurityChange_slot()));
-
-    connect(ui->PlotWidget, SIGNAL(mouseWheel(QWheelEvent*)), plotDrawer, SLOT(setNewRange(QWheelEvent*)));
-    connect(ui->PlotWidget, SIGNAL(mouseMove(QMouseEvent *)), plotDrawer, SLOT(mouseMoved(QMouseEvent*)));
-    connect(ui->PlotWidget, SIGNAL(mousePress(QMouseEvent *)), plotDrawer, SLOT(mousePressed(QMouseEvent*)));
-    connect(ui->PlotWidget, SIGNAL(mouseRelease(QMouseEvent *)), plotDrawer, SLOT(mouseReleased(QMouseEvent*)));
-
-    connect(ui->PlotWidget->yAxis2, SIGNAL(rangeChanged(QCPRange)), ui->PlotWidget->yAxis, SLOT(setRange(QCPRange))); // left axis only mirrors inner right axis
-}
-
-TopWidget *Client::getTopWidget()
-{
-    return ui->topWidget;
-}
-
-LeftWidget *Client::getLeftWidget()
-{
-    return ui->leftWidget;
-}
-
-
 bool Client::checkNewVersion()
 {
     socketUpdate->connectToHost("127.0.0.1", quint16(6667));
@@ -158,6 +179,8 @@ void Client::readyRead()
     ver.print();
 }
 
+
+
 void Client::connected()
 {
     qDebug() << "Connected to update server";
@@ -168,42 +191,3 @@ void Client::disconnected()
     qDebug() << "Disconnected from update server";
 }
 
-void Client::redrawPlotBySecurityChange_slot()
-{
-    QString currentSec = getTopWidget()->getComboBoxSecurities()->currentText().toLower() + "_client";
-
-    plotDrawer->timeData->clear();
-    plotDrawer->priceData->clear();
-    plotDrawer->quantityData->clear();
-    plotDrawer->buysellData->clear();
-    plotDrawer->candlesticks->data().clear();
-
-    sqlSelector->selectData(currentSec);
-    plotDrawer->collectCandleInfo();
-
-    plotDrawer->candlesticks->setData(plotDrawer->time,
-                                      plotDrawer->open,
-                                      plotDrawer->high,
-                                      plotDrawer->low,
-                                      plotDrawer->close);
-
-    plotDrawer->volumeBarsPositive->setData(plotDrawer->timePositive,
-                                            plotDrawer->volumePositive);
-
-    plotDrawer->volumeBarsNegative->setData(plotDrawer->timeNegative,
-                                            plotDrawer->volumeNegative);
-
-    plotDrawer->drawPlot();
-}
-
-//void Client::setAutorescale()
-//{
-//    if (ui->checkBoxAutorescale->isChecked())
-//    {
-//        plotDrawer->autoRescale = true;
-//    }
-//    else
-//    {
-//        plotDrawer->autoRescale = false;
-//    }
-//}

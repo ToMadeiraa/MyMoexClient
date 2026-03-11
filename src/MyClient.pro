@@ -30,10 +30,13 @@ SOURCES += \
     PlotDrawer.cpp \
     SqlSelector.cpp \
     SqlUpdater.cpp \
+    Widgets/financialplot.cpp \
+    Widgets/volumeplot.cpp \
     leftwidget.cpp \
     main.cpp \
     client.cpp \
     GuiElements/mypushbutton.cpp \
+    plotsdrawer.cpp \
     topwidget.cpp
 
 HEADERS += \
@@ -43,14 +46,20 @@ HEADERS += \
     PlotDrawer.h \
     SqlSelector.h \
     SqlUpdater.h \
+    Widgets/financialplot.h \
+    Widgets/volumeplot.h \
     client.h \
     leftwidget.h \
     GuiElements/mypushbutton.h \
+    plotsdrawer.h \
     topwidget.h
 
 FORMS += \
+    Widgets/financialplot.ui \
+    Widgets/volumeplot.ui \
     client.ui \
     leftwidget.ui \
+    plotsdrawer.ui \
     topwidget.ui
 
 # Default rules for deployment.

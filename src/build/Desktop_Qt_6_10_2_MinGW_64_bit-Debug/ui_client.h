@@ -14,8 +14,8 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QWidget>
+#include <plotsdrawer.h>
 #include "leftwidget.h"
-#include "qcustomplot.h"
 #include "topwidget.h"
 
 QT_BEGIN_NAMESPACE
@@ -25,9 +25,9 @@ class Ui_Client
 public:
     QWidget *centralwidget;
     QGridLayout *gridLayout;
-    LeftWidget *leftWidget;
     TopWidget *topWidget;
-    QCustomPlot *PlotWidget;
+    LeftWidget *leftWidget;
+    PlotsDrawer *PlotsWidget;
 
     void setupUi(QMainWindow *Client)
     {
@@ -39,22 +39,22 @@ public:
         centralwidget->setObjectName("centralwidget");
         gridLayout = new QGridLayout(centralwidget);
         gridLayout->setObjectName("gridLayout");
-        leftWidget = new LeftWidget(centralwidget);
-        leftWidget->setObjectName("leftWidget");
-        leftWidget->setMaximumSize(QSize(40, 16777215));
-
-        gridLayout->addWidget(leftWidget, 1, 0, 1, 1);
-
         topWidget = new TopWidget(centralwidget);
         topWidget->setObjectName("topWidget");
         topWidget->setMaximumSize(QSize(16777215, 40));
 
         gridLayout->addWidget(topWidget, 0, 0, 1, 3);
 
-        PlotWidget = new QCustomPlot(centralwidget);
-        PlotWidget->setObjectName("PlotWidget");
+        leftWidget = new LeftWidget(centralwidget);
+        leftWidget->setObjectName("leftWidget");
+        leftWidget->setMaximumSize(QSize(40, 16777215));
 
-        gridLayout->addWidget(PlotWidget, 1, 1, 1, 2);
+        gridLayout->addWidget(leftWidget, 1, 0, 2, 1);
+
+        PlotsWidget = new PlotsDrawer(centralwidget);
+        PlotsWidget->setObjectName("PlotsWidget");
+
+        gridLayout->addWidget(PlotsWidget, 1, 1, 2, 2);
 
         Client->setCentralWidget(centralwidget);
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PlotsDrawer</class>
+ <widget class="QWidget" name="PlotsDrawer">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>736</width>
+    <height>548</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="FinancialPlot" name="PlotWidgetCandlesticks" native="true"/>
+   </item>
+   <item>
+    <widget class="VolumePlot" name="PlotWidgetVolume" native="true"/>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FinancialPlot</class>
+   <extends>QWidget</extends>
+   <header location="global">Widgets/financialplot.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VolumePlot</class>
+   <extends>QWidget</extends>
+   <header location="global">Widgets/volumeplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

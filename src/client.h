@@ -24,9 +24,10 @@
 
 #include "SqlUpdater.h"
 #include "SqlSelector.h"
-#include "PlotDrawer.h"
 #include "topwidget.h"
 #include "leftwidget.h"
+
+#include "plotsdrawer.h"
 
 struct Version {
     ushort Major;
@@ -47,7 +48,8 @@ struct Version {
         return *this;
     }
 
-    void print() {
+    void print()
+    {
         qDebug() << QString("%1.%2.%3").arg(this->Major).arg(this->Minor).arg(this->Maintenance);
     }
 };
@@ -81,7 +83,8 @@ public:
     QVector<uint>   quantityData;
     QVector<bool>   buysellData;
 
-    PlotDrawer *plotDrawer;
+    //new
+    PlotsDrawer *plotsDrawer;
 
     Version ver;
     void readConfigFile();
