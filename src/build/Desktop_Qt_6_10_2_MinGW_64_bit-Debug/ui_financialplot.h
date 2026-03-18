@@ -29,7 +29,9 @@ public:
             FinancialPlot->setObjectName("FinancialPlot");
         FinancialPlot->resize(827, 287);
         horizontalLayout = new QHBoxLayout(FinancialPlot);
+        horizontalLayout->setSpacing(0);
         horizontalLayout->setObjectName("horizontalLayout");
+        horizontalLayout->setContentsMargins(0, 0, 0, 0);
         FinPlot = new QCustomPlot(FinancialPlot);
         FinPlot->setObjectName("FinPlot");
 

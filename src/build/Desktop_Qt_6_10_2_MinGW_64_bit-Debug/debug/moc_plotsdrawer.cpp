@@ -49,7 +49,15 @@ template <> constexpr inline auto PlotsDrawer::qt_create_metaobjectdata<qt_meta_
         "mouseReleased",
         "redrawPlotByBinSizeChange_slot",
         "bs",
-        "drawPlot"
+        "drawPlot",
+        "onHorizontalRangeChanged",
+        "QCPRange",
+        "newRange",
+        "onVerticalRangeChanged",
+        "onMouseWheel",
+        "onMousePress",
+        "onMouseMove",
+        "onMouseRelease"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -71,6 +79,22 @@ template <> constexpr inline auto PlotsDrawer::qt_create_metaobjectdata<qt_meta_
         }}),
         // Slot 'drawPlot'
         QtMocHelpers::SlotData<void()>(9, 2, QMC::AccessPublic, QMetaType::Void),
+        // Slot 'onHorizontalRangeChanged'
+        QtMocHelpers::SlotData<void(const QCPRange &)>(10, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { 0x80000000 | 11, 12 },
+        }}),
+        // Slot 'onVerticalRangeChanged'
+        QtMocHelpers::SlotData<void(const QCPRange &)>(13, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { 0x80000000 | 11, 12 },
+        }}),
+        // Slot 'onMouseWheel'
+        QtMocHelpers::SlotData<void()>(14, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onMousePress'
+        QtMocHelpers::SlotData<void()>(15, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onMouseMove'
+        QtMocHelpers::SlotData<void()>(16, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onMouseRelease'
+        QtMocHelpers::SlotData<void()>(17, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -99,6 +123,12 @@ void PlotsDrawer::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 2: _t->mouseReleased((*reinterpret_cast<std::add_pointer_t<QMouseEvent*>>(_a[1]))); break;
         case 3: _t->redrawPlotByBinSizeChange_slot((*reinterpret_cast<std::add_pointer_t<uint>>(_a[1]))); break;
         case 4: _t->drawPlot(); break;
+        case 5: _t->onHorizontalRangeChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
+        case 6: _t->onVerticalRangeChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
+        case 7: _t->onMouseWheel(); break;
+        case 8: _t->onMousePress(); break;
+        case 9: _t->onMouseMove(); break;
+        case 10: _t->onMouseRelease(); break;
         default: ;
         }
     }
@@ -123,14 +153,14 @@ int PlotsDrawer::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 11;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 5)
+        if (_id < 11)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 5;
+        _id -= 11;
     }
     return _id;
 }

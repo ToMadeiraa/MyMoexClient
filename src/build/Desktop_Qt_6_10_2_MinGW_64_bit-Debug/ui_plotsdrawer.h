@@ -31,7 +31,9 @@ public:
             PlotsDrawer->setObjectName("PlotsDrawer");
         PlotsDrawer->resize(736, 548);
         verticalLayout = new QVBoxLayout(PlotsDrawer);
+        verticalLayout->setSpacing(0);
         verticalLayout->setObjectName("verticalLayout");
+        verticalLayout->setContentsMargins(0, 0, 0, 0);
         PlotWidgetCandlesticks = new FinancialPlot(PlotsDrawer);
         PlotWidgetCandlesticks->setObjectName("PlotWidgetCandlesticks");
 
@@ -39,6 +41,7 @@ public:
 
         PlotWidgetVolume = new VolumePlot(PlotsDrawer);
         PlotWidgetVolume->setObjectName("PlotWidgetVolume");
+        PlotWidgetVolume->setMaximumSize(QSize(16777215, 300));
 
         verticalLayout->addWidget(PlotWidgetVolume);
 

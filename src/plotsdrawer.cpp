@@ -6,6 +6,8 @@ PlotsDrawer::PlotsDrawer(QWidget *parent)
     , binSize(60) //интервал в секундах
     , autoRescale(true)
     , ui(new Ui::PlotsDrawer)
+    , m_rangeChangedLock(false)
+    , m_dragging(false)
 {
     ui->setupUi(this);
 
@@ -18,6 +20,8 @@ PlotsDrawer::PlotsDrawer(QWidget *parent)
 
     finPlot->initPlot(binSize, startTime);
     volPlot->initPlot(binSize, startTime);
+
+
 }
 
 PlotsDrawer::~PlotsDrawer()
@@ -48,7 +52,11 @@ void PlotsDrawer::drawPlot()
 
     finPlot->customPlotFinancial->replot();
     volPlot->customPlotVolume->replot();
+
+    connectSignals();
 }
+
+
 
 void PlotsDrawer::clearSecurityData()
 {
@@ -142,6 +150,104 @@ void PlotsDrawer::collectCandleInfo()
             volPlot->volumePositive[i] = candles[i].volume;
         }
     }
+}
+
+void PlotsDrawer::syncPlotRanges()
+{
+    if (m_rangeChangedLock)
+        return;
+
+    m_rangeChangedLock = true;
+
+    // Синхронизируем диапазоны осей X
+    volPlot->customPlotVolume->xAxis->setRange(finPlot->customPlotFinancial->xAxis->range());
+
+    m_rangeChangedLock = false;
+}
+
+void PlotsDrawer::connectSignals()
+{
+    connect(finPlot->customPlotFinancial->xAxis, SIGNAL(rangeChanged(QCPRange)),
+            this, SLOT(onHorizontalRangeChanged(QCPRange)));
+    connect(volPlot->customPlotVolume->xAxis, SIGNAL(rangeChanged(QCPRange)),
+            this, SLOT(onHorizontalRangeChanged(QCPRange)));
+
+    // Обработка мыши для синхронизации
+    connect(finPlot->customPlotFinancial, SIGNAL(mousePress(QMouseEvent*)),
+            this, SLOT(onMousePress()));
+    connect(finPlot->customPlotFinancial, SIGNAL(mouseMove(QMouseEvent*)),
+            this, SLOT(onMouseMove()));
+    connect(finPlot->customPlotFinancial, SIGNAL(mouseRelease(QMouseEvent*)),
+            this, SLOT(onMouseRelease()));
+    connect(volPlot->customPlotVolume, SIGNAL(mousePress(QMouseEvent*)),
+            this, SLOT(onMousePress()));
+    connect(volPlot->customPlotVolume, SIGNAL(mouseMove(QMouseEvent*)),
+            this, SLOT(onMouseMove()));
+    connect(volPlot->customPlotVolume, SIGNAL(mouseRelease(QMouseEvent*)),
+            this, SLOT(onMouseRelease()));
+
+    // Синхронизация колесика мыши
+    connect(finPlot->customPlotFinancial, SIGNAL(mouseWheel(QWheelEvent*)),
+            this, SLOT(onMouseWheel()));
+    connect(volPlot->customPlotVolume, SIGNAL(mouseWheel(QWheelEvent*)),
+            this, SLOT(onMouseWheel()));
+}
+
+
+
+void PlotsDrawer::onHorizontalRangeChanged(const QCPRange &newRange)
+{
+    if (m_rangeChangedLock)
+        return;
+
+    m_rangeChangedLock = true;
+
+    // Синхронизируем ось X обоих графиков
+    finPlot->customPlotFinancial->xAxis->setRange(newRange);
+    volPlot->customPlotVolume->xAxis->setRange(newRange);
+
+    // Перерисовываем оба графика
+    finPlot->customPlotFinancial->replot();
+    volPlot->customPlotVolume->replot();
+
+    m_rangeChangedLock = false;
+}
+
+void PlotsDrawer::onVerticalRangeChanged(const QCPRange &newRange)
+{
+    if (m_rangeChangedLock)
+        return;
+
+    m_rangeChangedLock = true;
+
+    // Синхронизируем ось Y финансового графика (опционально)
+    // Можно закомментировать, если не нужна синхронизация по вертикали
+    // m_financialPlot->yAxis->setRange(newRange);
+
+    m_rangeChangedLock = false;
+}
+
+void PlotsDrawer::onMouseWheel()
+{
+    syncPlotRanges();
+}
+
+void PlotsDrawer::onMousePress()
+{
+    m_dragging = true;
+    m_lastDragPos = QCursor::pos();
+}
+
+void PlotsDrawer::onMouseMove()
+{
+    if (m_dragging) {
+        syncPlotRanges();
+    }
+}
+
+void PlotsDrawer::onMouseRelease()
+{
+    m_dragging = false;
 }
 
 

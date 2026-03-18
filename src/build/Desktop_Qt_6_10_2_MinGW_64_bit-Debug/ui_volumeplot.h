@@ -29,7 +29,9 @@ public:
             VolumePlot->setObjectName("VolumePlot");
         VolumePlot->resize(610, 300);
         horizontalLayout = new QHBoxLayout(VolumePlot);
+        horizontalLayout->setSpacing(0);
         horizontalLayout->setObjectName("horizontalLayout");
+        horizontalLayout->setContentsMargins(0, 0, 0, 0);
         VolPlot = new QCustomPlot(VolumePlot);
         VolPlot->setObjectName("VolPlot");
 

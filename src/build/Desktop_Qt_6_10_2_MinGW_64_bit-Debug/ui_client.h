@@ -38,7 +38,9 @@ public:
         centralwidget = new QWidget(Client);
         centralwidget->setObjectName("centralwidget");
         gridLayout = new QGridLayout(centralwidget);
+        gridLayout->setSpacing(0);
         gridLayout->setObjectName("gridLayout");
+        gridLayout->setContentsMargins(0, 0, 0, 0);
         topWidget = new TopWidget(centralwidget);
         topWidget->setObjectName("topWidget");
         topWidget->setMaximumSize(QSize(16777215, 40));

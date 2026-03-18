@@ -37,6 +37,12 @@ public:
 
 private:
     Ui::PlotsDrawer *ui;
+    bool m_dragging;
+    bool m_rangeChangedLock;
+    QPoint m_lastDragPos;
+
+    void connectSignals();
+    void syncPlotRanges();
 
 public slots:
     void mouseMoved(QMouseEvent *e);
@@ -46,6 +52,14 @@ public slots:
 
 public slots:
     void drawPlot();
+
+private slots:
+    void onHorizontalRangeChanged(const QCPRange &newRange);
+    void onVerticalRangeChanged(const QCPRange &newRange);
+    void onMouseWheel();
+    void onMousePress();
+    void onMouseMove();
+    void onMouseRelease();
 
 };
 

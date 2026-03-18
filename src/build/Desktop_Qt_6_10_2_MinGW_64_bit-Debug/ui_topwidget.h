@@ -34,7 +34,9 @@ public:
         TopWidget->resize(400, 42);
         TopWidget->setMaximumSize(QSize(16777215, 42));
         horizontalLayout = new QHBoxLayout(TopWidget);
+        horizontalLayout->setSpacing(0);
         horizontalLayout->setObjectName("horizontalLayout");
+        horizontalLayout->setContentsMargins(0, 0, 0, 0);
         comboBoxSecurities = new MyComboBoxSecurity(TopWidget);
         comboBoxSecurities->setObjectName("comboBoxSecurities");
 
