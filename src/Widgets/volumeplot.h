@@ -1,12 +1,8 @@
 #ifndef VOLUMEPLOT_H
 #define VOLUMEPLOT_H
 
-#include "qcustomplot.h"
+#include "../qcustomplot.h"
 #include <QWidget>
-
-namespace Ui {
-class VolumePlot;
-}
 
 class VolumePlot : public QWidget
 {
@@ -28,9 +24,6 @@ public:
 
     void setCandlesData();
     void initPlot(double binSize, double startTime);
-
-private:
-    Ui::VolumePlot *ui;
 };
 
 #endif // VOLUMEPLOT_H

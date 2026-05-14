@@ -2,8 +2,8 @@
 #define FINANCIALPLOT_H
 
 #include <QWidget>
-#include "qcustomplot.h"
-#include "AxisTag.h"
+#include "../qcustomplot.h"
+#include "../AxisTag.h"
 
 class Candle
 {
@@ -16,10 +16,6 @@ public:
     double close = 0;
     double volume = 0;
 };
-
-namespace Ui {
-class FinancialPlot;
-}
 
 class FinancialPlot : public QWidget
 {
@@ -39,13 +35,9 @@ public:
     QVector<double> time;
 
     QCPItemStraightLine *infLine;
-    AxisTag *mTag1;
 
     void setCandlesData();
     void initPlot(double binSize, double startTime);
-
-private:
-    Ui::FinancialPlot *ui;
 };
 
 #endif // FINANCIALPLOT_H

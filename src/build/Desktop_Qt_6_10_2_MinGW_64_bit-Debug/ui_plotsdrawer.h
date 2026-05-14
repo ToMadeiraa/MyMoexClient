@@ -13,8 +13,6 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include <Widgets/financialplot.h>
-#include <Widgets/volumeplot.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -22,8 +20,7 @@ class Ui_PlotsDrawer
 {
 public:
     QVBoxLayout *verticalLayout;
-    FinancialPlot *PlotWidgetCandlesticks;
-    VolumePlot *PlotWidgetVolume;
+    QWidget *PlotsWidget;
 
     void setupUi(QWidget *PlotsDrawer)
     {
@@ -34,16 +31,16 @@ public:
         verticalLayout->setSpacing(0);
         verticalLayout->setObjectName("verticalLayout");
         verticalLayout->setContentsMargins(0, 0, 0, 0);
-        PlotWidgetCandlesticks = new FinancialPlot(PlotsDrawer);
-        PlotWidgetCandlesticks->setObjectName("PlotWidgetCandlesticks");
+        PlotsWidget = new QWidget(PlotsDrawer);
+        PlotsWidget->setObjectName("PlotsWidget");
+        QSizePolicy sizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(PlotsWidget->sizePolicy().hasHeightForWidth());
+        PlotsWidget->setSizePolicy(sizePolicy);
+        PlotsWidget->setMinimumSize(QSize(800, 600));
 
-        verticalLayout->addWidget(PlotWidgetCandlesticks);
-
-        PlotWidgetVolume = new VolumePlot(PlotsDrawer);
-        PlotWidgetVolume->setObjectName("PlotWidgetVolume");
-        PlotWidgetVolume->setMaximumSize(QSize(16777215, 300));
-
-        verticalLayout->addWidget(PlotWidgetVolume);
+        verticalLayout->addWidget(PlotsWidget);
 
 
         retranslateUi(PlotsDrawer);

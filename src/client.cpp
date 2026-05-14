@@ -88,15 +88,6 @@ void Client::connectSlots()
 
     connect(getTopWidget()->getComboBoxBinSize(), SIGNAL(binSizeChanged_signal(uint)), plotsDrawer, SLOT(redrawPlotByBinSizeChange_slot(uint)));
     connect(getTopWidget()->getComboBoxSecurities(), SIGNAL(currentIndexChanged(int)), this, SLOT(redrawPlotBySecurityChange_slot()));
-
-    //new
-    //connect(ui->PlotsWidget, SIGNAL(mouseWheel(QWheelEvent*)), plotDrawer, SLOT(setNewRange(QWheelEvent*)));
-    connect(ui->PlotsWidget, SIGNAL(mouseMove(QMouseEvent *)), plotsDrawer, SLOT(mouseMoved(QMouseEvent*)));
-    connect(ui->PlotsWidget, SIGNAL(mousePress(QMouseEvent *)), plotsDrawer, SLOT(mousePressed(QMouseEvent*)));
-    connect(ui->PlotsWidget, SIGNAL(mouseRelease(QMouseEvent *)), plotsDrawer, SLOT(mouseReleased(QMouseEvent*)));
-    //connect(ui->PlotsWidget->yAxis2, SIGNAL(rangeChanged(QCPRange)), ui->PlotWidget->yAxis, SLOT(setRange(QCPRange))); // left axis only mirrors inner right axis
-
-
 }
 
 TopWidget *Client::getTopWidget()
@@ -121,12 +112,8 @@ void Client::redrawPlotBySecurityChange_slot()
     plotsDrawer->finPlot->setCandlesData();
     plotsDrawer->volPlot->setCandlesData();
 
-    plotsDrawer->finPlot->customPlotFinancial->rescaleAxes(true);
-    plotsDrawer->volPlot->customPlotVolume->rescaleAxes(true);
-
     plotsDrawer->drawPlot();
 }
-
 
 
 void Client::readConfigFile()

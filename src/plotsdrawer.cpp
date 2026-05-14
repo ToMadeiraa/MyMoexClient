@@ -5,9 +5,8 @@ PlotsDrawer::PlotsDrawer(QWidget *parent)
     : QWidget(parent)
     , binSize(60) //интервал в секундах
     , autoRescale(true)
+    , m_syncing(false)
     , ui(new Ui::PlotsDrawer)
-    , m_rangeChangedLock(false)
-    , m_dragging(false)
 {
     ui->setupUi(this);
 
@@ -15,13 +14,29 @@ PlotsDrawer::PlotsDrawer(QWidget *parent)
     start.setTimeSpec(Qt::UTC);
     startTime = start.currentSecsSinceEpoch();
 
-    finPlot = ui->PlotWidgetCandlesticks;
-    volPlot = ui->PlotWidgetVolume;
-
-    finPlot->initPlot(binSize, startTime);
+    volPlot = new VolumePlot(ui->PlotsWidget);
     volPlot->initPlot(binSize, startTime);
 
+    finPlot = new FinancialPlot(ui->PlotsWidget);
+    finPlot->initPlot(binSize, startTime);
+    finPlot->customPlotFinancial->installEventFilter(this);
 
+    // Синхронизация ТОЛЬКО оси X при изменении candle plot
+    connect(finPlot->customPlotFinancial->xAxis,
+            QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
+            this, &PlotsDrawer::onCandleXAxisChanged);
+}
+
+void PlotsDrawer::onCandleXAxisChanged(const QCPRange &range)
+{
+    if (m_syncing) return;
+
+
+    m_syncing = true;
+    // Обновляем только X ось volume plot
+    volPlot->customPlotVolume->xAxis->setRange(range);
+    volPlot->customPlotVolume->replot();
+    m_syncing = false;
 }
 
 PlotsDrawer::~PlotsDrawer()
@@ -34,28 +49,16 @@ void PlotsDrawer::drawPlot()
 {
     if (priceData->isEmpty() || timeData->isEmpty()) return;
 
-    //рисуем горизонтальную линию последней цены
-    finPlot->infLine->point1->setCoords(0, priceData->last());
-    finPlot->infLine->point2->setCoords(startTime*100, priceData->last());
-
-    // update the vertical axis tag positions and texts to match the rightmost data point of the graphs:
-    finPlot->customPlotFinancial->xAxis->rescale();
-    finPlot->candlesticks->rescaleValueAxis(false, true);
-    finPlot->customPlotFinancial->xAxis->setRange(finPlot->customPlotFinancial->xAxis->range().upper, 100, Qt::AlignRight);
-
-    // update the vertical axis tag positions and texts to match the rightmost data point of the graphs:
-    finPlot->mTag1->updatePosition(priceData->last());
-    finPlot->mTag1->setText(QString::number(priceData->last(), 'f', 2));
-
-    if (autoRescale)
-        finPlot->customPlotFinancial->rescaleAxes();
+    finPlot->customPlotFinancial->rescaleAxes(true);
+    volPlot->customPlotVolume->rescaleAxes(true);
 
     finPlot->customPlotFinancial->replot();
+
+    //делаем так, чтоб график объемов занимал 20%
+    QCPRange autoRange = volPlot->customPlotVolume->yAxis2->range();
+    volPlot->customPlotVolume->yAxis2->setRange(autoRange.lower, autoRange.upper * 5);
     volPlot->customPlotVolume->replot();
-
-    connectSignals();
 }
-
 
 
 void PlotsDrawer::clearSecurityData()
@@ -152,102 +155,50 @@ void PlotsDrawer::collectCandleInfo()
     }
 }
 
-void PlotsDrawer::syncPlotRanges()
+bool PlotsDrawer::eventFilter(QObject *obj, QEvent *event)
 {
-    if (m_rangeChangedLock)
-        return;
+    // Перехватываем события колеса мыши
+    if (event->type() == QEvent::Wheel)
+    {
+        QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
 
-    m_rangeChangedLock = true;
+        // Проверяем, что событие от свечного графика
+        if (obj == finPlot->customPlotFinancial)
+        {
+            // Получаем текущий диапазон X
+            QCPRange xRange = finPlot->customPlotFinancial->xAxis->range();
+            double center = xRange.center();
+            double range = xRange.size();
 
-    // Синхронизируем диапазоны осей X
-    volPlot->customPlotVolume->xAxis->setRange(finPlot->customPlotFinancial->xAxis->range());
+            // Коэффициент масштабирования
+            double scaleFactor = 1.15;
 
-    m_rangeChangedLock = false;
-}
+            // Определяем направление прокрутки
+            if (wheelEvent->angleDelta().y() < 0)
+            {
+                // Прокрутка вверх - уменьшаем масштаб (показываем больше)
+                range *= scaleFactor;
+            }
+            else
+            {
+                // Прокрутка вниз - увеличиваем масштаб (показываем меньше)
+                range /= scaleFactor;
+            }
 
-void PlotsDrawer::connectSignals()
-{
-    connect(finPlot->customPlotFinancial->xAxis, SIGNAL(rangeChanged(QCPRange)),
-            this, SLOT(onHorizontalRangeChanged(QCPRange)));
-    connect(volPlot->customPlotVolume->xAxis, SIGNAL(rangeChanged(QCPRange)),
-            this, SLOT(onHorizontalRangeChanged(QCPRange)));
+            // Устанавливаем новый диапазон X
+            QCPRange newRange(center - range / 2.0, center + range / 2.0);
 
-    // Обработка мыши для синхронизации
-    connect(finPlot->customPlotFinancial, SIGNAL(mousePress(QMouseEvent*)),
-            this, SLOT(onMousePress()));
-    connect(finPlot->customPlotFinancial, SIGNAL(mouseMove(QMouseEvent*)),
-            this, SLOT(onMouseMove()));
-    connect(finPlot->customPlotFinancial, SIGNAL(mouseRelease(QMouseEvent*)),
-            this, SLOT(onMouseRelease()));
-    connect(volPlot->customPlotVolume, SIGNAL(mousePress(QMouseEvent*)),
-            this, SLOT(onMousePress()));
-    connect(volPlot->customPlotVolume, SIGNAL(mouseMove(QMouseEvent*)),
-            this, SLOT(onMouseMove()));
-    connect(volPlot->customPlotVolume, SIGNAL(mouseRelease(QMouseEvent*)),
-            this, SLOT(onMouseRelease()));
+            m_syncing = true;
+            finPlot->customPlotFinancial->xAxis->setRange(newRange);
+            volPlot->customPlotVolume->xAxis->setRange(newRange);
+            finPlot->customPlotFinancial->replot();
+            volPlot->customPlotVolume->replot();
+            m_syncing = false;
 
-    // Синхронизация колесика мыши
-    connect(finPlot->customPlotFinancial, SIGNAL(mouseWheel(QWheelEvent*)),
-            this, SLOT(onMouseWheel()));
-    connect(volPlot->customPlotVolume, SIGNAL(mouseWheel(QWheelEvent*)),
-            this, SLOT(onMouseWheel()));
-}
-
-
-
-void PlotsDrawer::onHorizontalRangeChanged(const QCPRange &newRange)
-{
-    if (m_rangeChangedLock)
-        return;
-
-    m_rangeChangedLock = true;
-
-    // Синхронизируем ось X обоих графиков
-    finPlot->customPlotFinancial->xAxis->setRange(newRange);
-    volPlot->customPlotVolume->xAxis->setRange(newRange);
-
-    // Перерисовываем оба графика
-    finPlot->customPlotFinancial->replot();
-    volPlot->customPlotVolume->replot();
-
-    m_rangeChangedLock = false;
-}
-
-void PlotsDrawer::onVerticalRangeChanged(const QCPRange &newRange)
-{
-    if (m_rangeChangedLock)
-        return;
-
-    m_rangeChangedLock = true;
-
-    // Синхронизируем ось Y финансового графика (опционально)
-    // Можно закомментировать, если не нужна синхронизация по вертикали
-    // m_financialPlot->yAxis->setRange(newRange);
-
-    m_rangeChangedLock = false;
-}
-
-void PlotsDrawer::onMouseWheel()
-{
-    syncPlotRanges();
-}
-
-void PlotsDrawer::onMousePress()
-{
-    m_dragging = true;
-    m_lastDragPos = QCursor::pos();
-}
-
-void PlotsDrawer::onMouseMove()
-{
-    if (m_dragging) {
-        syncPlotRanges();
+            return true;  // Событие обработано
+        }
     }
-}
-
-void PlotsDrawer::onMouseRelease()
-{
-    m_dragging = false;
+    return false;
 }
 
 
@@ -265,21 +216,6 @@ void PlotsDrawer::isMouseOverBar(double x_value)
 }
 
 
-void PlotsDrawer::mouseMoved(QMouseEvent *e)
-{
-
-}
-
-void PlotsDrawer::mousePressed(QMouseEvent *e)
-{
-
-}
-
-void PlotsDrawer::mouseReleased(QMouseEvent *e)
-{
-
-}
-
 void PlotsDrawer::redrawPlotByBinSizeChange_slot(uint bs)
 {
     binSize = bs;
@@ -290,11 +226,6 @@ void PlotsDrawer::redrawPlotByBinSizeChange_slot(uint bs)
     volPlot->setCandlesData();
     volPlot->volumeBarsPositive->setWidth(binSize*0.8);
     volPlot->volumeBarsNegative->setWidth(binSize*0.8);
-
-    finPlot->customPlotFinancial->rescaleAxes(true);
-    volPlot->customPlotVolume->rescaleAxes(true);
-    finPlot->customPlotFinancial->replot();
-    volPlot->customPlotVolume->replot();
 
     volPlot->volumeBarsNegative->data().clear();
     volPlot->volumeBarsPositive->data().clear();
@@ -313,5 +244,7 @@ void PlotsDrawer::redrawPlotByBinSizeChange_slot(uint bs)
 
     volPlot->volumeBarsNegative->setWidth(binSize);
     volPlot->volumeBarsPositive->setWidth(binSize);
+
+    drawPlot();
 }
 

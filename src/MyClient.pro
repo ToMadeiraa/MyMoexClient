@@ -6,12 +6,8 @@ CONFIG += c++17
 
 QMAKE_CXXFLAGS += -Wall -Wextra -O0 -g
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
 DEFINES += QCUSTOMPLOT_USE_LIBRARY
-INCLUDEPATH += C:/Users/User/Documents/PetProjects/MyMoexClient/include
+INCLUDEPATH += C:/Users/okhot/Documents/PetProjects/MyMoexClient/src/include
 CONFIG(debug, debug|release) {
     # Режим Debug
     win32:QCP_LIB_NAME = qcustomplotd2
@@ -21,13 +17,12 @@ CONFIG(debug, debug|release) {
     win32:QCP_LIB_NAME = qcustomplot2
     else:QCP_LIB_NAME = qcustomplot
 }
-LIBS += -L"C:/Users/User/Documents/PetProjects/MyMoexClient/include" -l$$QCP_LIB_NAME
+LIBS += -L"C:/Users/okhot/Documents/PetProjects/MyMoexClient/src/include" -l$$QCP_LIB_NAME
 
 SOURCES += \
     AxisTag.cpp \
     GuiElements/mycomboboxbinsize.cpp \
     GuiElements/mycomboboxsecurity.cpp \
-    PlotDrawer.cpp \
     SqlSelector.cpp \
     SqlUpdater.cpp \
     Widgets/financialplot.cpp \
@@ -43,7 +38,6 @@ HEADERS += \
     AxisTag.h \
     GuiElements/mycomboboxbinsize.h \
     GuiElements/mycomboboxsecurity.h \
-    PlotDrawer.h \
     SqlSelector.h \
     SqlUpdater.h \
     Widgets/financialplot.h \
@@ -54,9 +48,8 @@ HEADERS += \
     plotsdrawer.h \
     topwidget.h
 
+
 FORMS += \
-    Widgets/financialplot.ui \
-    Widgets/volumeplot.ui \
     client.ui \
     leftwidget.ui \
     plotsdrawer.ui \

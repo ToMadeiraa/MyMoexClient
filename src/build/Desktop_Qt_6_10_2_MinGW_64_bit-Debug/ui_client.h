@@ -55,6 +55,12 @@ public:
 
         PlotsWidget = new PlotsDrawer(centralwidget);
         PlotsWidget->setObjectName("PlotsWidget");
+        QSizePolicy sizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(PlotsWidget->sizePolicy().hasHeightForWidth());
+        PlotsWidget->setSizePolicy(sizePolicy);
+        PlotsWidget->setMinimumSize(QSize(800, 600));
 
         gridLayout->addWidget(PlotsWidget, 1, 1, 2, 2);
 

@@ -34,32 +34,20 @@ public:
     void isMouseOverBar(double x_value);
     void clearSecurityData();
     void collectCandleInfo();
+    bool m_syncing;
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
     Ui::PlotsDrawer *ui;
-    bool m_dragging;
-    bool m_rangeChangedLock;
-    QPoint m_lastDragPos;
-
-    void connectSignals();
-    void syncPlotRanges();
 
 public slots:
-    void mouseMoved(QMouseEvent *e);
-    void mousePressed(QMouseEvent *e);
-    void mouseReleased(QMouseEvent *e);
     void redrawPlotByBinSizeChange_slot(uint bs);
 
 public slots:
     void drawPlot();
-
-private slots:
-    void onHorizontalRangeChanged(const QCPRange &newRange);
-    void onVerticalRangeChanged(const QCPRange &newRange);
-    void onMouseWheel();
-    void onMousePress();
-    void onMouseMove();
-    void onMouseRelease();
+    void onCandleXAxisChanged(const QCPRange &range);
 
 };
 
