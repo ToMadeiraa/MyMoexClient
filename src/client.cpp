@@ -66,7 +66,6 @@ Client::Client(QWidget *parent)
     plotsDrawer->timeData = &this->timeData;
     plotsDrawer->quantityData = &this->quantityData;
     plotsDrawer->buysellData = &this->buysellData;
-    plotsDrawer->autoRescale = true;
 
     //ui
     getTopWidget()->getComboBoxSecurities()->fillComboBox(sqlUpdater->SecID_Numbers);
@@ -109,8 +108,8 @@ void Client::redrawPlotBySecurityChange_slot()
     plotsDrawer->clearSecurityData();
     sqlSelector->selectData(currentSec);
     plotsDrawer->collectCandleInfo();
-    plotsDrawer->finPlot->setCandlesData();
-    plotsDrawer->volPlot->setCandlesData();
+    plotsDrawer->finWidget->setCandlesData();
+    plotsDrawer->volWidget->setCandlesData();
 
     plotsDrawer->drawPlot();
 }

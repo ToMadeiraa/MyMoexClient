@@ -1,9 +1,8 @@
-#ifndef FINANCIALPLOT_H
-#define FINANCIALPLOT_H
+#ifndef FINANCIALWIDGET_H
+#define FINANCIALWIDGET_H
 
 #include <QWidget>
 #include "../qcustomplot.h"
-#include "../AxisTag.h"
 
 class Candle
 {
@@ -17,15 +16,15 @@ public:
     double volume = 0;
 };
 
-class FinancialPlot : public QWidget
+class FinancialWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit FinancialPlot(QWidget *parent = nullptr);
-    ~FinancialPlot();
+    explicit FinancialWidget(QWidget *parent = nullptr);
+    ~FinancialWidget();
 
-    QCustomPlot* customPlotFinancial;
+    QCustomPlot* financialPlot;
     QCPFinancial *candlesticks;
 
     QVector<double> open;
@@ -40,4 +39,4 @@ public:
     void initPlot(double binSize, double startTime);
 };
 
-#endif // FINANCIALPLOT_H
+#endif // FINANCIALWIDGET_H

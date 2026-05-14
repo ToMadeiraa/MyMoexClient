@@ -19,7 +19,6 @@ public:
 
     MyComboBoxSecurity *getComboBoxSecurities();
     MyComboBoxBinSize *getComboBoxBinSize();
-    QComboBox* getComboBoxIndicators();
 
 private:
     Ui::TopWidget *ui;

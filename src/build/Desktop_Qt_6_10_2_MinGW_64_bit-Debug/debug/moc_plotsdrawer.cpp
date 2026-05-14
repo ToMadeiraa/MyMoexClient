@@ -47,7 +47,11 @@ template <> constexpr inline auto PlotsDrawer::qt_create_metaobjectdata<qt_meta_
         "drawPlot",
         "onCandleXAxisChanged",
         "QCPRange",
-        "range"
+        "range",
+        "onCandleYAxisChanged",
+        "onXAxisPlotRangeChanged",
+        "syncAxesToCandleX",
+        "syncAxesToCandleY"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -59,6 +63,22 @@ template <> constexpr inline auto PlotsDrawer::qt_create_metaobjectdata<qt_meta_
         QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPublic, QMetaType::Void),
         // Slot 'onCandleXAxisChanged'
         QtMocHelpers::SlotData<void(const QCPRange &)>(5, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { 0x80000000 | 6, 7 },
+        }}),
+        // Slot 'onCandleYAxisChanged'
+        QtMocHelpers::SlotData<void(const QCPRange &)>(8, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { 0x80000000 | 6, 7 },
+        }}),
+        // Slot 'onXAxisPlotRangeChanged'
+        QtMocHelpers::SlotData<void(const QCPRange &)>(9, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { 0x80000000 | 6, 7 },
+        }}),
+        // Slot 'syncAxesToCandleX'
+        QtMocHelpers::SlotData<void(const QCPRange &)>(10, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { 0x80000000 | 6, 7 },
+        }}),
+        // Slot 'syncAxesToCandleY'
+        QtMocHelpers::SlotData<void(const QCPRange &)>(11, 2, QMC::AccessPublic, QMetaType::Void, {{
             { 0x80000000 | 6, 7 },
         }}),
     };
@@ -87,6 +107,10 @@ void PlotsDrawer::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 0: _t->redrawPlotByBinSizeChange_slot((*reinterpret_cast<std::add_pointer_t<uint>>(_a[1]))); break;
         case 1: _t->drawPlot(); break;
         case 2: _t->onCandleXAxisChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
+        case 3: _t->onCandleYAxisChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
+        case 4: _t->onXAxisPlotRangeChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
+        case 5: _t->syncAxesToCandleX((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
+        case 6: _t->syncAxesToCandleY((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
         default: ;
         }
     }
@@ -111,14 +135,14 @@ int PlotsDrawer::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 7;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 7)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 3;
+        _id -= 7;
     }
     return _id;
 }

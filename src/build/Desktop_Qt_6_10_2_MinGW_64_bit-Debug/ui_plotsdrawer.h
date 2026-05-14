@@ -11,7 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -19,18 +19,27 @@ QT_BEGIN_NAMESPACE
 class Ui_PlotsDrawer
 {
 public:
-    QVBoxLayout *verticalLayout;
+    QGridLayout *gridLayout;
+    QGridLayout *gridPlotsLayout;
+    QWidget *y2AxisWidget;
     QWidget *PlotsWidget;
+    QWidget *xAxisWidget;
 
     void setupUi(QWidget *PlotsDrawer)
     {
         if (PlotsDrawer->objectName().isEmpty())
             PlotsDrawer->setObjectName("PlotsDrawer");
-        PlotsDrawer->resize(736, 548);
-        verticalLayout = new QVBoxLayout(PlotsDrawer);
-        verticalLayout->setSpacing(0);
-        verticalLayout->setObjectName("verticalLayout");
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        PlotsDrawer->resize(800, 600);
+        gridLayout = new QGridLayout(PlotsDrawer);
+        gridLayout->setObjectName("gridLayout");
+        gridLayout->setContentsMargins(0, 0, 0, 0);
+        gridPlotsLayout = new QGridLayout();
+        gridPlotsLayout->setObjectName("gridPlotsLayout");
+        y2AxisWidget = new QWidget(PlotsDrawer);
+        y2AxisWidget->setObjectName("y2AxisWidget");
+
+        gridPlotsLayout->addWidget(y2AxisWidget, 0, 1, 1, 1);
+
         PlotsWidget = new QWidget(PlotsDrawer);
         PlotsWidget->setObjectName("PlotsWidget");
         QSizePolicy sizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
@@ -38,9 +47,16 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(PlotsWidget->sizePolicy().hasHeightForWidth());
         PlotsWidget->setSizePolicy(sizePolicy);
-        PlotsWidget->setMinimumSize(QSize(800, 600));
 
-        verticalLayout->addWidget(PlotsWidget);
+        gridPlotsLayout->addWidget(PlotsWidget, 0, 0, 1, 1);
+
+        xAxisWidget = new QWidget(PlotsDrawer);
+        xAxisWidget->setObjectName("xAxisWidget");
+
+        gridPlotsLayout->addWidget(xAxisWidget, 1, 0, 1, 1);
+
+
+        gridLayout->addLayout(gridPlotsLayout, 0, 0, 1, 1);
 
 
         retranslateUi(PlotsDrawer);

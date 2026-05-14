@@ -22,8 +22,3 @@ MyComboBoxBinSize *TopWidget::getComboBoxBinSize()
 {
     return ui->comboBoxBinSize;
 }
-
-QComboBox *TopWidget::getComboBoxIndicators()
-{
-    return ui->comboBoxIndicators;
-}

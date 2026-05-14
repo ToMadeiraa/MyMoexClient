@@ -20,13 +20,12 @@ CONFIG(debug, debug|release) {
 LIBS += -L"C:/Users/okhot/Documents/PetProjects/MyMoexClient/src/include" -l$$QCP_LIB_NAME
 
 SOURCES += \
-    AxisTag.cpp \
     GuiElements/mycomboboxbinsize.cpp \
     GuiElements/mycomboboxsecurity.cpp \
     SqlSelector.cpp \
     SqlUpdater.cpp \
-    Widgets/financialplot.cpp \
-    Widgets/volumeplot.cpp \
+    Widgets/financialwidget.cpp \
+    Widgets/volumewidget.cpp \
     leftwidget.cpp \
     main.cpp \
     client.cpp \
@@ -35,13 +34,12 @@ SOURCES += \
     topwidget.cpp
 
 HEADERS += \
-    AxisTag.h \
     GuiElements/mycomboboxbinsize.h \
     GuiElements/mycomboboxsecurity.h \
     SqlSelector.h \
     SqlUpdater.h \
-    Widgets/financialplot.h \
-    Widgets/volumeplot.h \
+    Widgets/financialwidget.h \
+    Widgets/volumewidget.h \
     client.h \
     leftwidget.h \
     GuiElements/mypushbutton.h \
