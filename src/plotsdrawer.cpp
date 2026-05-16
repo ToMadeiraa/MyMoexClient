@@ -63,16 +63,23 @@ void PlotsDrawer::onCandleXAxisChanged(const QCPRange &range)
     if (m_syncing) return;
 
     m_syncing = true;
-    // Обновляем только X ось volume plot
+
     volWidget->volumePlot->xAxis->setRange(range);
     volWidget->volumePlot->replot();
+
     m_syncing = false;
 }
 
 void PlotsDrawer::onCandleYAxisChanged(const QCPRange &range)
 {
-    Q_UNUSED(range);
-    // Обработка при необходимости
+    // if (m_syncing) return;
+
+    // m_syncing = true;
+
+    // volWidget->volumePlot->yAxis2->setRange(range);
+    // volWidget->volumePlot->replot();
+
+    // m_syncing = false;
 }
 
 void PlotsDrawer::onXAxisPlotRangeChanged(const QCPRange &range)
@@ -87,6 +94,19 @@ void PlotsDrawer::onXAxisPlotRangeChanged(const QCPRange &range)
 
     finWidget->financialPlot->replot();
     volWidget->volumePlot->replot();
+
+    m_syncing = false;
+}
+
+void PlotsDrawer::onYAxisPlotRangeChanged(const QCPRange &range)
+{
+    if (m_syncing) return;
+
+    m_syncing = true;
+
+    // Синхронизируем все графики с новым диапазоном X
+    finWidget->financialPlot->yAxis2->setRange(range);
+    finWidget->financialPlot->replot();
 
     m_syncing = false;
 }
@@ -294,9 +314,53 @@ bool PlotsDrawer::eventFilter(QObject *obj, QEvent *event)
 
             return true;
         }
+
+
+        // Обработка колеса мыши на yAxisPlot
+        if (obj == m_yAxisPlot)
+        {
+            // Получаем текущий диапазон X с оси X plot
+            QCPRange yRange = m_yAxisPlot->yAxis2->range();
+            double center = yRange.center();
+            double range = yRange.size();
+
+            double scaleFactor = 1.15;
+
+            if (wheelEvent->angleDelta().y() > 0)
+            {
+                range *= scaleFactor;  // Zoom out
+            }
+            else
+            {
+                range /= scaleFactor;  // Zoom in
+            }
+
+            QCPRange newRange(center - range / 2.0, center + range / 2.0);
+
+            m_syncing = true;
+
+            // Обновляем все связанные графики
+            m_yAxisPlot->yAxis2->setRange(newRange);
+            finWidget->financialPlot->yAxis2->setRange(newRange);
+
+            m_yAxisPlot->replot();
+            finWidget->financialPlot->replot();
+
+            m_syncing = false;
+
+            return true;
+        }
     }
 
-
+    else if (event->type() == QEvent::MouseButtonPress)
+    {
+        if (obj == finWidget->financialPlot)
+            qDebug() << "aszxczxczxc";
+        else if (obj == m_xAxisPlot)
+            qDebug() << "zzzzzzzzzzzzzzzzzzz";
+        else if (obj == m_yAxisPlot)
+            qDebug() << "xxxxxxxxxxxxxxxxxx";
+    }
 
      return false;
 }
@@ -341,13 +405,18 @@ void PlotsDrawer::createPlotConnections()
             QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
             this, &PlotsDrawer::onCandleXAxisChanged);
 
+    // Синхронизация volume plot с candle plot по Y
+    connect(finWidget->financialPlot->yAxis2,
+            QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
+            this, &PlotsDrawer::onCandleYAxisChanged);
+
     // Синхронизация оси X основного графика с осевым plot'ом
     connect(finWidget->financialPlot->xAxis,
             QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
             this, &PlotsDrawer::syncAxesToCandleX);
 
     // Синхронизация оси Y основного графика с осевым plot'ом
-    connect(finWidget->financialPlot->yAxis,
+    connect(finWidget->financialPlot->yAxis2,
             QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
             this, &PlotsDrawer::syncAxesToCandleY);
 }
@@ -357,8 +426,6 @@ void PlotsDrawer::setupAxisPlots()
     // === X AXIS PLOT (снизу) ===
     m_xAxisPlot = new QCustomPlot(ui->xAxisWidget);
     m_xAxisPlot->setAttribute(Qt::WA_TranslucentBackground);
-    // m_xAxisPlot->setGeometry(0, WINDOW_HEIGHT - X_AXIS_HEIGHT,
-    //                          WINDOW_WIDTH - Y_AXIS_WIDTH, X_AXIS_HEIGHT);
     m_xAxisPlot->setFixedSize(WINDOW_WIDTH, X_AXIS_HEIGHT);
 
     m_xAxisPlot->setBackground(QBrush(QColor(0, 0, 0, 80)));  // Полупрозрачный фон
@@ -401,6 +468,8 @@ void PlotsDrawer::setupAxisPlots()
     m_xAxisPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     m_xAxisPlot->axisRect()->setRangeDrag(Qt::Horizontal);
     m_xAxisPlot->axisRect()->setRangeZoom(Qt::Horizontal);
+    m_xAxisPlot->axisRect()->setRangeDragAxes(m_xAxisPlot->xAxis, nullptr);
+    m_xAxisPlot->axisRect()->setRangeZoomAxes(m_xAxisPlot->xAxis, nullptr);
 
     // Добавляем обработку колеса мыши для оси X
     connect(m_xAxisPlot->xAxis,
@@ -416,23 +485,23 @@ void PlotsDrawer::setupAxisPlots()
     m_yAxisPlot->setOpenGl(false);
 
     // Настройка оси Y (справа)
-    m_yAxis = m_yAxisPlot->yAxis2;
-    m_yAxis->setVisible(true);
-    m_yAxis->setTicks(true);
-    m_yAxis->setTickLabels(true);
-    m_yAxis->setSubTicks(true);
+    m_yAxis2 = m_yAxisPlot->yAxis2;
+    m_yAxis2->setVisible(true);
+    m_yAxis2->setTicks(true);
+    m_yAxis2->setTickLabels(true);
+    m_yAxis2->setSubTicks(true);
 
     // Внешний вид оси Y
-    m_yAxis->setBasePen(QPen(QColor(200, 200, 200, 220), 2));
-    m_yAxis->setTickPen(QPen(QColor(200, 200, 200, 200), 1));
-    m_yAxis->setSubTickPen(QPen(QColor(200, 200, 200, 150), 1));
-    m_yAxis->setTickLabelColor(QColor(220, 220, 220, 230));
+    m_yAxis2->setBasePen(QPen(QColor(200, 200, 200, 220), 2));
+    m_yAxis2->setTickPen(QPen(QColor(200, 200, 200, 200), 1));
+    m_yAxis2->setSubTickPen(QPen(QColor(200, 200, 200, 150), 1));
+    m_yAxis2->setTickLabelColor(QColor(220, 220, 220, 230));
 
     QFont yFont;
     yFont.setPointSize(8);
-    m_yAxis->setTickLabelFont(yFont);
-    m_yAxis->setNumberFormat("f");
-    m_yAxis->setNumberPrecision(2);
+    m_yAxis2->setTickLabelFont(yFont);
+    m_yAxis2->setNumberFormat("f");
+    m_yAxis2->setNumberPrecision(2);
 
     // Скрываем все остальные оси
     m_yAxisPlot->xAxis->setVisible(false);
@@ -443,11 +512,25 @@ void PlotsDrawer::setupAxisPlots()
     m_yAxisPlot->axisRect()->setAutoMargins(QCP::msRight);
     m_yAxisPlot->axisRect()->setMargins(QMargins(0, 0, 0, 0));
 
-    m_yAxisPlot->setInteractions(QCP::iNone);  // Отключаем взаимодействие
+    // Включаем взаимодействие для оси Y (только вертикальная)
+    m_yAxisPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    m_yAxisPlot->axisRect()->setRangeDrag(Qt::Vertical);
+    m_yAxisPlot->axisRect()->setRangeZoom(Qt::Vertical);
+    m_yAxisPlot->axisRect()->setRangeDragAxes(nullptr, m_yAxisPlot->yAxis2);
+    m_yAxisPlot->axisRect()->setRangeZoomAxes(nullptr, m_yAxisPlot->yAxis2);
+
+    // Добавляем обработку колеса мыши для оси Y
+    connect(m_yAxisPlot->yAxis2,
+            QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
+            this, &PlotsDrawer::onYAxisPlotRangeChanged);
 
     // Поднимаем оси наверх
     m_xAxisPlot->raise();
     m_yAxisPlot->raise();
+
+    // Устанавливаем фильтры событий
+    m_xAxisPlot->installEventFilter(this);
+    m_yAxisPlot->installEventFilter(this);
 }
 
 

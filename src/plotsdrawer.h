@@ -32,7 +32,7 @@ public:
     QCustomPlot *m_xAxisPlot;         // Отдельный plot для оси X
     QCustomPlot *m_yAxisPlot;         // Отдельный plot для оси Y
     QCPAxis *m_xAxis;                 // Ось X на отдельном plot
-    QCPAxis *m_yAxis;                 // Ось Y на отдельном plot
+    QCPAxis *m_yAxis2;                 // Ось Y на отдельном plot
 
     void isMouseOverBar(double x_value);
     void clearSecurityData();
@@ -62,6 +62,7 @@ public slots:
     void onCandleXAxisChanged(const QCPRange &range);
     void onCandleYAxisChanged(const QCPRange &range);
     void onXAxisPlotRangeChanged(const QCPRange &range);
+    void onYAxisPlotRangeChanged(const QCPRange &range);
     void syncAxesToCandleX(const QCPRange &range);
     void syncAxesToCandleY(const QCPRange &range);
 

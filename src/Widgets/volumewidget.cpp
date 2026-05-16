@@ -18,9 +18,6 @@ void VolumeWidget::setCandlesData()
 
 void VolumeWidget::initPlot(double binSize, double startTime)
 {
-    // customPlotVolume->setFixedSize(800-70, 600-40);
-    // customPlotVolume->setGeometry(0, 0, 800-70, 600-40);
-    // customPlotVolume->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     volumePlot->setBackground(QBrush(Qt::transparent));
     volumePlot->axisRect()->setBackground(QBrush(Qt::transparent));
     volumePlot->setOpenGl(false);

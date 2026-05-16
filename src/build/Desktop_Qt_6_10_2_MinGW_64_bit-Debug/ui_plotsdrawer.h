@@ -37,6 +37,7 @@ public:
         gridPlotsLayout->setObjectName("gridPlotsLayout");
         y2AxisWidget = new QWidget(PlotsDrawer);
         y2AxisWidget->setObjectName("y2AxisWidget");
+        y2AxisWidget->setMinimumSize(QSize(70, 0));
 
         gridPlotsLayout->addWidget(y2AxisWidget, 0, 1, 1, 1);
 
@@ -52,6 +53,7 @@ public:
 
         xAxisWidget = new QWidget(PlotsDrawer);
         xAxisWidget->setObjectName("xAxisWidget");
+        xAxisWidget->setMinimumSize(QSize(0, 40));
 
         gridPlotsLayout->addWidget(xAxisWidget, 1, 0, 1, 1);
 

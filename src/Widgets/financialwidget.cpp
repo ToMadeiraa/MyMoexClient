@@ -31,10 +31,13 @@ void FinancialWidget::initPlot(double binSize, double startTime)
     financialPlot->axisRect()->setRangeDrag(Qt::Horizontal | Qt::Vertical);
     financialPlot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
 
+    financialPlot->axisRect()->setRangeDragAxes(financialPlot->xAxis, financialPlot->yAxis2);
+    financialPlot->axisRect()->setRangeZoomAxes(financialPlot->xAxis, nullptr);  // Только X для зума
+
     // Поднимаем свечной график наверх
     financialPlot->raise();
 
-    candlesticks = new QCPFinancial(financialPlot->xAxis, financialPlot->yAxis);
+    candlesticks = new QCPFinancial(financialPlot->xAxis, financialPlot->yAxis2);
 
     candlesticks->setName("Candles");
     candlesticks->setChartStyle(QCPFinancial::csCandlestick);
