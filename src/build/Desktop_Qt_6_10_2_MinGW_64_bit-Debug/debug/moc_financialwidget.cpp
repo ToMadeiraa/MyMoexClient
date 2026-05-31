@@ -33,14 +33,14 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 QT_WARNING_DISABLE_GCC("-Wuseless-cast")
 namespace {
-struct qt_meta_tag_ZN15FinancialWidgetE_t {};
+struct qt_meta_tag_ZN13CandlesWidgetE_t {};
 } // unnamed namespace
 
-template <> constexpr inline auto FinancialWidget::qt_create_metaobjectdata<qt_meta_tag_ZN15FinancialWidgetE_t>()
+template <> constexpr inline auto CandlesWidget::qt_create_metaobjectdata<qt_meta_tag_ZN13CandlesWidgetE_t>()
 {
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
-        "FinancialWidget"
+        "CandlesWidget"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -49,42 +49,42 @@ template <> constexpr inline auto FinancialWidget::qt_create_metaobjectdata<qt_m
     };
     QtMocHelpers::UintData qt_enums {
     };
-    return QtMocHelpers::metaObjectData<FinancialWidget, qt_meta_tag_ZN15FinancialWidgetE_t>(QMC::MetaObjectFlag{}, qt_stringData,
+    return QtMocHelpers::metaObjectData<CandlesWidget, qt_meta_tag_ZN13CandlesWidgetE_t>(QMC::MetaObjectFlag{}, qt_stringData,
             qt_methods, qt_properties, qt_enums);
 }
-Q_CONSTINIT const QMetaObject FinancialWidget::staticMetaObject = { {
+Q_CONSTINIT const QMetaObject CandlesWidget::staticMetaObject = { {
     QMetaObject::SuperData::link<QWidget::staticMetaObject>(),
-    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN15FinancialWidgetE_t>.stringdata,
-    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN15FinancialWidgetE_t>.data,
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN13CandlesWidgetE_t>.stringdata,
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN13CandlesWidgetE_t>.data,
     qt_static_metacall,
     nullptr,
-    qt_staticMetaObjectRelocatingContent<qt_meta_tag_ZN15FinancialWidgetE_t>.metaTypes,
+    qt_staticMetaObjectRelocatingContent<qt_meta_tag_ZN13CandlesWidgetE_t>.metaTypes,
     nullptr
 } };
 
-void FinancialWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void CandlesWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
-    auto *_t = static_cast<FinancialWidget *>(_o);
+    auto *_t = static_cast<CandlesWidget *>(_o);
     (void)_t;
     (void)_c;
     (void)_id;
     (void)_a;
 }
 
-const QMetaObject *FinancialWidget::metaObject() const
+const QMetaObject *CandlesWidget::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *FinancialWidget::qt_metacast(const char *_clname)
+void *CandlesWidget::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_staticMetaObjectStaticContent<qt_meta_tag_ZN15FinancialWidgetE_t>.strings))
+    if (!strcmp(_clname, qt_staticMetaObjectStaticContent<qt_meta_tag_ZN13CandlesWidgetE_t>.strings))
         return static_cast<void*>(this);
     return QWidget::qt_metacast(_clname);
 }
 
-int FinancialWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int CandlesWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QWidget::qt_metacall(_c, _id, _a);
     return _id;

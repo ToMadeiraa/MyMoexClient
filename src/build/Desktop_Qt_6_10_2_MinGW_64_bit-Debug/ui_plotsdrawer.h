@@ -12,6 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -22,8 +23,16 @@ public:
     QGridLayout *gridLayout;
     QGridLayout *gridPlotsLayout;
     QWidget *y2AxisWidget;
-    QWidget *PlotsWidget;
     QWidget *xAxisWidget;
+    QWidget *PlotsWidget;
+    QGridLayout *labelsLayout;
+    QLabel *labelChange;
+    QLabel *labelHigh;
+    QLabel *labelVerticalVolume;
+    QLabel *labelOpen;
+    QLabel *labelClose;
+    QLabel *labelLow;
+    QLabel *labelHorizontalVolume;
 
     void setupUi(QWidget *PlotsDrawer)
     {
@@ -31,6 +40,7 @@ public:
             PlotsDrawer->setObjectName("PlotsDrawer");
         PlotsDrawer->resize(800, 600);
         gridLayout = new QGridLayout(PlotsDrawer);
+        gridLayout->setSpacing(0);
         gridLayout->setObjectName("gridLayout");
         gridLayout->setContentsMargins(0, 0, 0, 0);
         gridPlotsLayout = new QGridLayout();
@@ -39,7 +49,13 @@ public:
         y2AxisWidget->setObjectName("y2AxisWidget");
         y2AxisWidget->setMinimumSize(QSize(70, 0));
 
-        gridPlotsLayout->addWidget(y2AxisWidget, 0, 1, 1, 1);
+        gridPlotsLayout->addWidget(y2AxisWidget, 1, 1, 1, 1);
+
+        xAxisWidget = new QWidget(PlotsDrawer);
+        xAxisWidget->setObjectName("xAxisWidget");
+        xAxisWidget->setMinimumSize(QSize(0, 40));
+
+        gridPlotsLayout->addWidget(xAxisWidget, 2, 0, 1, 1);
 
         PlotsWidget = new QWidget(PlotsDrawer);
         PlotsWidget->setObjectName("PlotsWidget");
@@ -49,13 +65,47 @@ public:
         sizePolicy.setHeightForWidth(PlotsWidget->sizePolicy().hasHeightForWidth());
         PlotsWidget->setSizePolicy(sizePolicy);
 
-        gridPlotsLayout->addWidget(PlotsWidget, 0, 0, 1, 1);
+        gridPlotsLayout->addWidget(PlotsWidget, 1, 0, 1, 1);
 
-        xAxisWidget = new QWidget(PlotsDrawer);
-        xAxisWidget->setObjectName("xAxisWidget");
-        xAxisWidget->setMinimumSize(QSize(0, 40));
+        labelsLayout = new QGridLayout();
+        labelsLayout->setObjectName("labelsLayout");
+        labelChange = new QLabel(PlotsDrawer);
+        labelChange->setObjectName("labelChange");
 
-        gridPlotsLayout->addWidget(xAxisWidget, 1, 0, 1, 1);
+        labelsLayout->addWidget(labelChange, 0, 4, 1, 1);
+
+        labelHigh = new QLabel(PlotsDrawer);
+        labelHigh->setObjectName("labelHigh");
+
+        labelsLayout->addWidget(labelHigh, 0, 1, 1, 1);
+
+        labelVerticalVolume = new QLabel(PlotsDrawer);
+        labelVerticalVolume->setObjectName("labelVerticalVolume");
+
+        labelsLayout->addWidget(labelVerticalVolume, 0, 5, 1, 1);
+
+        labelOpen = new QLabel(PlotsDrawer);
+        labelOpen->setObjectName("labelOpen");
+
+        labelsLayout->addWidget(labelOpen, 0, 0, 1, 1);
+
+        labelClose = new QLabel(PlotsDrawer);
+        labelClose->setObjectName("labelClose");
+
+        labelsLayout->addWidget(labelClose, 0, 3, 1, 1);
+
+        labelLow = new QLabel(PlotsDrawer);
+        labelLow->setObjectName("labelLow");
+
+        labelsLayout->addWidget(labelLow, 0, 2, 1, 1);
+
+        labelHorizontalVolume = new QLabel(PlotsDrawer);
+        labelHorizontalVolume->setObjectName("labelHorizontalVolume");
+
+        labelsLayout->addWidget(labelHorizontalVolume, 0, 6, 1, 1);
+
+
+        gridPlotsLayout->addLayout(labelsLayout, 0, 0, 1, 1);
 
 
         gridLayout->addLayout(gridPlotsLayout, 0, 0, 1, 1);
@@ -69,6 +119,13 @@ public:
     void retranslateUi(QWidget *PlotsDrawer)
     {
         PlotsDrawer->setWindowTitle(QCoreApplication::translate("PlotsDrawer", "Form", nullptr));
+        labelChange->setText(QCoreApplication::translate("PlotsDrawer", "labelChange", nullptr));
+        labelHigh->setText(QCoreApplication::translate("PlotsDrawer", "labelHigh", nullptr));
+        labelVerticalVolume->setText(QCoreApplication::translate("PlotsDrawer", "labelVerticalVolume", nullptr));
+        labelOpen->setText(QCoreApplication::translate("PlotsDrawer", "labelOpen", nullptr));
+        labelClose->setText(QCoreApplication::translate("PlotsDrawer", "labelClose", nullptr));
+        labelLow->setText(QCoreApplication::translate("PlotsDrawer", "labelLow", nullptr));
+        labelHorizontalVolume->setText(QCoreApplication::translate("PlotsDrawer", "labelHorizontalVolume", nullptr));
     } // retranslateUi
 
 };

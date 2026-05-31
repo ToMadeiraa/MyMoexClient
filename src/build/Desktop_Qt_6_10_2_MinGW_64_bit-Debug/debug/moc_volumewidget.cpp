@@ -33,14 +33,14 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 QT_WARNING_DISABLE_GCC("-Wuseless-cast")
 namespace {
-struct qt_meta_tag_ZN12VolumeWidgetE_t {};
+struct qt_meta_tag_ZN20VerticalVolumeWidgetE_t {};
 } // unnamed namespace
 
-template <> constexpr inline auto VolumeWidget::qt_create_metaobjectdata<qt_meta_tag_ZN12VolumeWidgetE_t>()
+template <> constexpr inline auto VerticalVolumeWidget::qt_create_metaobjectdata<qt_meta_tag_ZN20VerticalVolumeWidgetE_t>()
 {
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
-        "VolumeWidget"
+        "VerticalVolumeWidget"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -49,42 +49,42 @@ template <> constexpr inline auto VolumeWidget::qt_create_metaobjectdata<qt_meta
     };
     QtMocHelpers::UintData qt_enums {
     };
-    return QtMocHelpers::metaObjectData<VolumeWidget, qt_meta_tag_ZN12VolumeWidgetE_t>(QMC::MetaObjectFlag{}, qt_stringData,
+    return QtMocHelpers::metaObjectData<VerticalVolumeWidget, qt_meta_tag_ZN20VerticalVolumeWidgetE_t>(QMC::MetaObjectFlag{}, qt_stringData,
             qt_methods, qt_properties, qt_enums);
 }
-Q_CONSTINIT const QMetaObject VolumeWidget::staticMetaObject = { {
+Q_CONSTINIT const QMetaObject VerticalVolumeWidget::staticMetaObject = { {
     QMetaObject::SuperData::link<QWidget::staticMetaObject>(),
-    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN12VolumeWidgetE_t>.stringdata,
-    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN12VolumeWidgetE_t>.data,
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN20VerticalVolumeWidgetE_t>.stringdata,
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN20VerticalVolumeWidgetE_t>.data,
     qt_static_metacall,
     nullptr,
-    qt_staticMetaObjectRelocatingContent<qt_meta_tag_ZN12VolumeWidgetE_t>.metaTypes,
+    qt_staticMetaObjectRelocatingContent<qt_meta_tag_ZN20VerticalVolumeWidgetE_t>.metaTypes,
     nullptr
 } };
 
-void VolumeWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void VerticalVolumeWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
-    auto *_t = static_cast<VolumeWidget *>(_o);
+    auto *_t = static_cast<VerticalVolumeWidget *>(_o);
     (void)_t;
     (void)_c;
     (void)_id;
     (void)_a;
 }
 
-const QMetaObject *VolumeWidget::metaObject() const
+const QMetaObject *VerticalVolumeWidget::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *VolumeWidget::qt_metacast(const char *_clname)
+void *VerticalVolumeWidget::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_staticMetaObjectStaticContent<qt_meta_tag_ZN12VolumeWidgetE_t>.strings))
+    if (!strcmp(_clname, qt_staticMetaObjectStaticContent<qt_meta_tag_ZN20VerticalVolumeWidgetE_t>.strings))
         return static_cast<void*>(this);
     return QWidget::qt_metacast(_clname);
 }
 
-int VolumeWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int VerticalVolumeWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QWidget::qt_metacall(_c, _id, _a);
     return _id;

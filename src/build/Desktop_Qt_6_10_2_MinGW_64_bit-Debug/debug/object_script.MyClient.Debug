@@ -2,8 +2,11 @@ debug/mycomboboxbinsize.o
 debug/mycomboboxsecurity.o
 debug/SqlSelector.o
 debug/SqlUpdater.o
-debug/financialwidget.o
-debug/volumewidget.o
+debug/candleswidget.o
+debug/horizontalvolumewidget.o
+debug/verticalvolumewidget.o
+debug/xaxiswidget.o
+debug/yaxis2widget.o
 debug/leftwidget.o
 debug/main.o
 debug/client.o
@@ -14,8 +17,11 @@ debug/moc_mycomboboxbinsize.o
 debug/moc_mycomboboxsecurity.o
 debug/moc_SqlSelector.o
 debug/moc_SqlUpdater.o
-debug/moc_financialwidget.o
-debug/moc_volumewidget.o
+debug/moc_candleswidget.o
+debug/moc_horizontalvolumewidget.o
+debug/moc_verticalvolumewidget.o
+debug/moc_xaxiswidget.o
+debug/moc_yaxis2widget.o
 debug/moc_client.o
 debug/moc_leftwidget.o
 debug/moc_mypushbutton.o

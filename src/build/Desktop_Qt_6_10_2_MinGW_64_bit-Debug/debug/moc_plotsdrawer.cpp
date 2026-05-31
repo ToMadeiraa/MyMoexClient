@@ -41,50 +41,52 @@ template <> constexpr inline auto PlotsDrawer::qt_create_metaobjectdata<qt_meta_
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
         "PlotsDrawer",
-        "redrawPlotByBinSizeChange_slot",
-        "",
-        "bs",
         "drawPlot",
+        "",
+        "redrawPlotByBinSizeChange_slot",
+        "bs",
         "onCandleXAxisChanged",
         "QCPRange",
         "range",
-        "onCandleYAxisChanged",
         "onXAxisPlotRangeChanged",
         "onYAxisPlotRangeChanged",
         "syncAxesToCandleX",
-        "syncAxesToCandleY"
+        "syncAxesToCandleY",
+        "onMouseMove",
+        "QMouseEvent*",
+        "event"
     };
 
     QtMocHelpers::UintData qt_methods {
-        // Slot 'redrawPlotByBinSizeChange_slot'
-        QtMocHelpers::SlotData<void(uint)>(1, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::UInt, 3 },
-        }}),
         // Slot 'drawPlot'
-        QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPublic, QMetaType::Void),
+        QtMocHelpers::SlotData<void()>(1, 2, QMC::AccessPublic, QMetaType::Void),
+        // Slot 'redrawPlotByBinSizeChange_slot'
+        QtMocHelpers::SlotData<void(uint)>(3, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::UInt, 4 },
+        }}),
         // Slot 'onCandleXAxisChanged'
         QtMocHelpers::SlotData<void(const QCPRange &)>(5, 2, QMC::AccessPublic, QMetaType::Void, {{
             { 0x80000000 | 6, 7 },
         }}),
-        // Slot 'onCandleYAxisChanged'
+        // Slot 'onXAxisPlotRangeChanged'
         QtMocHelpers::SlotData<void(const QCPRange &)>(8, 2, QMC::AccessPublic, QMetaType::Void, {{
             { 0x80000000 | 6, 7 },
         }}),
-        // Slot 'onXAxisPlotRangeChanged'
+        // Slot 'onYAxisPlotRangeChanged'
         QtMocHelpers::SlotData<void(const QCPRange &)>(9, 2, QMC::AccessPublic, QMetaType::Void, {{
             { 0x80000000 | 6, 7 },
         }}),
-        // Slot 'onYAxisPlotRangeChanged'
+        // Slot 'syncAxesToCandleX'
         QtMocHelpers::SlotData<void(const QCPRange &)>(10, 2, QMC::AccessPublic, QMetaType::Void, {{
             { 0x80000000 | 6, 7 },
         }}),
-        // Slot 'syncAxesToCandleX'
+        // Slot 'syncAxesToCandleY'
         QtMocHelpers::SlotData<void(const QCPRange &)>(11, 2, QMC::AccessPublic, QMetaType::Void, {{
             { 0x80000000 | 6, 7 },
         }}),
-        // Slot 'syncAxesToCandleY'
-        QtMocHelpers::SlotData<void(const QCPRange &)>(12, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { 0x80000000 | 6, 7 },
+        // Slot 'onMouseMove'
+        QtMocHelpers::SlotData<void(QMouseEvent *)>(12, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { 0x80000000 | 13, 14 },
         }}),
     };
     QtMocHelpers::UintData qt_properties {
@@ -109,14 +111,14 @@ void PlotsDrawer::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
     auto *_t = static_cast<PlotsDrawer *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: _t->redrawPlotByBinSizeChange_slot((*reinterpret_cast<std::add_pointer_t<uint>>(_a[1]))); break;
-        case 1: _t->drawPlot(); break;
+        case 0: _t->drawPlot(); break;
+        case 1: _t->redrawPlotByBinSizeChange_slot((*reinterpret_cast<std::add_pointer_t<uint>>(_a[1]))); break;
         case 2: _t->onCandleXAxisChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
-        case 3: _t->onCandleYAxisChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
-        case 4: _t->onXAxisPlotRangeChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
-        case 5: _t->onYAxisPlotRangeChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
-        case 6: _t->syncAxesToCandleX((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
-        case 7: _t->syncAxesToCandleY((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
+        case 3: _t->onXAxisPlotRangeChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
+        case 4: _t->onYAxisPlotRangeChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
+        case 5: _t->syncAxesToCandleX((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
+        case 6: _t->syncAxesToCandleY((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
+        case 7: _t->onMouseMove((*reinterpret_cast<std::add_pointer_t<QMouseEvent*>>(_a[1]))); break;
         default: ;
         }
     }

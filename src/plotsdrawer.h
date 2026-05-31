@@ -1,9 +1,19 @@
 #ifndef PLOTSDRAWER_H
 #define PLOTSDRAWER_H
 
+#include "ui_plotsdrawer.h"
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
+#define X_AXIS_HEIGHT 40
+#define Y_AXIS_WIDTH 70
+#define HORIZONTAL_BARS_NUMBER  50
+
 #include <QWidget>
-#include "Widgets/financialwidget.h"
-#include "Widgets/volumewidget.h"
+#include "Widgets/candleswidget.h"
+#include "Widgets/verticalvolumewidget.h"
+#include "Widgets/horizontalvolumewidget.h"
+#include "Widgets/xaxiswidget.h"
+#include "Widgets/yaxis2widget.h"
 
 namespace Ui {
 class PlotsDrawer;
@@ -17,27 +27,31 @@ public:
     explicit PlotsDrawer(QWidget *parent = nullptr);
     ~PlotsDrawer();
 
-    QVector<Candle> candles;
-    QVector<double> *priceData;
-    QVector<double> *timeData;
-    QVector<uint>   *quantityData;
-    QVector<bool>   *buysellData;
-
-    QDateTime start;
-    double startTime;
-    double binSize;
-
-    FinancialWidget* finWidget;
-    VolumeWidget* volWidget;
-    QCustomPlot *m_xAxisPlot;         // Отдельный plot для оси X
-    QCustomPlot *m_yAxisPlot;         // Отдельный plot для оси Y
-    QCPAxis *m_xAxis;                 // Ось X на отдельном plot
-    QCPAxis *m_yAxis2;                 // Ось Y на отдельном plot
-
-    void isMouseOverBar(double x_value);
     void clearSecurityData();
     void collectCandleInfo();
-    bool m_syncing;
+
+    QDateTime               m_startDateTime;
+    double                  m_doubleStartDateTime;
+    double                  m_binSize;
+
+    QVector<Candle>         m_candles;
+    QVector<double>         *p_priceData;
+    QVector<double>         *p_timeData;
+    QVector<uint>           *p_quantityData;
+    QVector<bool>           *p_buysellData;
+
+    CandlesWidget           *p_candlesWidget;
+    VerticalVolumeWidget    *p_verticalVolumeWidget;
+    HorizontalVolumeWidget  *p_horizontalVolumeWidget;
+
+    XAxisWidget             *p_xAxisWidget;
+    YAxis2Widget            *p_yAxis2Widget;
+
+    bool                    m_syncing;
+    double                  yAxis2MinValue;
+    double                  yAxis2MaxValue;
+    double                  xAxisMinValue;
+    double                  xAxisMaxValue;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
@@ -45,26 +59,26 @@ protected:
 private:
     void hideAllAxes(QCustomPlot *plot);
     void createPlotConnections();
-    void setupAxisPlots();
-
-    static const int WINDOW_WIDTH = 800;
-    static const int WINDOW_HEIGHT = 600;
-    static const int X_AXIS_HEIGHT = 40;
-    static const int Y_AXIS_WIDTH = 70;
+    QLabel* getLabelOpen();
+    QLabel* getLabelHigh();
+    QLabel* getLabelLow();
+    QLabel* getLabelClose();
+    QLabel* getLabelChange();
+    QLabel* getLabelVolumeVertical();
+    QLabel* getLabelVolumeHorizontal();
 
     Ui::PlotsDrawer *ui;
 
-public slots:
-    void redrawPlotByBinSizeChange_slot(uint bs);
 
 public slots:
     void drawPlot();
+    void redrawPlotByBinSizeChange_slot(uint bs);
     void onCandleXAxisChanged(const QCPRange &range);
-    void onCandleYAxisChanged(const QCPRange &range);
     void onXAxisPlotRangeChanged(const QCPRange &range);
     void onYAxisPlotRangeChanged(const QCPRange &range);
     void syncAxesToCandleX(const QCPRange &range);
     void syncAxesToCandleY(const QCPRange &range);
+    void onMouseMove(QMouseEvent *event);
 
 };
 

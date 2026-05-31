@@ -24,8 +24,11 @@ SOURCES += \
     GuiElements/mycomboboxsecurity.cpp \
     SqlSelector.cpp \
     SqlUpdater.cpp \
-    Widgets/financialwidget.cpp \
-    Widgets/volumewidget.cpp \
+    Widgets/candleswidget.cpp \
+    Widgets/horizontalvolumewidget.cpp \
+    Widgets/verticalvolumewidget.cpp \
+    Widgets/xaxiswidget.cpp \
+    Widgets/yaxis2widget.cpp \
     leftwidget.cpp \
     main.cpp \
     client.cpp \
@@ -38,8 +41,11 @@ HEADERS += \
     GuiElements/mycomboboxsecurity.h \
     SqlSelector.h \
     SqlUpdater.h \
-    Widgets/financialwidget.h \
-    Widgets/volumewidget.h \
+    Widgets/candleswidget.h \
+    Widgets/horizontalvolumewidget.h \
+    Widgets/verticalvolumewidget.h \
+    Widgets/xaxiswidget.h \
+    Widgets/yaxis2widget.h \
     client.h \
     leftwidget.h \
     GuiElements/mypushbutton.h \

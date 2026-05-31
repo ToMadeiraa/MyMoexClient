@@ -62,10 +62,10 @@ Client::Client(QWidget *parent)
 
     //new
     plotsDrawer = ui->PlotsWidget;
-    plotsDrawer->priceData = &this->priceData;
-    plotsDrawer->timeData = &this->timeData;
-    plotsDrawer->quantityData = &this->quantityData;
-    plotsDrawer->buysellData = &this->buysellData;
+    plotsDrawer->p_priceData = &this->priceData;
+    plotsDrawer->p_timeData = &this->timeData;
+    plotsDrawer->p_quantityData = &this->quantityData;
+    plotsDrawer->p_buysellData = &this->buysellData;
 
     //ui
     getTopWidget()->getComboBoxSecurities()->fillComboBox(sqlUpdater->SecID_Numbers);
@@ -108,8 +108,9 @@ void Client::redrawPlotBySecurityChange_slot()
     plotsDrawer->clearSecurityData();
     sqlSelector->selectData(currentSec);
     plotsDrawer->collectCandleInfo();
-    plotsDrawer->finWidget->setCandlesData();
-    plotsDrawer->volWidget->setCandlesData();
+    plotsDrawer->p_candlesWidget->setCandlesData();
+    plotsDrawer->p_verticalVolumeWidget->setCandlesData();
+    plotsDrawer->p_horizontalVolumeWidget->setCandlesData();
 
     plotsDrawer->drawPlot();
 }

@@ -2,8 +2,11 @@ release/mycomboboxbinsize.o
 release/mycomboboxsecurity.o
 release/SqlSelector.o
 release/SqlUpdater.o
-release/financialwidget.o
-release/volumewidget.o
+release/candleswidget.o
+release/horizontalvolumewidget.o
+release/verticalvolumewidget.o
+release/xaxiswidget.o
+release/yaxis2widget.o
 release/leftwidget.o
 release/main.o
 release/client.o
@@ -14,8 +17,11 @@ release/moc_mycomboboxbinsize.o
 release/moc_mycomboboxsecurity.o
 release/moc_SqlSelector.o
 release/moc_SqlUpdater.o
-release/moc_financialwidget.o
-release/moc_volumewidget.o
+release/moc_candleswidget.o
+release/moc_horizontalvolumewidget.o
+release/moc_verticalvolumewidget.o
+release/moc_xaxiswidget.o
+release/moc_yaxis2widget.o
 release/moc_client.o
 release/moc_leftwidget.o
 release/moc_mypushbutton.o
