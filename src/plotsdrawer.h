@@ -2,11 +2,12 @@
 #define PLOTSDRAWER_H
 
 #include "ui_plotsdrawer.h"
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
-#define X_AXIS_HEIGHT 40
-#define Y_AXIS_WIDTH 70
+#define WINDOW_WIDTH            800
+#define WINDOW_HEIGHT           600
+#define X_AXIS_HEIGHT           40
+#define Y_AXIS_WIDTH            70
 #define HORIZONTAL_BARS_NUMBER  50
+#define EPSILON                 std::numeric_limits<double>::epsilon()
 
 #include <QWidget>
 #include "Widgets/candleswidget.h"
@@ -47,6 +48,9 @@ public:
     XAxisWidget             *p_xAxisWidget;
     YAxis2Widget            *p_yAxis2Widget;
 
+    QPalette                *m_palette;
+
+
     bool                    m_syncing;
     double                  yAxis2MinValue;
     double                  yAxis2MaxValue;
@@ -55,6 +59,7 @@ public:
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
+    bool mouseMoveEvent(QObject *obj, QEvent *event);
 
 private:
     void hideAllAxes(QCustomPlot *plot);
@@ -78,7 +83,6 @@ public slots:
     void onYAxisPlotRangeChanged(const QCPRange &range);
     void syncAxesToCandleX(const QCPRange &range);
     void syncAxesToCandleY(const QCPRange &range);
-    void onMouseMove(QMouseEvent *event);
 
 };
 

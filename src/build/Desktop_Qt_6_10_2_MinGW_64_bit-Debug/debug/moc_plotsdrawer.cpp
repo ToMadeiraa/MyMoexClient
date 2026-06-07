@@ -51,10 +51,7 @@ template <> constexpr inline auto PlotsDrawer::qt_create_metaobjectdata<qt_meta_
         "onXAxisPlotRangeChanged",
         "onYAxisPlotRangeChanged",
         "syncAxesToCandleX",
-        "syncAxesToCandleY",
-        "onMouseMove",
-        "QMouseEvent*",
-        "event"
+        "syncAxesToCandleY"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -83,10 +80,6 @@ template <> constexpr inline auto PlotsDrawer::qt_create_metaobjectdata<qt_meta_
         // Slot 'syncAxesToCandleY'
         QtMocHelpers::SlotData<void(const QCPRange &)>(11, 2, QMC::AccessPublic, QMetaType::Void, {{
             { 0x80000000 | 6, 7 },
-        }}),
-        // Slot 'onMouseMove'
-        QtMocHelpers::SlotData<void(QMouseEvent *)>(12, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { 0x80000000 | 13, 14 },
         }}),
     };
     QtMocHelpers::UintData qt_properties {
@@ -118,7 +111,6 @@ void PlotsDrawer::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 4: _t->onYAxisPlotRangeChanged((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
         case 5: _t->syncAxesToCandleX((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
         case 6: _t->syncAxesToCandleY((*reinterpret_cast<std::add_pointer_t<QCPRange>>(_a[1]))); break;
-        case 7: _t->onMouseMove((*reinterpret_cast<std::add_pointer_t<QMouseEvent*>>(_a[1]))); break;
         default: ;
         }
     }
@@ -143,14 +135,14 @@ int PlotsDrawer::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 8)
+        if (_id < 7)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 8;
+        _id -= 7;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 8)
+        if (_id < 7)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 8;
+        _id -= 7;
     }
     return _id;
 }

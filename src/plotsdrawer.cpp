@@ -36,6 +36,12 @@ PlotsDrawer::PlotsDrawer(QWidget *parent)
     ui->y2AxisWidget->setFixedSize(Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
     ui->xAxisWidget->setFixedSize(WINDOW_WIDTH - Y_AXIS_WIDTH, X_AXIS_HEIGHT);
 
+    m_palette = new QPalette;
+    m_palette->setColor(QPalette::Window, Qt::white);
+    m_palette->setColor(QPalette::WindowText, Qt::black);
+    p_xAxisWidget->xCoordLabel->setPalette(*m_palette);
+    p_yAxis2Widget->yCoordLabel->setPalette(*m_palette);
+
     createPlotConnections();
 }
 
@@ -62,7 +68,7 @@ void PlotsDrawer::drawPlot()
     //делаем так, чтоб график объемов занимал 20%
     QCPRange autoRangeHorizontalX = p_horizontalVolumeWidget->p_volumePlot->xAxis->range();
     p_horizontalVolumeWidget->p_volumePlot->xAxis->setRange(autoRangeHorizontalX.lower, autoRangeHorizontalX.upper * 5);
-    // p_horizontalVolumeWidget->p_volumePlot->yAxis2->setRange(yAxis2MinValue, yAxis2MaxValue);
+    p_horizontalVolumeWidget->p_volumeBars->setWidth((yAxis2MaxValue-yAxis2MinValue)/HORIZONTAL_BARS_NUMBER*0.8);
     p_horizontalVolumeWidget->p_volumePlot->replot();
 }
 
@@ -141,51 +147,6 @@ void PlotsDrawer::syncAxesToCandleY(const QCPRange &range)
     m_syncing = false;
 }
 
-void PlotsDrawer::onMouseMove(QMouseEvent *event)
-{
-    int pixelX = event->pos().x();
-    int pixelY = event->pos().y();
-
-    double time = p_candlesWidget->financialPlot->xAxis->pixelToCoord(pixelX);
-    double price = p_candlesWidget->financialPlot->yAxis2->pixelToCoord(pixelY);
-    double verticalVolume = 0;
-    double horizontalVolume = 0;
-    double priceOpen = 0;
-    double priceClose = 0;
-    double priceHigh = 0;
-    double priceLow = 0;
-
-    for (int i = 0; i < m_candles.size(); ++i)
-    {
-        if (m_candles[i].timeCandleStart <= time && m_candles[i].timeCandleEnd >= time)
-        {
-            priceOpen = m_candles[i].open;
-            priceClose = m_candles[i].close;
-            priceHigh = m_candles[i].high;
-            priceLow = m_candles[i].low;
-            verticalVolume = m_candles[i].volume;
-            break;
-        }
-    }
-
-
-    double minDiff = INT_MAX;
-    int currVolIndex = 0;
-    for (int i = 0; i < p_horizontalVolumeWidget->m_price.size(); ++i)
-    {
-        if (abs(p_horizontalVolumeWidget->m_price[i] - price) < minDiff)
-            currVolIndex = i;
-    }
-
-    getLabelOpen()->setText(QString::number(priceOpen));
-    getLabelClose()->setText(QString::number(priceClose));
-    getLabelHigh()->setText(QString::number(priceHigh));
-    getLabelLow()->setText(QString::number(priceLow));
-    getLabelVolumeVertical()->setText(QString::number(verticalVolume));
-    getLabelVolumeHorizontal()->setText(QString::number(p_horizontalVolumeWidget->m_volume[currVolIndex]));
-}
-
-
 void PlotsDrawer::hideAllAxes(QCustomPlot *plot)
 {
     if (!plot) return;
@@ -245,12 +206,11 @@ void PlotsDrawer::createPlotConnections()
             QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
             this, &PlotsDrawer::onYAxisPlotRangeChanged);
 
-    // Подключаем обработчик движения мыши
-    connect(p_candlesWidget->financialPlot, &QCustomPlot::mouseMove, this, &PlotsDrawer::onMouseMove);
-
     // Устанавливаем фильтры событий
     p_xAxisWidget->p_xAxisPlot->installEventFilter(this);
     p_yAxis2Widget->p_yAxisPlot->installEventFilter(this);
+    p_xAxisWidget->xCoordLabel->installEventFilter(this);
+    p_yAxis2Widget->yCoordLabel->installEventFilter(this);
 }
 
 QLabel *PlotsDrawer::getLabelOpen(){return ui->labelOpen;}
@@ -274,7 +234,8 @@ void PlotsDrawer::redrawPlotByBinSizeChange_slot(uint bs)
 
     p_verticalVolumeWidget->volumeBarsNegative->data().clear();
     p_verticalVolumeWidget->volumeBarsPositive->data().clear();
-    for (int i=0; i<m_candles.size(); ++i)
+    p_horizontalVolumeWidget->p_volumeBars->data().clear();
+    for (int i=0; i < m_candles.size(); ++i)
     {
         long long v = m_candles[i].volume;
         if (m_candles[i].open > m_candles[i].close)
@@ -316,7 +277,7 @@ void PlotsDrawer::collectCandleInfo()
         c.high = std::max(c.high, currentPrice);
         c.low = std::min(c.low, currentPrice);
         c.volume += p_quantityData->at(i);
-        if (p_timeData->at(i) - previousTime > m_binSize || p_timeData->at(i) - previousTime == m_binSize)
+        if (p_timeData->at(i) - previousTime > m_binSize)
         {
             c.timeCandleEnd = p_timeData->at(i);
             c.close = currentPrice;
@@ -328,7 +289,7 @@ void PlotsDrawer::collectCandleInfo()
                 c.timeCandleStart = previousTime;
                 c.open = currentPrice;
                 c.high = 0;
-                c.low = 999999999;
+                c.low = INT_MAX;
                 c.close = 0;
                 c.volume = 0;
             }
@@ -407,8 +368,12 @@ void PlotsDrawer::collectCandleInfo()
     for (int i = 0; i < HORIZONTAL_BARS_NUMBER; ++i)
         p_horizontalVolumeWidget->m_price[i] = yAxis2MinValue + priceStep/2 + priceStep*i;
 
-    for (long long int i = 0; i < p_timeData->size(); ++i) {
-        ushort j = (p_priceData->at(i)-yAxis2MinValue)/priceStep;
+    yAxis2MinValue -= EPSILON;
+
+    for (long long int i = 0; i < p_timeData->size(); ++i)
+    {
+        double currValue = p_priceData->at(i);
+        ushort j = abs(currValue - yAxis2MinValue)/priceStep;
         p_horizontalVolumeWidget->m_volume[j] += p_quantityData->at(i);
     }
 }
@@ -434,12 +399,10 @@ bool PlotsDrawer::eventFilter(QObject *obj, QEvent *event)
             // Определяем направление прокрутки
             if (wheelEvent->angleDelta().y() < 0)
             {
-                // Прокрутка вверх - уменьшаем масштаб (показываем больше)
                 range *= scaleFactor;
             }
             else
             {
-                // Прокрутка вниз - увеличиваем масштаб (показываем меньше)
                 range /= scaleFactor;
             }
 
@@ -454,13 +417,11 @@ bool PlotsDrawer::eventFilter(QObject *obj, QEvent *event)
             p_verticalVolumeWidget->volumePlot->replot();
             p_xAxisWidget->p_xAxisPlot->replot();
             m_syncing = false;
-
-            return true;  // Событие обработано
         }
 
 
         // Обработка колеса мыши на xAxisPlot
-        if (obj == p_xAxisWidget->p_xAxisPlot)
+        if (obj == p_xAxisWidget->p_xAxisPlot || obj == p_xAxisWidget->xCoordLabel)
         {
             // Получаем текущий диапазон X с оси X plot
             QCPRange xRange = p_xAxisWidget->p_xAxisPlot->xAxis->range();
@@ -492,13 +453,11 @@ bool PlotsDrawer::eventFilter(QObject *obj, QEvent *event)
             p_verticalVolumeWidget->volumePlot->replot();
 
             m_syncing = false;
-
-            return true;
         }
 
 
         // Обработка колеса мыши на yAxisPlot
-        if (obj == p_yAxis2Widget->p_yAxisPlot)
+        if (obj == p_yAxis2Widget->p_yAxisPlot || obj == p_yAxis2Widget->yCoordLabel)
         {
             // Получаем текущий диапазон X с оси X plot
             QCPRange yRange = p_yAxis2Widget->p_yAxisPlot->yAxis2->range();
@@ -530,11 +489,195 @@ bool PlotsDrawer::eventFilter(QObject *obj, QEvent *event)
             p_horizontalVolumeWidget->p_volumePlot->replot(); //new
 
             m_syncing = false;
-
-            return true;
         }
+
+        //
+        mouseMoveEvent(obj, event);
+        return true;
+    }
+
+    if (event->type() == QEvent::MouseMove)
+    {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+
+        int pixelX = mouseEvent->pos().x();
+        int pixelY = mouseEvent->pos().y();
+
+        double time = p_candlesWidget->financialPlot->xAxis->pixelToCoord(pixelX) + m_binSize/2;
+        double price = p_candlesWidget->financialPlot->yAxis2->pixelToCoord(pixelY);
+        double verticalVolume = 0;
+        double horizontalVolume = 0;
+        double priceOpen = 0;
+        double priceClose = 0;
+        double priceHigh = 0;
+        double priceLow = 0;
+
+        for (int i = 0; i < m_candles.size(); ++i)
+        {
+            if (m_candles[i].timeCandleStart <= time && m_candles[i].timeCandleEnd >= time)
+            {
+                priceOpen = m_candles[i].open;
+                priceClose = m_candles[i].close;
+                priceHigh = m_candles[i].high;
+                priceLow = m_candles[i].low;
+                verticalVolume = m_candles[i].volume;
+                break;
+            }
+        }
+
+        double minDiff = INT_MAX;
+        int currVolIndex = 0;
+        for (int i = 0; i < p_horizontalVolumeWidget->m_price.size(); ++i)
+        {
+            if (abs(p_horizontalVolumeWidget->m_price[i] - price) < minDiff)
+            {
+                minDiff = abs(p_horizontalVolumeWidget->m_price[i] - price);
+                currVolIndex = i;
+            }
+        }
+        horizontalVolume = p_horizontalVolumeWidget->m_volume[currVolIndex];
+
+        getLabelOpen()->setText(QString::number(priceOpen, 'g', 8));
+        getLabelClose()->setText(QString::number(priceClose, 'g', 8));
+        getLabelHigh()->setText(QString::number(priceHigh, 'g', 8));
+        getLabelLow()->setText(QString::number(priceLow, 'g', 8));
+        getLabelVolumeVertical()->setText(QString::number(verticalVolume, 'g', 8));
+        getLabelVolumeHorizontal()->setText(QString::number(horizontalVolume, 'g', 8));
+
+
+        //горизонтальная и вертикальная линии
+        double xValue = p_candlesWidget->financialPlot->xAxis->pixelToCoord(mouseEvent->pos().x());
+        double yValue = p_candlesWidget->financialPlot->yAxis2->pixelToCoord(mouseEvent->pos().y());
+
+        // Получаем границы видимой области
+        auto xRange = p_candlesWidget->financialPlot->xAxis->range();
+        auto yRange = p_candlesWidget->financialPlot->yAxis2->range();
+
+        if (p_candlesWidget->financialPlot->axisRect()->rect().contains(mouseEvent->pos()))
+        {
+            // Вертикальная линия (продлеваем за ось X вниз)
+            p_candlesWidget->lineX->point1->setCoords(xValue, yRange.lower);  // Уходим за ось X
+            p_candlesWidget->lineX->point2->setCoords(xValue, yRange.upper);
+
+            // Горизонтальная линия (продлеваем за ось Y2 вправо)
+            p_candlesWidget->lineY->point1->setCoords(xRange.lower, yValue);
+            p_candlesWidget->lineY->point2->setCoords(xRange.upper, yValue);  // Уходим за ось Y2
+
+            // Показываем все элементы
+            p_candlesWidget->lineX->setVisible(true);
+            p_candlesWidget->lineY->setVisible(true);
+
+            // Обновляем текст метки
+            QDateTime dateTimeUtc = QDateTime::fromSecsSinceEpoch(static_cast<qint64>(xValue), Qt::UTC);
+            p_xAxisWidget->xCoordLabel->setText(dateTimeUtc.toString("dd. MM. yyyy\n hh:mm:ss"));
+            p_yAxis2Widget->yCoordLabel->setText(QString::number(yValue));
+
+            // Устанавливаем позицию меток
+
+            p_xAxisWidget->xCoordLabel->move(mouseEvent->pos().x() - p_xAxisWidget->xCoordLabel->geometry().width()/2, 0);
+            p_yAxis2Widget->yCoordLabel->move(0, mouseEvent->pos().y() - p_yAxis2Widget->yCoordLabel->geometry().height()/2);
+        }
+        else
+        {
+            // Скрываем линии и метки, если курсор за пределами графика
+            p_candlesWidget->lineX->setVisible(false);
+            p_candlesWidget->lineY->setVisible(false);
+        }
+
+        p_candlesWidget->financialPlot->replot();
     }
 
     return false;
+}
+
+bool PlotsDrawer::mouseMoveEvent(QObject *obj, QEvent *event)
+{
+    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+
+    int pixelX = mouseEvent->pos().x();
+    int pixelY = mouseEvent->pos().y();
+
+    double time = p_candlesWidget->financialPlot->xAxis->pixelToCoord(pixelX) + m_binSize/2;
+    double price = p_candlesWidget->financialPlot->yAxis2->pixelToCoord(pixelY);
+    double verticalVolume = 0;
+    double horizontalVolume = 0;
+    double priceOpen = 0;
+    double priceClose = 0;
+    double priceHigh = 0;
+    double priceLow = 0;
+
+    for (int i = 0; i < m_candles.size(); ++i)
+    {
+        if (m_candles[i].timeCandleStart <= time && m_candles[i].timeCandleEnd >= time)
+        {
+            priceOpen = m_candles[i].open;
+            priceClose = m_candles[i].close;
+            priceHigh = m_candles[i].high;
+            priceLow = m_candles[i].low;
+            verticalVolume = m_candles[i].volume;
+            break;
+        }
+    }
+
+    double minDiff = INT_MAX;
+    int currVolIndex = 0;
+    for (int i = 0; i < p_horizontalVolumeWidget->m_price.size(); ++i)
+    {
+        if (abs(p_horizontalVolumeWidget->m_price[i] - price) < minDiff)
+        {
+            minDiff = abs(p_horizontalVolumeWidget->m_price[i] - price);
+            currVolIndex = i;
+        }
+    }
+    horizontalVolume = p_horizontalVolumeWidget->m_volume[currVolIndex];
+
+    getLabelOpen()->setText(QString::number(priceOpen, 'g', 8));
+    getLabelClose()->setText(QString::number(priceClose, 'g', 8));
+    getLabelHigh()->setText(QString::number(priceHigh, 'g', 8));
+    getLabelLow()->setText(QString::number(priceLow, 'g', 8));
+    getLabelVolumeVertical()->setText(QString::number(verticalVolume, 'g', 8));
+    getLabelVolumeHorizontal()->setText(QString::number(horizontalVolume, 'g', 8));
+
+
+    //горизонтальная и вертикальная линии
+    double xValue = p_candlesWidget->financialPlot->xAxis->pixelToCoord(mouseEvent->pos().x());
+    double yValue = p_candlesWidget->financialPlot->yAxis2->pixelToCoord(mouseEvent->pos().y());
+
+    // Получаем границы видимой области
+    auto xRange = p_candlesWidget->financialPlot->xAxis->range();
+    auto yRange = p_candlesWidget->financialPlot->yAxis2->range();
+
+    if (p_candlesWidget->financialPlot->axisRect()->rect().contains(mouseEvent->pos()))
+    {
+        // Вертикальная линия (продлеваем за ось X вниз)
+        p_candlesWidget->lineX->point1->setCoords(xValue, yRange.lower);  // Уходим за ось X
+        p_candlesWidget->lineX->point2->setCoords(xValue, yRange.upper);
+
+        // Горизонтальная линия (продлеваем за ось Y2 вправо)
+        p_candlesWidget->lineY->point1->setCoords(xRange.lower, yValue);
+        p_candlesWidget->lineY->point2->setCoords(xRange.upper, yValue);  // Уходим за ось Y2
+
+        // Показываем все элементы
+        p_candlesWidget->lineX->setVisible(true);
+        p_candlesWidget->lineY->setVisible(true);
+
+        // Обновляем текст метки
+        QDateTime dateTimeUtc = QDateTime::fromSecsSinceEpoch(static_cast<qint64>(xValue), Qt::UTC);
+        p_xAxisWidget->xCoordLabel->setText(dateTimeUtc.toString("dd. MM. yyyy\n hh:mm:ss"));
+        p_yAxis2Widget->yCoordLabel->setText(QString::number(yValue));
+
+        // Устанавливаем позицию меток
+
+        p_xAxisWidget->xCoordLabel->move(mouseEvent->pos().x() - p_xAxisWidget->xCoordLabel->geometry().width()/2, 0);
+        p_yAxis2Widget->yCoordLabel->move(0, mouseEvent->pos().y() - p_yAxis2Widget->yCoordLabel->geometry().height()/2);
+    }
+    else
+    {
+        // Скрываем линии и метки, если курсор за пределами графика
+        p_candlesWidget->lineX->setVisible(false);
+        p_candlesWidget->lineY->setVisible(false);
+    }
+
+    p_candlesWidget->financialPlot->replot();
 }
 

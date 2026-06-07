@@ -4,6 +4,7 @@ XAxisWidget::XAxisWidget(QWidget *parent, int width, int heigth)
     : QWidget(parent)
 {
     p_xAxisPlot = new QCustomPlot(parent);
+
     p_xAxisPlot->setAttribute(Qt::WA_TranslucentBackground);
     p_xAxisPlot->setFixedSize(width, heigth);
     p_xAxisPlot->setBackground(QBrush(QColor(0, 0, 0, 80)));  // Полупрозрачный фон
@@ -16,7 +17,7 @@ XAxisWidget::XAxisWidget(QWidget *parent, int width, int heigth)
     m_xAxis->setSubTicks(true);
 
     // Внешний вид оси X
-    m_xAxis->setBasePen(QPen(QColor(200, 200, 200, 220), 2));
+    m_xAxis->setBasePen(QPen(QColor(200, 200, 200, 150), 2));
     m_xAxis->setTickPen(QPen(QColor(200, 200, 200, 200), 1));
     m_xAxis->setSubTickPen(QPen(QColor(200, 200, 200, 150), 1));
     m_xAxis->setTickLabelColor(QColor(220, 220, 220, 230));
@@ -39,7 +40,8 @@ XAxisWidget::XAxisWidget(QWidget *parent, int width, int heigth)
     QSharedPointer<QCPAxisTickerDateTime> dateTimeTicker(new QCPAxisTickerDateTime);
     dateTimeTicker->setDateTimeSpec(Qt::UTC);
     dateTimeTicker->setDateTimeFormat("dd. MM. yyyy\n hh:mm:ss");
-    p_xAxisPlot->xAxis->setTicker(dateTimeTicker);
+    dateTimeTicker->setTickCount(8);
+    m_xAxis->setTicker(dateTimeTicker);
 
     // Включаем взаимодействие для оси X (только горизонтальное)
     p_xAxisPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
@@ -48,4 +50,11 @@ XAxisWidget::XAxisWidget(QWidget *parent, int width, int heigth)
     p_xAxisPlot->axisRect()->setRangeDragAxes(p_xAxisPlot->xAxis, nullptr);
     p_xAxisPlot->axisRect()->setRangeZoomAxes(p_xAxisPlot->xAxis, nullptr);
 
+    //creating value labels
+    xCoordLabel = new QLabel(parent);
+    xCoordLabel->setFixedSize(100,heigth);
+    xCoordLabel->setText("");
+    xCoordLabel->setAlignment(Qt::AlignCenter);
+    xCoordLabel->setAutoFillBackground(true);
+    xCoordLabel->move(-1000, 20);
 }

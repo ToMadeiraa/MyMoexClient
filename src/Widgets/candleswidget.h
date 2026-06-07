@@ -33,7 +33,8 @@ public:
     QVector<double> close;
     QVector<double> time;
 
-    QCPItemStraightLine *infLine;
+    QCPItemStraightLine *lineX;
+    QCPItemStraightLine *lineY;
 
     void setCandlesData();
     void initPlot(double binSize, double startTime);

@@ -14,6 +14,7 @@ public:
 
     QCustomPlot         *p_yAxisPlot;         // Отдельный plot для оси Y
     QCPAxis             *m_yAxis2;            // Ось Y на отдельном plot
+    QLabel              *yCoordLabel;         // Метка со значением Y на оси
 };
 
 #endif // YAXIS2WIDGET_H

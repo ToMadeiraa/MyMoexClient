@@ -14,6 +14,7 @@ public:
 
     QCustomPlot         *p_xAxisPlot;         // Отдельный plot для оси X
     QCPAxis             *m_xAxis;             // Ось X на отдельном plot
+    QLabel              *xCoordLabel;         // Метка со значением X на оси
 };
 
 #endif // XAXISWIDGET_H

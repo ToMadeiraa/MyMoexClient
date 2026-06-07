@@ -45,4 +45,12 @@ YAxis2Widget::YAxis2Widget(QWidget *parent, int width, int heigth)
     p_yAxisPlot->axisRect()->setRangeZoom(Qt::Vertical);
     p_yAxisPlot->axisRect()->setRangeDragAxes(nullptr, p_yAxisPlot->yAxis2);
     p_yAxisPlot->axisRect()->setRangeZoomAxes(nullptr, p_yAxisPlot->yAxis2);
+
+    //creating value labels
+    yCoordLabel = new QLabel(parent);
+    yCoordLabel->setText("");
+    yCoordLabel->move(15, -1000);
+    yCoordLabel->setFixedSize(width,30);
+    yCoordLabel->setAlignment(Qt::AlignCenter);
+    yCoordLabel->setAutoFillBackground(true);
 }

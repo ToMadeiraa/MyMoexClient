@@ -47,4 +47,22 @@ void CandlesWidget::initPlot(double binSize, double startTime)
     candlesticks->setBrushNegative(QColor(Qt::red));
 
     financialPlot->xAxis->setRange(QCPRange(startTime, startTime+60));
+
+    // Создаем вертикальную линию (для оси X)
+    lineX = new QCPItemStraightLine(financialPlot);
+    lineX->setPen(QPen(Qt::darkGray, 1, Qt::DashLine));
+    lineX->point1->setCoords(0, -1);
+    lineX->point2->setCoords(0, 1);
+    lineX->point1->setAxes(financialPlot->xAxis, financialPlot->yAxis2);
+    lineX->point2->setAxes(financialPlot->xAxis, financialPlot->yAxis2);
+    lineX->setClipToAxisRect(false);  // Продолжаем линию до оси
+
+    // Создаем горизонтальную линию (для оси Y)
+    lineY = new QCPItemStraightLine(financialPlot);
+    lineY->setPen(QPen(Qt::darkGray, 1, Qt::DashLine));
+    lineY->point1->setCoords(-1, 0);
+    lineY->point2->setCoords(1, 0);
+    lineY->point1->setAxes(financialPlot->xAxis, financialPlot->yAxis2);
+    lineY->point2->setAxes(financialPlot->xAxis, financialPlot->yAxis2);
+    lineY->setClipToAxisRect(false);  // Продолжаем линию до оси
 }
