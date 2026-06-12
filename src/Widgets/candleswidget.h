@@ -11,7 +11,7 @@ public:
     double timeCandleEnd = 0;
     double open = 0;
     double high = 0;
-    double low = 999999999;
+    double low = INT_MAX;
     double close = 0;
     double volume = 0;
 };

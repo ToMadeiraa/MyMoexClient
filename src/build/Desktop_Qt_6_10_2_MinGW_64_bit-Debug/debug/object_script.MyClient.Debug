@@ -2,6 +2,7 @@ debug/mycomboboxbinsize.o
 debug/mycomboboxsecurity.o
 debug/SqlSelector.o
 debug/SqlUpdater.o
+debug/additionalplotwidget.o
 debug/candleswidget.o
 debug/horizontalvolumewidget.o
 debug/verticalvolumewidget.o
@@ -17,6 +18,7 @@ debug/moc_mycomboboxbinsize.o
 debug/moc_mycomboboxsecurity.o
 debug/moc_SqlSelector.o
 debug/moc_SqlUpdater.o
+debug/moc_additionalplotwidget.o
 debug/moc_candleswidget.o
 debug/moc_horizontalvolumewidget.o
 debug/moc_verticalvolumewidget.o

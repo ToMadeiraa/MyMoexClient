@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QFrame>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QSpacerItem>
@@ -27,11 +28,13 @@ public:
     QWidget *centralwidget;
     QGridLayout *gridLayout;
     QGridLayout *gridLayout_5;
-    PlotsDrawer *PlotsWidget;
-    LeftWidget *leftWidget;
-    TopWidget *topWidget;
-    QSpacerItem *horizontalSpacer;
     QSpacerItem *verticalSpacer;
+    TopWidget *topWidget;
+    PlotsDrawer *PlotsWidget;
+    QFrame *line;
+    LeftWidget *leftWidget;
+    QSpacerItem *horizontalSpacer;
+    QWidget *widget;
 
     void setupUi(QMainWindow *Client)
     {
@@ -47,6 +50,16 @@ public:
         gridLayout->setContentsMargins(0, 0, 0, 0);
         gridLayout_5 = new QGridLayout();
         gridLayout_5->setObjectName("gridLayout_5");
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
+
+        gridLayout_5->addItem(verticalSpacer, 5, 1, 1, 1);
+
+        topWidget = new TopWidget(centralwidget);
+        topWidget->setObjectName("topWidget");
+        topWidget->setMaximumSize(QSize(16777215, 40));
+
+        gridLayout_5->addWidget(topWidget, 0, 0, 1, 2);
+
         PlotsWidget = new PlotsDrawer(centralwidget);
         PlotsWidget->setObjectName("PlotsWidget");
         QSizePolicy sizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
@@ -58,25 +71,28 @@ public:
 
         gridLayout_5->addWidget(PlotsWidget, 2, 1, 1, 1);
 
+        line = new QFrame(centralwidget);
+        line->setObjectName("line");
+        line->setFrameShape(QFrame::Shape::HLine);
+        line->setFrameShadow(QFrame::Shadow::Sunken);
+
+        gridLayout_5->addWidget(line, 3, 1, 1, 1);
+
         leftWidget = new LeftWidget(centralwidget);
         leftWidget->setObjectName("leftWidget");
         leftWidget->setMaximumSize(QSize(40, 16777215));
 
         gridLayout_5->addWidget(leftWidget, 2, 0, 1, 1);
 
-        topWidget = new TopWidget(centralwidget);
-        topWidget->setObjectName("topWidget");
-        topWidget->setMaximumSize(QSize(16777215, 40));
-
-        gridLayout_5->addWidget(topWidget, 0, 0, 1, 2);
-
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 
         gridLayout_5->addItem(horizontalSpacer, 2, 2, 1, 1);
 
-        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
+        widget = new QWidget(centralwidget);
+        widget->setObjectName("widget");
+        widget->setMinimumSize(QSize(800, 400));
 
-        gridLayout_5->addItem(verticalSpacer, 3, 1, 1, 1);
+        gridLayout_5->addWidget(widget, 4, 1, 1, 1);
 
 
         gridLayout->addLayout(gridLayout_5, 2, 2, 1, 1);

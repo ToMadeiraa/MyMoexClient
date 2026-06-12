@@ -24,6 +24,7 @@ SOURCES += \
     GuiElements/mycomboboxsecurity.cpp \
     SqlSelector.cpp \
     SqlUpdater.cpp \
+    Widgets/additionalplotwidget.cpp \
     Widgets/candleswidget.cpp \
     Widgets/horizontalvolumewidget.cpp \
     Widgets/verticalvolumewidget.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     GuiElements/mycomboboxsecurity.h \
     SqlSelector.h \
     SqlUpdater.h \
+    Widgets/additionalplotwidget.h \
     Widgets/candleswidget.h \
     Widgets/horizontalvolumewidget.h \
     Widgets/verticalvolumewidget.h \

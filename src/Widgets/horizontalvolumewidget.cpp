@@ -1,7 +1,7 @@
 #include "horizontalvolumewidget.h"
 
 HorizontalVolumeWidget::HorizontalVolumeWidget(QWidget *parent, int width, int heigth)
-: QWidget(parent)
+    : QWidget(parent)
 {
     p_volumePlot = new QCustomPlot(parent);
     p_volumePlot->setFixedSize(width, heigth);

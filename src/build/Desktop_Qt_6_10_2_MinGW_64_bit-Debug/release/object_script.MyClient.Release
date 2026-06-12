@@ -2,6 +2,7 @@ release/mycomboboxbinsize.o
 release/mycomboboxsecurity.o
 release/SqlSelector.o
 release/SqlUpdater.o
+release/additionalplotwidget.o
 release/candleswidget.o
 release/horizontalvolumewidget.o
 release/verticalvolumewidget.o
@@ -17,6 +18,7 @@ release/moc_mycomboboxbinsize.o
 release/moc_mycomboboxsecurity.o
 release/moc_SqlSelector.o
 release/moc_SqlUpdater.o
+release/moc_additionalplotwidget.o
 release/moc_candleswidget.o
 release/moc_horizontalvolumewidget.o
 release/moc_verticalvolumewidget.o

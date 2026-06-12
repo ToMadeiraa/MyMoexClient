@@ -74,7 +74,8 @@ void PlotsDrawer::drawPlot()
 
 void PlotsDrawer::onCandleXAxisChanged(const QCPRange &range)
 {
-    if (m_syncing) return;
+    if (m_syncing)
+        return;
 
     m_syncing = true;
 
@@ -87,7 +88,8 @@ void PlotsDrawer::onCandleXAxisChanged(const QCPRange &range)
 
 void PlotsDrawer::onXAxisPlotRangeChanged(const QCPRange &range)
 {
-    if (m_syncing) return;
+    if (m_syncing)
+        return;
 
     m_syncing = true;
 
@@ -103,7 +105,8 @@ void PlotsDrawer::onXAxisPlotRangeChanged(const QCPRange &range)
 
 void PlotsDrawer::onYAxisPlotRangeChanged(const QCPRange &range)
 {
-    if (m_syncing) return;
+    if (m_syncing)
+        return;
 
     m_syncing = true;
 
@@ -119,7 +122,8 @@ void PlotsDrawer::onYAxisPlotRangeChanged(const QCPRange &range)
 
 void PlotsDrawer::syncAxesToCandleX(const QCPRange &range)
 {
-    if (m_syncing) return;
+    if (m_syncing)
+        return;
 
     m_syncing = true;
 
@@ -132,7 +136,8 @@ void PlotsDrawer::syncAxesToCandleX(const QCPRange &range)
 
 void PlotsDrawer::syncAxesToCandleY(const QCPRange &range)
 {
-    if (m_syncing) return;
+    if (m_syncing)
+        return;
 
     m_syncing = true;
 
@@ -266,35 +271,57 @@ void PlotsDrawer::clearSecurityData()
 
 void PlotsDrawer::collectCandleInfo()
 {
+    if (p_priceData->isEmpty() || p_timeData->isEmpty())
+        return;
+
     m_candles.clear();
+
     Candle c;
-    double previousTime = p_timeData->first();
-    c.timeCandleStart = previousTime;
-    c.open = p_priceData->first();
-    for (long long int i = 0; i < p_timeData->size(); ++i)
+    // Инициализируем первую свечу ПЕРВЫМ значением
+    c.timeCandleStart = p_timeData->at(0);
+    c.open = p_priceData->at(0);
+    c.high = p_priceData->at(0);
+    c.low = p_priceData->at(0);
+    c.volume = p_quantityData->at(0);  // Начинаем с первого объема
+
+    double previousTime = p_timeData->at(0);
+
+    for (int i = 0; i < p_timeData->size(); ++i)
     {
         double currentPrice = p_priceData->at(i);
-        c.high = std::max(c.high, currentPrice);
-        c.low = std::min(c.low, currentPrice);
-        c.volume += p_quantityData->at(i);
-        if (p_timeData->at(i) - previousTime > m_binSize)
+        double currentTime = p_timeData->at(i);
+        double currentVolume = p_quantityData->at(i);
+
+        // Проверяем, не пора ли закрыть текущую свечу
+        if (currentTime - previousTime >= m_binSize && i > 0)
         {
-            c.timeCandleEnd = p_timeData->at(i);
-            c.close = currentPrice;
+            // Закрываем текущую свечу
+            c.timeCandleEnd = currentTime;
+            c.close = p_priceData->at(i - 1);  // цена закрытия - последняя цена предыдущего периода
+
             m_candles.push_back(c);
-            //at least one more candle
-            if (i != p_timeData->size()-1)
-            {
-                previousTime = p_timeData->at(i+1);
-                c.timeCandleStart = previousTime;
-                c.open = currentPrice;
-                c.high = 0;
-                c.low = INT_MAX;
-                c.close = 0;
-                c.volume = 0;
-            }
+
+            // Начинаем новую свечу
+            previousTime = currentTime;
+            c.timeCandleStart = currentTime;
+            c.open = currentPrice;
+            c.high = currentPrice;
+            c.low = currentPrice;
+            c.volume = currentVolume;  // Начинаем с текущего объема для новой свечи
+        }
+        else
+        {
+            // Обновляем high/low/volume текущей свечи
+            c.high = std::max(c.high, currentPrice);
+            c.low = std::min(c.low, currentPrice);
+            c.volume += currentVolume;  // Накапливаем объем
         }
     }
+
+    // Закрываем последнюю свечу
+    c.timeCandleEnd = p_timeData->last();
+    c.close = p_priceData->last();
+    m_candles.push_back(c);
 
     p_candlesWidget->open.clear();
     p_candlesWidget->high.clear();
@@ -491,107 +518,25 @@ bool PlotsDrawer::eventFilter(QObject *obj, QEvent *event)
             m_syncing = false;
         }
 
-        //
+        //меняем
         mouseMoveEvent(obj, event);
         return true;
     }
 
-    if (event->type() == QEvent::MouseMove)
+    else if (event->type() == QEvent::MouseMove && obj == p_candlesWidget->financialPlot)
     {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-
-        int pixelX = mouseEvent->pos().x();
-        int pixelY = mouseEvent->pos().y();
-
-        double time = p_candlesWidget->financialPlot->xAxis->pixelToCoord(pixelX) + m_binSize/2;
-        double price = p_candlesWidget->financialPlot->yAxis2->pixelToCoord(pixelY);
-        double verticalVolume = 0;
-        double horizontalVolume = 0;
-        double priceOpen = 0;
-        double priceClose = 0;
-        double priceHigh = 0;
-        double priceLow = 0;
-
-        for (int i = 0; i < m_candles.size(); ++i)
-        {
-            if (m_candles[i].timeCandleStart <= time && m_candles[i].timeCandleEnd >= time)
-            {
-                priceOpen = m_candles[i].open;
-                priceClose = m_candles[i].close;
-                priceHigh = m_candles[i].high;
-                priceLow = m_candles[i].low;
-                verticalVolume = m_candles[i].volume;
-                break;
-            }
-        }
-
-        double minDiff = INT_MAX;
-        int currVolIndex = 0;
-        for (int i = 0; i < p_horizontalVolumeWidget->m_price.size(); ++i)
-        {
-            if (abs(p_horizontalVolumeWidget->m_price[i] - price) < minDiff)
-            {
-                minDiff = abs(p_horizontalVolumeWidget->m_price[i] - price);
-                currVolIndex = i;
-            }
-        }
-        horizontalVolume = p_horizontalVolumeWidget->m_volume[currVolIndex];
-
-        getLabelOpen()->setText(QString::number(priceOpen, 'g', 8));
-        getLabelClose()->setText(QString::number(priceClose, 'g', 8));
-        getLabelHigh()->setText(QString::number(priceHigh, 'g', 8));
-        getLabelLow()->setText(QString::number(priceLow, 'g', 8));
-        getLabelVolumeVertical()->setText(QString::number(verticalVolume, 'g', 8));
-        getLabelVolumeHorizontal()->setText(QString::number(horizontalVolume, 'g', 8));
-
-
-        //горизонтальная и вертикальная линии
-        double xValue = p_candlesWidget->financialPlot->xAxis->pixelToCoord(mouseEvent->pos().x());
-        double yValue = p_candlesWidget->financialPlot->yAxis2->pixelToCoord(mouseEvent->pos().y());
-
-        // Получаем границы видимой области
-        auto xRange = p_candlesWidget->financialPlot->xAxis->range();
-        auto yRange = p_candlesWidget->financialPlot->yAxis2->range();
-
-        if (p_candlesWidget->financialPlot->axisRect()->rect().contains(mouseEvent->pos()))
-        {
-            // Вертикальная линия (продлеваем за ось X вниз)
-            p_candlesWidget->lineX->point1->setCoords(xValue, yRange.lower);  // Уходим за ось X
-            p_candlesWidget->lineX->point2->setCoords(xValue, yRange.upper);
-
-            // Горизонтальная линия (продлеваем за ось Y2 вправо)
-            p_candlesWidget->lineY->point1->setCoords(xRange.lower, yValue);
-            p_candlesWidget->lineY->point2->setCoords(xRange.upper, yValue);  // Уходим за ось Y2
-
-            // Показываем все элементы
-            p_candlesWidget->lineX->setVisible(true);
-            p_candlesWidget->lineY->setVisible(true);
-
-            // Обновляем текст метки
-            QDateTime dateTimeUtc = QDateTime::fromSecsSinceEpoch(static_cast<qint64>(xValue), Qt::UTC);
-            p_xAxisWidget->xCoordLabel->setText(dateTimeUtc.toString("dd. MM. yyyy\n hh:mm:ss"));
-            p_yAxis2Widget->yCoordLabel->setText(QString::number(yValue));
-
-            // Устанавливаем позицию меток
-
-            p_xAxisWidget->xCoordLabel->move(mouseEvent->pos().x() - p_xAxisWidget->xCoordLabel->geometry().width()/2, 0);
-            p_yAxis2Widget->yCoordLabel->move(0, mouseEvent->pos().y() - p_yAxis2Widget->yCoordLabel->geometry().height()/2);
-        }
-        else
-        {
-            // Скрываем линии и метки, если курсор за пределами графика
-            p_candlesWidget->lineX->setVisible(false);
-            p_candlesWidget->lineY->setVisible(false);
-        }
-
-        p_candlesWidget->financialPlot->replot();
+        mouseMoveEvent(obj, event);
     }
+
 
     return false;
 }
 
 bool PlotsDrawer::mouseMoveEvent(QObject *obj, QEvent *event)
 {
+    if (obj == p_xAxisWidget->p_xAxisPlot || obj == p_yAxis2Widget->p_yAxisPlot)
+        return false;
+
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
 
     int pixelX = mouseEvent->pos().x();
@@ -631,12 +576,35 @@ bool PlotsDrawer::mouseMoveEvent(QObject *obj, QEvent *event)
     }
     horizontalVolume = p_horizontalVolumeWidget->m_volume[currVolIndex];
 
-    getLabelOpen()->setText(QString::number(priceOpen, 'g', 8));
-    getLabelClose()->setText(QString::number(priceClose, 'g', 8));
-    getLabelHigh()->setText(QString::number(priceHigh, 'g', 8));
-    getLabelLow()->setText(QString::number(priceLow, 'g', 8));
-    getLabelVolumeVertical()->setText(QString::number(verticalVolume, 'g', 8));
-    getLabelVolumeHorizontal()->setText(QString::number(horizontalVolume, 'g', 8));
+    QString styleSheetString;
+    if (priceOpen < priceClose)
+        styleSheetString = "color: rgb(0, 128, 0);";
+    else if (priceOpen > priceClose)
+        styleSheetString = "color: rgb(128, 0, 0);";
+    else
+        styleSheetString = "color: rgb(128, 128, 128);";
+
+    getLabelOpen()->setStyleSheet(styleSheetString);
+    getLabelClose()->setStyleSheet(styleSheetString);
+    getLabelHigh()->setStyleSheet(styleSheetString);
+    getLabelLow()->setStyleSheet(styleSheetString);
+    getLabelChange()->setStyleSheet(styleSheetString);
+    getLabelVolumeVertical()->setStyleSheet(styleSheetString);
+    getLabelVolumeHorizontal()->setStyleSheet(styleSheetString);
+
+    getLabelOpen()->setText(QString("O: ") + QString::number(priceOpen, 'g', 8));
+    getLabelClose()->setText(QString("C: ") + QString::number(priceClose, 'g', 8));
+    getLabelHigh()->setText(QString("H: ") + QString::number(priceHigh, 'g', 8));
+    getLabelLow()->setText(QString("L: ") + QString::number(priceLow, 'g', 8));
+
+    if (priceOpen < priceClose)
+        getLabelChange()->setText("+" + QString::number(priceClose - priceOpen, 'f', 4) + " (+" + QString::number((priceClose - priceOpen)/priceOpen*100, 'f', 2) + "%)");
+    else
+        getLabelChange()->setText(QString::number(priceClose - priceOpen, 'f', 4) + " (" + QString::number((priceClose - priceOpen)/priceOpen*100, 'f', 2) + "%)");
+
+
+    getLabelVolumeVertical()->setText(QString("V. Volume: ") + QString::number(verticalVolume, 'g', 8));
+    getLabelVolumeHorizontal()->setText(QString("H. Volume: ") + QString::number(horizontalVolume, 'g', 8));
 
 
     //горизонтальная и вертикальная линии
@@ -679,5 +647,6 @@ bool PlotsDrawer::mouseMoveEvent(QObject *obj, QEvent *event)
     }
 
     p_candlesWidget->financialPlot->replot();
+    return true;
 }
 

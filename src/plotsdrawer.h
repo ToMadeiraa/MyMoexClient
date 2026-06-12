@@ -5,7 +5,7 @@
 #define WINDOW_WIDTH            800
 #define WINDOW_HEIGHT           600
 #define X_AXIS_HEIGHT           40
-#define Y_AXIS_WIDTH            70
+#define Y_AXIS_WIDTH            50
 #define HORIZONTAL_BARS_NUMBER  50
 #define EPSILON                 std::numeric_limits<double>::epsilon()
 
