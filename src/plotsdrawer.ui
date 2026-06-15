@@ -10,6 +10,12 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -33,6 +39,12 @@
     <layout class="QGridLayout" name="gridPlotsLayout">
      <item row="1" column="1">
       <widget class="QWidget" name="y2AxisWidget" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>70</width>
@@ -43,6 +55,12 @@
      </item>
      <item row="2" column="0">
       <widget class="QWidget" name="xAxisWidget" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -61,10 +79,16 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
+     <item row="0" column="0" colspan="2">
       <layout class="QGridLayout" name="labelsLayout">
        <item row="0" column="4">
         <widget class="QLabel" name="labelChange">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string>labelChange</string>
          </property>
@@ -72,6 +96,12 @@
        </item>
        <item row="0" column="1">
         <widget class="QLabel" name="labelHigh">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string>labelHigh</string>
          </property>
@@ -79,6 +109,12 @@
        </item>
        <item row="0" column="5">
         <widget class="QLabel" name="labelVerticalVolume">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string>labelVerticalVolume</string>
          </property>
@@ -86,6 +122,12 @@
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="labelOpen">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string>labelOpen</string>
          </property>
@@ -93,6 +135,12 @@
        </item>
        <item row="0" column="3">
         <widget class="QLabel" name="labelClose">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string>labelClose</string>
          </property>
@@ -100,6 +148,12 @@
        </item>
        <item row="0" column="2">
         <widget class="QLabel" name="labelLow">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string>labelLow</string>
          </property>
@@ -107,6 +161,12 @@
        </item>
        <item row="0" column="6">
         <widget class="QLabel" name="labelHorizontalVolume">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string>labelHorizontalVolume</string>
          </property>

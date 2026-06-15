@@ -60,16 +60,73 @@ Client::Client(QWidget *parent)
 
     sqlSelectorThread->start();
 
-    //new
-    plotsDrawer = ui->PlotsWidget;
+    //ui
+    p_leftTopWidget = new QWidget();
+    p_leftBottomWidget = new QWidget();
+    p_rightWidget = new QWidget();
+    plotsDrawer = new PlotsDrawer();
+    p_additionalPlotDrawer = new AdditionalPlotDrawer(p_leftBottomWidget);
+    p_lw = new LeftWidget();
+    p_tw = new TopWidget();
+    p_topLeftGridLayout = new QGridLayout(p_leftTopWidget);
+    p_topLeftGridLayout->addWidget(p_tw, 0, 1);
+    p_topLeftGridLayout->addWidget(p_lw, 1, 0);
+    p_topLeftGridLayout->addWidget(plotsDrawer, 1, 1);
+
+    // Создаем главный горизонтальный сплиттер
+    p_mainSplitter = new QSplitter(Qt::Horizontal, this);
+
+    // Создаем вертикальный сплиттер для левой панели
+    p_leftSplitter = new QSplitter(Qt::Vertical);
+
+    p_leftSplitter->addWidget(p_leftTopWidget);
+    p_leftSplitter->addWidget(p_additionalPlotDrawer);
+
+    p_leftSplitter->setSizes({600, 600});  // Одинаковая высота
+    p_leftSplitter->setStretchFactor(0, 1);
+    p_leftSplitter->setStretchFactor(1, 1);
+    p_leftSplitter->setHandleWidth(2);
+    p_leftSplitter->setChildrenCollapsible(false);
+
+    p_mainSplitter->addWidget(p_leftSplitter);
+    p_mainSplitter->addWidget(p_rightWidget);
+
+    // Настройка главного горизонтального сплиттера
+    p_mainSplitter->setSizes({800, 800});
+    p_mainSplitter->setStretchFactor(0, 1);  // Левая панель
+    p_mainSplitter->setStretchFactor(1, 2);  // Правая панель
+    p_mainSplitter->setHandleWidth(2);
+    p_mainSplitter->setChildrenCollapsible(false);
+
+    // Стилизация разделителей
+    p_mainSplitter->setStyleSheet(
+        "QSplitter::handle {"
+        "   background-color: #aaaaaa;"
+        "}"
+        "QSplitter::handle:hover {"
+        "   background-color: #888888;"
+        "}"
+        );
+
+    p_leftSplitter->setStyleSheet(
+        "QSplitter::handle {"
+        "   background-color: #aaaaaa;"
+        "}"
+        "QSplitter::handle:hover {"
+        "   background-color: #888888;"
+        "}"
+        );
+
+    setCentralWidget(p_mainSplitter);
+
     plotsDrawer->p_priceData = &this->priceData;
     plotsDrawer->p_timeData = &this->timeData;
     plotsDrawer->p_quantityData = &this->quantityData;
     plotsDrawer->p_buysellData = &this->buysellData;
 
-    //ui
-    getTopWidget()->getComboBoxSecurities()->fillComboBox(sqlUpdater->SecID_Numbers);
+    p_tw->getComboBoxSecurities()->fillComboBox(sqlUpdater->SecID_Numbers);
     connectSlots();
+    redrawPlotBySecurityChange_slot();
 }
 
 Client::~Client()
@@ -85,25 +142,14 @@ void Client::connectSlots()
     connect(sqlUpdater, &SqlUpdater::finished, sqlUpdater, &SqlUpdater::deleteLater);
     connect(sqlUpdaterThread, &QThread::finished, sqlUpdaterThread, &QThread::deleteLater);
 
-    connect(getTopWidget()->getComboBoxBinSize(), SIGNAL(binSizeChanged_signal(uint)), plotsDrawer, SLOT(redrawPlotByBinSizeChange_slot(uint)));
-    connect(getTopWidget()->getComboBoxSecurities(), SIGNAL(currentIndexChanged(int)), this, SLOT(redrawPlotBySecurityChange_slot()));
+    connect(p_tw->getComboBoxBinSize(), SIGNAL(binSizeChanged_signal(uint)), plotsDrawer, SLOT(redrawPlotByBinSizeChange_slot(uint)));
+    connect(p_tw->getComboBoxSecurities(), SIGNAL(currentIndexChanged(int)), this, SLOT(redrawPlotBySecurityChange_slot()));
 }
-
-TopWidget *Client::getTopWidget()
-{
-    return ui->topWidget;
-}
-
-LeftWidget *Client::getLeftWidget()
-{
-    return ui->leftWidget;
-}
-
 
 
 void Client::redrawPlotBySecurityChange_slot()
 {
-    QString currentSec = getTopWidget()->getComboBoxSecurities()->currentText().toLower() + "_client";
+    QString currentSec = p_tw->getComboBoxSecurities()->currentText().toLower() + "_client";
 
     plotsDrawer->clearSecurityData();
     sqlSelector->selectData(currentSec);

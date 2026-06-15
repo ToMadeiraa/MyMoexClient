@@ -19,15 +19,17 @@
 #include <QDir>
 #include <QXmlStreamReader>
 #include <QTimer>
-
 #include <QWheelEvent>
+
+#include <QSplitter>
+#include <QGridLayout>
 
 #include "SqlUpdater.h"
 #include "SqlSelector.h"
 #include "topwidget.h"
 #include "leftwidget.h"
-
 #include "plotsdrawer.h"
+#include "additionalplotdrawer.h"
 
 struct Version {
     ushort Major;
@@ -83,8 +85,17 @@ public:
     QVector<uint>   quantityData;
     QVector<bool>   buysellData;
 
-    //new
-    PlotsDrawer *plotsDrawer;
+    QGridLayout             *p_topLeftGridLayout;
+    QSplitter               *p_mainSplitter;
+    QSplitter               *p_leftSplitter;
+    QWidget                 *p_leftTopWidget;
+    QWidget                 *p_leftBottomWidget;
+    QWidget                 *p_rightWidget;
+    PlotsDrawer             *plotsDrawer;
+    AdditionalPlotDrawer    *p_additionalPlotDrawer;
+    LeftWidget              *p_lw;
+    TopWidget               *p_tw;
+
 
     Version ver;
     void readConfigFile();
@@ -92,8 +103,6 @@ public:
 private:
     void connectSlots();
     QTcpSocket *socketUpdate;
-    TopWidget *getTopWidget();
-    LeftWidget *getLeftWidget();
     Ui::Client *ui;
 
 

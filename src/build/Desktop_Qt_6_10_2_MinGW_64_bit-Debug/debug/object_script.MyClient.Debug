@@ -8,6 +8,7 @@ debug/horizontalvolumewidget.o
 debug/verticalvolumewidget.o
 debug/xaxiswidget.o
 debug/yaxis2widget.o
+debug/additionalplotdrawer.o
 debug/leftwidget.o
 debug/main.o
 debug/client.o
@@ -24,6 +25,7 @@ debug/moc_horizontalvolumewidget.o
 debug/moc_verticalvolumewidget.o
 debug/moc_xaxiswidget.o
 debug/moc_yaxis2widget.o
+debug/moc_additionalplotdrawer.o
 debug/moc_client.o
 debug/moc_leftwidget.o
 debug/moc_mypushbutton.o

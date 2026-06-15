@@ -25,6 +25,7 @@ void MyComboBoxBinSize::fillComboBox()
     addItem("1 day");
     addItem("1 week");
     addItem("1 month");
+    setCurrentIndex(5);
 }
 
 void MyComboBoxBinSize::itemChanged_slot()

@@ -4,9 +4,9 @@ CandlesWidget::CandlesWidget(QWidget *parent, int width, int heigth)
     : QWidget(parent)
 {
     financialPlot = new QCustomPlot(parent);
-    financialPlot->setFixedSize(width, heigth);
-    financialPlot->setGeometry(0, 0, width, heigth);
-    financialPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    financialPlot->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    financialPlot->setMinimumSize(width, heigth);
+    // financialPlot->setGeometry(0, 0, width, heigth);
 }
 
 CandlesWidget::~CandlesWidget()
@@ -20,8 +20,6 @@ void CandlesWidget::setCandlesData()
 
 void CandlesWidget::initPlot(double binSize, double startTime)
 {
-    financialPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
     // Настройка прозрачности для candle plot
     financialPlot->setBackground(QBrush(Qt::transparent));
     financialPlot->setOpenGl(false);

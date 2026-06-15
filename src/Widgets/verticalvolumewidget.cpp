@@ -4,9 +4,9 @@ VerticalVolumeWidget::VerticalVolumeWidget(QWidget *parent, int width, int heigt
     : QWidget(parent)
 {
     volumePlot = new QCustomPlot(parent);
-    volumePlot->setFixedSize(width, heigth);
-    volumePlot->setGeometry(0, 0, width, heigth);
-    volumePlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    volumePlot->setMinimumSize(width, heigth);
+    // volumePlot->setGeometry(0, 0, width, heigth);
+    volumePlot->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
 VerticalVolumeWidget::~VerticalVolumeWidget()

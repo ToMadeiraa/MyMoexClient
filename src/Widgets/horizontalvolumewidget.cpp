@@ -4,9 +4,9 @@ HorizontalVolumeWidget::HorizontalVolumeWidget(QWidget *parent, int width, int h
     : QWidget(parent)
 {
     p_volumePlot = new QCustomPlot(parent);
-    p_volumePlot->setFixedSize(width, heigth);
-    p_volumePlot->setGeometry(0, 0, width, heigth);
-    p_volumePlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    p_volumePlot->setMinimumSize(width, heigth);
+    // p_volumePlot->setGeometry(0, 0, width, heigth);
+    p_volumePlot->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
 void HorizontalVolumeWidget::setCandlesData()

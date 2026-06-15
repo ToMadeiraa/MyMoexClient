@@ -6,8 +6,9 @@ YAxis2Widget::YAxis2Widget(QWidget *parent, int width, int heigth)
     // === Y AXIS PLOT (справа) ===
     p_yAxisPlot = new QCustomPlot(parent);
     p_yAxisPlot->setAttribute(Qt::WA_TranslucentBackground);
-    p_yAxisPlot->setFixedSize(width, heigth);
-
+    p_yAxisPlot->setMinimumSize(width, heigth);
+    p_yAxisPlot->setFixedWidth(width);
+    p_yAxisPlot->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     p_yAxisPlot->setBackground(QBrush(QColor(0, 0, 0, 80)));  // Полупрозрачный фон
     p_yAxisPlot->setOpenGl(false);
 

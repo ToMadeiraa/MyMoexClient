@@ -30,6 +30,7 @@ SOURCES += \
     Widgets/verticalvolumewidget.cpp \
     Widgets/xaxiswidget.cpp \
     Widgets/yaxis2widget.cpp \
+    additionalplotdrawer.cpp \
     leftwidget.cpp \
     main.cpp \
     client.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     Widgets/verticalvolumewidget.h \
     Widgets/xaxiswidget.h \
     Widgets/yaxis2widget.h \
+    additionalplotdrawer.h \
     client.h \
     leftwidget.h \
     GuiElements/mypushbutton.h \
@@ -56,6 +58,7 @@ HEADERS += \
 
 
 FORMS += \
+    additionalplotdrawer.ui \
     client.ui \
     leftwidget.ui \
     plotsdrawer.ui \

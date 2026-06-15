@@ -4,9 +4,9 @@ AdditionalPlotWidget::AdditionalPlotWidget(QWidget *parent, int width, int heigt
     : QWidget(parent)
 {
     p_AdditionalPlot = new QCustomPlot(parent);
-    p_AdditionalPlot->setFixedSize(width, heigth);
-    p_AdditionalPlot->setGeometry(0, 0, width, heigth);
-    p_AdditionalPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    p_AdditionalPlot->setMinimumSize(width, heigth);
+    // p_AdditionalPlot->setGeometry(0, 0, width, heigth);
+    p_AdditionalPlot->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
 void AdditionalPlotWidget::initPlot(double binSize, double startTime)

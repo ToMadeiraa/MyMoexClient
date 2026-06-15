@@ -3,7 +3,7 @@
 
 PlotsDrawer::PlotsDrawer(QWidget *parent)
     : QWidget(parent)
-    , m_binSize(60) //интервал в секундах
+    , m_binSize(3600) //интервал в секундах
     , m_syncing(false)
     , ui(new Ui::PlotsDrawer)
 {
@@ -32,9 +32,9 @@ PlotsDrawer::PlotsDrawer(QWidget *parent)
     p_xAxisWidget = new XAxisWidget(ui->xAxisWidget, WINDOW_WIDTH, X_AXIS_HEIGHT);
     p_yAxis2Widget = new YAxis2Widget(ui->y2AxisWidget, Y_AXIS_WIDTH, WINDOW_HEIGHT);
 
-    ui->PlotsWidget->setFixedSize(WINDOW_WIDTH - Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
-    ui->y2AxisWidget->setFixedSize(Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
-    ui->xAxisWidget->setFixedSize(WINDOW_WIDTH - Y_AXIS_WIDTH, X_AXIS_HEIGHT);
+    ui->PlotsWidget->setMinimumSize(WINDOW_WIDTH - Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
+    ui->y2AxisWidget->setMinimumSize(Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
+    ui->xAxisWidget->setMinimumSize(WINDOW_WIDTH - Y_AXIS_WIDTH, X_AXIS_HEIGHT);
 
     m_palette = new QPalette;
     m_palette->setColor(QPalette::Window, Qt::white);
@@ -648,5 +648,31 @@ bool PlotsDrawer::mouseMoveEvent(QObject *obj, QEvent *event)
 
     p_candlesWidget->financialPlot->replot();
     return true;
+}
+
+void PlotsDrawer::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event); // Вызов базового класса
+    p_verticalVolumeWidget->volumePlot->rescaleAxes();
+    p_horizontalVolumeWidget->p_volumePlot->rescaleAxes();
+    p_candlesWidget->financialPlot->rescaleAxes();
+    p_xAxisWidget->p_xAxisPlot->rescaleAxes();
+    p_yAxis2Widget->p_yAxisPlot->rescaleAxes();
+
+    // Обязательно вызываем перерисовку
+    p_candlesWidget->financialPlot->replot();
+    p_xAxisWidget->p_xAxisPlot->replot();
+    p_yAxis2Widget->p_yAxisPlot->replot();
+
+    //делаем так, чтоб график объемов занимал 20%
+    QCPRange autoRangeVertical = p_verticalVolumeWidget->volumePlot->yAxis2->range();
+    p_verticalVolumeWidget->volumePlot->yAxis2->setRange(autoRangeVertical.lower, autoRangeVertical.upper * 5);
+    p_verticalVolumeWidget->volumePlot->replot();
+
+    //делаем так, чтоб график объемов занимал 20%
+    QCPRange autoRangeHorizontalX = p_horizontalVolumeWidget->p_volumePlot->xAxis->range();
+    p_horizontalVolumeWidget->p_volumePlot->xAxis->setRange(autoRangeHorizontalX.lower, autoRangeHorizontalX.upper * 5);
+    p_horizontalVolumeWidget->p_volumeBars->setWidth((yAxis2MaxValue-yAxis2MinValue)/HORIZONTAL_BARS_NUMBER*0.8);
+    p_horizontalVolumeWidget->p_volumePlot->replot();
 }
 

@@ -6,7 +6,9 @@ XAxisWidget::XAxisWidget(QWidget *parent, int width, int heigth)
     p_xAxisPlot = new QCustomPlot(parent);
 
     p_xAxisPlot->setAttribute(Qt::WA_TranslucentBackground);
-    p_xAxisPlot->setFixedSize(width, heigth);
+    p_xAxisPlot->setMinimumSize(width, heigth);
+    p_xAxisPlot->setFixedHeight(heigth);
+    p_xAxisPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     p_xAxisPlot->setBackground(QBrush(QColor(0, 0, 0, 80)));  // Полупрозрачный фон
     p_xAxisPlot->setOpenGl(false);
 

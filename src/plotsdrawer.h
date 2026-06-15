@@ -1,13 +1,14 @@
 #ifndef PLOTSDRAWER_H
 #define PLOTSDRAWER_H
 
-#include "ui_plotsdrawer.h"
 #define WINDOW_WIDTH            800
 #define WINDOW_HEIGHT           600
 #define X_AXIS_HEIGHT           40
 #define Y_AXIS_WIDTH            50
 #define HORIZONTAL_BARS_NUMBER  50
 #define EPSILON                 std::numeric_limits<double>::epsilon()
+
+#include "ui_plotsdrawer.h"
 
 #include <QWidget>
 #include "Widgets/candleswidget.h"
@@ -50,7 +51,6 @@ public:
 
     QPalette                *m_palette;
 
-
     bool                    m_syncing;
     double                  yAxis2MinValue;
     double                  yAxis2MaxValue;
@@ -60,6 +60,7 @@ public:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
     bool mouseMoveEvent(QObject *obj, QEvent *event);
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     void hideAllAxes(QCustomPlot *plot);
@@ -73,7 +74,6 @@ private:
     QLabel* getLabelVolumeHorizontal();
 
     Ui::PlotsDrawer *ui;
-
 
 public slots:
     void drawPlot();
