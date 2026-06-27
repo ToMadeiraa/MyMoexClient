@@ -42,12 +42,27 @@ public:
     QVector<uint>           *p_quantityData;
     QVector<bool>           *p_buysellData;
 
+    QHBoxLayout             *p_horizontalLayout;
+    QVBoxLayout             *p_verticalLayout;
+    QGridLayout             *p_gridLayout;
+    QLabel                  *p_labelOpen;
+    QLabel                  *p_labelHigh;
+    QLabel                  *p_labelLow;
+    QLabel                  *p_labelClose;
+    QLabel                  *p_labelChange;
+    QLabel                  *p_labelVerticalVolume;
+    QLabel                  *p_labelHorizontalVolume;
+
     CandlesWidget           *p_candlesWidget;
     VerticalVolumeWidget    *p_verticalVolumeWidget;
     HorizontalVolumeWidget  *p_horizontalVolumeWidget;
 
     XAxisWidget             *p_xAxisWidget;
     YAxis2Widget            *p_yAxis2Widget;
+
+    QWidget                 *p_plotsWidget;
+    QWidget                 *p_xWidget;
+    QWidget                 *p_yWidget;
 
     QPalette                *m_palette;
 
@@ -65,13 +80,6 @@ protected:
 private:
     void hideAllAxes(QCustomPlot *plot);
     void createPlotConnections();
-    QLabel* getLabelOpen();
-    QLabel* getLabelHigh();
-    QLabel* getLabelLow();
-    QLabel* getLabelClose();
-    QLabel* getLabelChange();
-    QLabel* getLabelVolumeVertical();
-    QLabel* getLabelVolumeHorizontal();
 
     Ui::PlotsDrawer *ui;
 

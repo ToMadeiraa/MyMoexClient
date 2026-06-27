@@ -4,8 +4,8 @@ CandlesWidget::CandlesWidget(QWidget *parent, int width, int heigth)
     : QWidget(parent)
 {
     financialPlot = new QCustomPlot(parent);
-    financialPlot->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    financialPlot->setMinimumSize(width, heigth);
+    financialPlot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    // financialPlot->setMinimumSize(width, heigth);
     // financialPlot->setGeometry(0, 0, width, heigth);
 }
 
@@ -24,7 +24,7 @@ void CandlesWidget::initPlot(double binSize, double startTime)
     financialPlot->setBackground(QBrush(Qt::transparent));
     financialPlot->setOpenGl(false);
 
-    // Для свечного графика разрешаем перемещение в обоих направлениях
+    //Для свечного графика разрешаем перемещение в обоих направлениях
     financialPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     financialPlot->axisRect()->setRangeDrag(Qt::Horizontal | Qt::Vertical);
     financialPlot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
@@ -39,7 +39,7 @@ void CandlesWidget::initPlot(double binSize, double startTime)
 
     candlesticks->setName("Candles");
     candlesticks->setChartStyle(QCPFinancial::csCandlestick);
-    candlesticks->setWidth(binSize*0.8); //расстояния между свечками
+    // candlesticks->setWidth(binSize*0.8); //расстояния между свечками
     candlesticks->setTwoColored(true);
     candlesticks->setBrushPositive(QColor(Qt::green));
     candlesticks->setBrushNegative(QColor(Qt::red));

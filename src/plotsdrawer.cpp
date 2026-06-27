@@ -13,28 +13,57 @@ PlotsDrawer::PlotsDrawer(QWidget *parent)
     m_startDateTime.setTimeSpec(Qt::UTC);
     m_doubleStartDateTime = m_startDateTime.currentSecsSinceEpoch();
 
+    p_plotsWidget = new QWidget();
+    p_xWidget = new QWidget();
+    p_yWidget = new QWidget();
+
+    p_verticalLayout = new QVBoxLayout(ui->centralWidget);
+    p_horizontalLayout = new QHBoxLayout();
+    p_gridLayout = new QGridLayout();
+    p_labelOpen = new QLabel("1");
+    p_labelHigh = new QLabel("2");
+    p_labelLow = new QLabel("3");
+    p_labelClose = new QLabel("4");
+    p_labelChange = new QLabel("5");
+    p_labelVerticalVolume = new QLabel("6");
+    p_labelHorizontalVolume = new QLabel("7");
+    p_horizontalLayout->addWidget(p_labelOpen);
+    p_horizontalLayout->addWidget(p_labelHigh);
+    p_horizontalLayout->addWidget(p_labelLow);
+    p_horizontalLayout->addWidget(p_labelClose);
+    p_horizontalLayout->addWidget(p_labelChange);
+    p_horizontalLayout->addWidget(p_labelVerticalVolume);
+    p_horizontalLayout->addWidget(p_labelHorizontalVolume);
+
     //creating bottom plot (for horizontal volumes for example)
-    p_horizontalVolumeWidget = new HorizontalVolumeWidget(ui->PlotsWidget, WINDOW_WIDTH - Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
+    p_horizontalVolumeWidget = new HorizontalVolumeWidget(p_plotsWidget, WINDOW_WIDTH - Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
     p_horizontalVolumeWidget->initPlot(m_binSize, m_doubleStartDateTime);
     hideAllAxes(p_horizontalVolumeWidget->p_volumePlot);
 
     //creating vertical volume plot
-    p_verticalVolumeWidget = new VerticalVolumeWidget(ui->PlotsWidget, WINDOW_WIDTH - Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
+    p_verticalVolumeWidget = new VerticalVolumeWidget(p_plotsWidget, WINDOW_WIDTH - Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
     p_verticalVolumeWidget->initPlot(m_binSize, m_doubleStartDateTime);
     hideAllAxes(p_verticalVolumeWidget->volumePlot);
 
     //creating candles plot
-    p_candlesWidget = new CandlesWidget(ui->PlotsWidget, WINDOW_WIDTH - Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
+    p_candlesWidget = new CandlesWidget(p_plotsWidget, WINDOW_WIDTH - Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
     p_candlesWidget->initPlot(m_binSize, m_doubleStartDateTime);
     p_candlesWidget->financialPlot->installEventFilter(this);
     hideAllAxes(p_candlesWidget->financialPlot);
 
-    p_xAxisWidget = new XAxisWidget(ui->xAxisWidget, WINDOW_WIDTH, X_AXIS_HEIGHT);
-    p_yAxis2Widget = new YAxis2Widget(ui->y2AxisWidget, Y_AXIS_WIDTH, WINDOW_HEIGHT);
+    p_xAxisWidget = new XAxisWidget(p_xWidget, WINDOW_WIDTH, X_AXIS_HEIGHT);
+    p_yAxis2Widget = new YAxis2Widget(p_yWidget, Y_AXIS_WIDTH, WINDOW_HEIGHT);
 
-    ui->PlotsWidget->setMinimumSize(WINDOW_WIDTH - Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
-    ui->y2AxisWidget->setMinimumSize(Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
-    ui->xAxisWidget->setMinimumSize(WINDOW_WIDTH - Y_AXIS_WIDTH, X_AXIS_HEIGHT);
+    p_gridLayout->addWidget(p_plotsWidget, 0, 0);
+    p_gridLayout->addWidget(p_yWidget, 0, 1);
+    p_gridLayout->addWidget(p_xWidget, 1, 0);
+
+    p_verticalLayout->addLayout(p_horizontalLayout);
+    p_verticalLayout->addLayout(p_gridLayout);
+
+    p_plotsWidget->setMinimumSize(WINDOW_WIDTH - Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
+    // p_xWidget->setMinimumSize(Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
+    // p_yWidget->setMinimumSize(WINDOW_WIDTH - Y_AXIS_WIDTH, X_AXIS_HEIGHT);
 
     m_palette = new QPalette;
     m_palette->setColor(QPalette::Window, Qt::white);
@@ -54,22 +83,22 @@ void PlotsDrawer::drawPlot()
 {
     if (p_priceData->isEmpty() || p_timeData->isEmpty()) return;
 
-    p_horizontalVolumeWidget->p_volumePlot->rescaleAxes(true);
-    p_verticalVolumeWidget->volumePlot->rescaleAxes(true);
+    // p_horizontalVolumeWidget->p_volumePlot->rescaleAxes(true);
+    // p_verticalVolumeWidget->volumePlot->rescaleAxes(true);
     p_candlesWidget->financialPlot->rescaleAxes(true);
 
     p_candlesWidget->financialPlot->replot();
 
     //делаем так, чтоб график объемов занимал 20%
-    QCPRange autoRangeVertical = p_verticalVolumeWidget->volumePlot->yAxis2->range();
-    p_verticalVolumeWidget->volumePlot->yAxis2->setRange(autoRangeVertical.lower, autoRangeVertical.upper * 5);
-    p_verticalVolumeWidget->volumePlot->replot();
+    // QCPRange autoRangeVertical = p_verticalVolumeWidget->volumePlot->yAxis2->range();
+    // p_verticalVolumeWidget->volumePlot->yAxis2->setRange(autoRangeVertical.lower, autoRangeVertical.upper * 5);
+    // p_verticalVolumeWidget->volumePlot->replot();
 
-    //делаем так, чтоб график объемов занимал 20%
-    QCPRange autoRangeHorizontalX = p_horizontalVolumeWidget->p_volumePlot->xAxis->range();
-    p_horizontalVolumeWidget->p_volumePlot->xAxis->setRange(autoRangeHorizontalX.lower, autoRangeHorizontalX.upper * 5);
-    p_horizontalVolumeWidget->p_volumeBars->setWidth((yAxis2MaxValue-yAxis2MinValue)/HORIZONTAL_BARS_NUMBER*0.8);
-    p_horizontalVolumeWidget->p_volumePlot->replot();
+    // //делаем так, чтоб график объемов занимал 20%
+    // QCPRange autoRangeHorizontalX = p_horizontalVolumeWidget->p_volumePlot->xAxis->range();
+    // p_horizontalVolumeWidget->p_volumePlot->xAxis->setRange(autoRangeHorizontalX.lower, autoRangeHorizontalX.upper * 5);
+    // p_horizontalVolumeWidget->p_volumeBars->setWidth((yAxis2MaxValue-yAxis2MinValue)/HORIZONTAL_BARS_NUMBER*0.8);
+    // p_horizontalVolumeWidget->p_volumePlot->replot();
 }
 
 void PlotsDrawer::onCandleXAxisChanged(const QCPRange &range)
@@ -79,8 +108,8 @@ void PlotsDrawer::onCandleXAxisChanged(const QCPRange &range)
 
     m_syncing = true;
 
-    p_verticalVolumeWidget->volumePlot->xAxis->setRange(range);
-    p_verticalVolumeWidget->volumePlot->replot();
+    // p_verticalVolumeWidget->volumePlot->xAxis->setRange(range);
+    // p_verticalVolumeWidget->volumePlot->replot();
 
     m_syncing = false;
 }
@@ -95,10 +124,10 @@ void PlotsDrawer::onXAxisPlotRangeChanged(const QCPRange &range)
 
     // Синхронизируем все графики с новым диапазоном X
     p_candlesWidget->financialPlot->xAxis->setRange(range);
-    p_verticalVolumeWidget->volumePlot->xAxis->setRange(range);
+    // p_verticalVolumeWidget->volumePlot->xAxis->setRange(range);
 
     p_candlesWidget->financialPlot->replot();
-    p_verticalVolumeWidget->volumePlot->replot();
+    // p_verticalVolumeWidget->volumePlot->replot();
 
     m_syncing = false;
 }
@@ -114,8 +143,8 @@ void PlotsDrawer::onYAxisPlotRangeChanged(const QCPRange &range)
     p_candlesWidget->financialPlot->yAxis2->setRange(range);
     p_candlesWidget->financialPlot->replot();
 
-    p_horizontalVolumeWidget->p_volumePlot->yAxis2->setRange(range);
-    p_horizontalVolumeWidget->p_volumePlot->replot();
+    // p_horizontalVolumeWidget->p_volumePlot->yAxis2->setRange(range);
+    // p_horizontalVolumeWidget->p_volumePlot->replot();
 
     m_syncing = false;
 }
@@ -127,9 +156,9 @@ void PlotsDrawer::syncAxesToCandleX(const QCPRange &range)
 
     m_syncing = true;
 
-    // Синхронизируем ось X на отдельном plot'е
-    p_xAxisWidget->p_xAxisPlot->xAxis->setRange(range);
-    p_xAxisWidget->p_xAxisPlot->replot();
+    // // Синхронизируем ось X на отдельном plot'е
+    // p_xAxisWidget->p_xAxisPlot->xAxis->setRange(range);
+    // p_xAxisWidget->p_xAxisPlot->replot();
 
     m_syncing = false;
 }
@@ -142,11 +171,11 @@ void PlotsDrawer::syncAxesToCandleY(const QCPRange &range)
     m_syncing = true;
 
     // Синхронизируем ось Y на отдельном plot'е
-    p_yAxis2Widget->p_yAxisPlot->yAxis2->setRange(range);
-    p_yAxis2Widget->p_yAxisPlot->replot();
+    // p_yAxis2Widget->p_yAxisPlot->yAxis2->setRange(range);
+    // p_yAxis2Widget->p_yAxisPlot->replot();
 
-    p_horizontalVolumeWidget->p_volumePlot->yAxis2->setRange(range);
-    p_horizontalVolumeWidget->p_volumePlot->replot();
+    // p_horizontalVolumeWidget->p_volumePlot->yAxis2->setRange(range);
+    // p_horizontalVolumeWidget->p_volumePlot->replot();
 
 
     m_syncing = false;
@@ -201,30 +230,22 @@ void PlotsDrawer::createPlotConnections()
             QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
             this, &PlotsDrawer::syncAxesToCandleY);
 
-    // Добавляем обработку колеса мыши для оси X
-    connect(p_xAxisWidget->p_xAxisPlot->xAxis,
-            QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
-            this, &PlotsDrawer::onXAxisPlotRangeChanged);
+    // // Добавляем обработку колеса мыши для оси X
+    // connect(p_xAxisWidget->p_xAxisPlot->xAxis,
+    //         QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
+    //         this, &PlotsDrawer::onXAxisPlotRangeChanged);
 
-    // Добавляем обработку колеса мыши для оси Y
-    connect(p_yAxis2Widget->p_yAxisPlot->yAxis2,
-            QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
-            this, &PlotsDrawer::onYAxisPlotRangeChanged);
+    // // Добавляем обработку колеса мыши для оси Y
+    // connect(p_yAxis2Widget->p_yAxisPlot->yAxis2,
+    //         QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
+    //         this, &PlotsDrawer::onYAxisPlotRangeChanged);
 
-    // Устанавливаем фильтры событий
-    p_xAxisWidget->p_xAxisPlot->installEventFilter(this);
-    p_yAxis2Widget->p_yAxisPlot->installEventFilter(this);
-    p_xAxisWidget->xCoordLabel->installEventFilter(this);
-    p_yAxis2Widget->yCoordLabel->installEventFilter(this);
+    // // Устанавливаем фильтры событий
+    // p_xAxisWidget->p_xAxisPlot->installEventFilter(this);
+    // p_yAxis2Widget->p_yAxisPlot->installEventFilter(this);
+    // p_xAxisWidget->xCoordLabel->installEventFilter(this);
+    // p_yAxis2Widget->yCoordLabel->installEventFilter(this);
 }
-
-QLabel *PlotsDrawer::getLabelOpen(){return ui->labelOpen;}
-QLabel *PlotsDrawer::getLabelHigh(){return ui->labelHigh;}
-QLabel *PlotsDrawer::getLabelLow(){return ui->labelLow;}
-QLabel *PlotsDrawer::getLabelClose(){return ui->labelClose;}
-QLabel *PlotsDrawer::getLabelChange(){return ui->labelChange;}
-QLabel *PlotsDrawer::getLabelVolumeVertical(){return ui->labelVerticalVolume;}
-QLabel *PlotsDrawer::getLabelVolumeHorizontal(){return ui->labelHorizontalVolume;}
 
 
 void PlotsDrawer::redrawPlotByBinSizeChange_slot(uint bs)
@@ -234,27 +255,27 @@ void PlotsDrawer::redrawPlotByBinSizeChange_slot(uint bs)
     collectCandleInfo();
     p_candlesWidget->candlesticks->setWidth(m_binSize*0.8); //расстояния между свечками
     p_candlesWidget->setCandlesData();
-    p_verticalVolumeWidget->setCandlesData();
-    p_horizontalVolumeWidget->setCandlesData();
+    // p_verticalVolumeWidget->setCandlesData();
+    // p_horizontalVolumeWidget->setCandlesData();
 
-    p_verticalVolumeWidget->volumeBarsNegative->data().clear();
-    p_verticalVolumeWidget->volumeBarsPositive->data().clear();
-    p_horizontalVolumeWidget->p_volumeBars->data().clear();
-    for (int i=0; i < m_candles.size(); ++i)
-    {
-        long long v = m_candles[i].volume;
-        if (m_candles[i].open > m_candles[i].close)
-        {
-            p_verticalVolumeWidget->volumeBarsNegative->addData(m_candles[i].timeCandleStart, qAbs(v));
-        }
-        else
-        {
-            p_verticalVolumeWidget->volumeBarsPositive->addData(m_candles[i].timeCandleStart, qAbs(v));
-        }
-    }
+    // p_verticalVolumeWidget->volumeBarsNegative->data().clear();
+    // p_verticalVolumeWidget->volumeBarsPositive->data().clear();
+    // p_horizontalVolumeWidget->p_volumeBars->data().clear();
+    // for (int i=0; i < m_candles.size(); ++i)
+    // {
+    //     long long v = m_candles[i].volume;
+    //     if (m_candles[i].open > m_candles[i].close)
+    //     {
+    //         p_verticalVolumeWidget->volumeBarsNegative->addData(m_candles[i].timeCandleStart, qAbs(v));
+    //     }
+    //     else
+    //     {
+    //         p_verticalVolumeWidget->volumeBarsPositive->addData(m_candles[i].timeCandleStart, qAbs(v));
+    //     }
+    // }
 
-    p_verticalVolumeWidget->volumeBarsNegative->setWidth(m_binSize);
-    p_verticalVolumeWidget->volumeBarsPositive->setWidth(m_binSize);
+    // p_verticalVolumeWidget->volumeBarsNegative->setWidth(m_binSize);
+    // p_verticalVolumeWidget->volumeBarsPositive->setWidth(m_binSize);
 
     drawPlot();
 }
@@ -336,15 +357,15 @@ void PlotsDrawer::collectCandleInfo()
     p_candlesWidget->time.resize(m_candles.size());
 
     //for vertical volume
-    p_verticalVolumeWidget->volumePositive.clear();
-    p_verticalVolumeWidget->timePositive.clear();
-    p_verticalVolumeWidget->volumeNegative.clear();
-    p_verticalVolumeWidget->timeNegative.clear();
+    // p_verticalVolumeWidget->volumePositive.clear();
+    // p_verticalVolumeWidget->timePositive.clear();
+    // p_verticalVolumeWidget->volumeNegative.clear();
+    // p_verticalVolumeWidget->timeNegative.clear();
 
-    p_verticalVolumeWidget->volumePositive.resize(m_candles.size());
-    p_verticalVolumeWidget->timePositive.resize(m_candles.size());
-    p_verticalVolumeWidget->volumeNegative.resize(m_candles.size());
-    p_verticalVolumeWidget->timeNegative.resize(m_candles.size());
+    // p_verticalVolumeWidget->volumePositive.resize(m_candles.size());
+    // p_verticalVolumeWidget->timePositive.resize(m_candles.size());
+    // p_verticalVolumeWidget->volumeNegative.resize(m_candles.size());
+    // p_verticalVolumeWidget->timeNegative.resize(m_candles.size());
 
 
     for (int i = 0; i < m_candles.size(); ++i)
@@ -355,23 +376,23 @@ void PlotsDrawer::collectCandleInfo()
         p_candlesWidget->close[i] = m_candles[i].close;
         p_candlesWidget->time[i] = m_candles[i].timeCandleStart;
 
-        //for volume
-        if (m_candles[i].open > m_candles[i].close)
-        {
-            p_verticalVolumeWidget->timeNegative[i] = m_candles[i].timeCandleStart;
-            p_verticalVolumeWidget->volumeNegative[i] = m_candles[i].volume;
+        // //for volume
+        // if (m_candles[i].open > m_candles[i].close)
+        // {
+        //     p_verticalVolumeWidget->timeNegative[i] = m_candles[i].timeCandleStart;
+        //     p_verticalVolumeWidget->volumeNegative[i] = m_candles[i].volume;
 
-            p_verticalVolumeWidget->timePositive[i] = m_candles[i].timeCandleStart;
-            p_verticalVolumeWidget->volumePositive[i] = 0;
-        }
-        else
-        {
-            p_verticalVolumeWidget->timeNegative[i] = m_candles[i].timeCandleStart;
-            p_verticalVolumeWidget->volumeNegative[i] = 0;
+        //     p_verticalVolumeWidget->timePositive[i] = m_candles[i].timeCandleStart;
+        //     p_verticalVolumeWidget->volumePositive[i] = 0;
+        // }
+        // else
+        // {
+        //     p_verticalVolumeWidget->timeNegative[i] = m_candles[i].timeCandleStart;
+        //     p_verticalVolumeWidget->volumeNegative[i] = 0;
 
-            p_verticalVolumeWidget->timePositive[i] = m_candles[i].timeCandleStart;
-            p_verticalVolumeWidget->volumePositive[i] = m_candles[i].volume;
-        }
+        //     p_verticalVolumeWidget->timePositive[i] = m_candles[i].timeCandleStart;
+        //     p_verticalVolumeWidget->volumePositive[i] = m_candles[i].volume;
+        // }
     }
 
     //for horizontal volume
@@ -385,24 +406,24 @@ void PlotsDrawer::collectCandleInfo()
             yAxis2MinValue = m_candles[i].low;
     }
 
-    p_horizontalVolumeWidget->m_price.clear();
-    p_horizontalVolumeWidget->m_volume.clear();
-    p_horizontalVolumeWidget->m_price.resize(HORIZONTAL_BARS_NUMBER);
-    p_horizontalVolumeWidget->m_volume.resize(HORIZONTAL_BARS_NUMBER);
+    // p_horizontalVolumeWidget->m_price.clear();
+    // p_horizontalVolumeWidget->m_volume.clear();
+    // p_horizontalVolumeWidget->m_price.resize(HORIZONTAL_BARS_NUMBER);
+    // p_horizontalVolumeWidget->m_volume.resize(HORIZONTAL_BARS_NUMBER);
 
-    double priceStep = (yAxis2MaxValue-yAxis2MinValue)/(HORIZONTAL_BARS_NUMBER-1);
+    // double priceStep = (yAxis2MaxValue-yAxis2MinValue)/(HORIZONTAL_BARS_NUMBER-1);
 
-    for (int i = 0; i < HORIZONTAL_BARS_NUMBER; ++i)
-        p_horizontalVolumeWidget->m_price[i] = yAxis2MinValue + priceStep/2 + priceStep*i;
+    // for (int i = 0; i < HORIZONTAL_BARS_NUMBER; ++i)
+    //     p_horizontalVolumeWidget->m_price[i] = yAxis2MinValue + priceStep/2 + priceStep*i;
 
-    yAxis2MinValue -= EPSILON;
+    // yAxis2MinValue -= EPSILON;
 
-    for (long long int i = 0; i < p_timeData->size(); ++i)
-    {
-        double currValue = p_priceData->at(i);
-        ushort j = abs(currValue - yAxis2MinValue)/priceStep;
-        p_horizontalVolumeWidget->m_volume[j] += p_quantityData->at(i);
-    }
+    // for (long long int i = 0; i < p_timeData->size(); ++i)
+    // {
+    //     double currValue = p_priceData->at(i);
+    //     ushort j = abs(currValue - yAxis2MinValue)/priceStep;
+    //     p_horizontalVolumeWidget->m_volume[j] += p_quantityData->at(i);
+    // }
 }
 
 bool PlotsDrawer::eventFilter(QObject *obj, QEvent *event)
@@ -438,85 +459,85 @@ bool PlotsDrawer::eventFilter(QObject *obj, QEvent *event)
 
             m_syncing = true;
             p_candlesWidget->financialPlot->xAxis->setRange(newRange);
-            p_verticalVolumeWidget->volumePlot->xAxis->setRange(newRange);
-            p_xAxisWidget->p_xAxisPlot->xAxis->setRange(newRange);
+            // p_verticalVolumeWidget->volumePlot->xAxis->setRange(newRange);
+            // p_xAxisWidget->p_xAxisPlot->xAxis->setRange(newRange);
             p_candlesWidget->financialPlot->replot();
-            p_verticalVolumeWidget->volumePlot->replot();
-            p_xAxisWidget->p_xAxisPlot->replot();
+            // p_verticalVolumeWidget->volumePlot->replot();
+            // p_xAxisWidget->p_xAxisPlot->replot();
             m_syncing = false;
         }
 
 
-        // Обработка колеса мыши на xAxisPlot
-        if (obj == p_xAxisWidget->p_xAxisPlot || obj == p_xAxisWidget->xCoordLabel)
-        {
-            // Получаем текущий диапазон X с оси X plot
-            QCPRange xRange = p_xAxisWidget->p_xAxisPlot->xAxis->range();
-            double center = xRange.center();
-            double range = xRange.size();
+        // // Обработка колеса мыши на xAxisPlot
+        // if (obj == p_xAxisWidget->p_xAxisPlot || obj == p_xAxisWidget->xCoordLabel)
+        // {
+        //     // Получаем текущий диапазон X с оси X plot
+        //     QCPRange xRange = p_xAxisWidget->p_xAxisPlot->xAxis->range();
+        //     double center = xRange.center();
+        //     double range = xRange.size();
 
-            double scaleFactor = 1.15;
+        //     double scaleFactor = 1.15;
 
-            if (wheelEvent->angleDelta().y() < 0)
-            {
-                range *= scaleFactor;  // Zoom out
-            }
-            else
-            {
-                range /= scaleFactor;  // Zoom in
-            }
+        //     if (wheelEvent->angleDelta().y() < 0)
+        //     {
+        //         range *= scaleFactor;  // Zoom out
+        //     }
+        //     else
+        //     {
+        //         range /= scaleFactor;  // Zoom in
+        //     }
 
-            QCPRange newRange(center - range / 2.0, center + range / 2.0);
+        //     QCPRange newRange(center - range / 2.0, center + range / 2.0);
 
-            m_syncing = true;
+        //     m_syncing = true;
 
-            // Обновляем все связанные графики
-            p_xAxisWidget->p_xAxisPlot->xAxis->setRange(newRange);
-            p_candlesWidget->financialPlot->xAxis->setRange(newRange);
-            p_verticalVolumeWidget->volumePlot->xAxis->setRange(newRange);
+        //     // Обновляем все связанные графики
+        //     p_xAxisWidget->p_xAxisPlot->xAxis->setRange(newRange);
+        //     p_candlesWidget->financialPlot->xAxis->setRange(newRange);
+        //     p_verticalVolumeWidget->volumePlot->xAxis->setRange(newRange);
 
-            p_xAxisWidget->p_xAxisPlot->replot();
-            p_candlesWidget->financialPlot->replot();
-            p_verticalVolumeWidget->volumePlot->replot();
+        //     p_xAxisWidget->p_xAxisPlot->replot();
+        //     p_candlesWidget->financialPlot->replot();
+        //     p_verticalVolumeWidget->volumePlot->replot();
 
-            m_syncing = false;
-        }
+        //     m_syncing = false;
+        // }
 
 
-        // Обработка колеса мыши на yAxisPlot
-        if (obj == p_yAxis2Widget->p_yAxisPlot || obj == p_yAxis2Widget->yCoordLabel)
-        {
-            // Получаем текущий диапазон X с оси X plot
-            QCPRange yRange = p_yAxis2Widget->p_yAxisPlot->yAxis2->range();
-            double center = yRange.center();
-            double range = yRange.size();
+        // // Обработка колеса мыши на yAxisPlot
+        // if (obj == p_yAxis2Widget->p_yAxisPlot || obj == p_yAxis2Widget->yCoordLabel)
+        // {
+        //     // Получаем текущий диапазон X с оси X plot
+        //     QCPRange yRange = p_yAxis2Widget->p_yAxisPlot->yAxis2->range();
+        //     double center = yRange.center();
+        //     double range = yRange.size();
 
-            double scaleFactor = 1.15;
+        //     double scaleFactor = 1.15;
 
-            if (wheelEvent->angleDelta().y() < 0)
-            {
-                range *= scaleFactor;  // Zoom out
-            }
-            else
-            {
-                range /= scaleFactor;  // Zoom in
-            }
+        //     if (wheelEvent->angleDelta().y() < 0)
+        //     {
+        //         range *= scaleFactor;  // Zoom out
+        //     }
+        //     else
+        //     {
+        //         range /= scaleFactor;  // Zoom in
+        //     }
 
-            QCPRange newRange(center - range / 2.0, center + range / 2.0);
+        //     QCPRange newRange(center - range / 2.0, center + range / 2.0);
 
-            m_syncing = true;
+        //     m_syncing = true;
 
-            // Обновляем все связанные графики
-            p_yAxis2Widget->p_yAxisPlot->yAxis2->setRange(newRange);
-            p_candlesWidget->financialPlot->yAxis2->setRange(newRange);
-            p_horizontalVolumeWidget->p_volumePlot->yAxis2->setRange(newRange); //new
+        //     // Обновляем все связанные графики
+        //     p_yAxis2Widget->p_yAxisPlot->yAxis2->setRange(newRange);
+        //     p_candlesWidget->financialPlot->yAxis2->setRange(newRange);
+        //     p_horizontalVolumeWidget->p_volumePlot->yAxis2->setRange(newRange); //new
 
-            p_yAxis2Widget->p_yAxisPlot->replot();
-            p_candlesWidget->financialPlot->replot();
-            p_horizontalVolumeWidget->p_volumePlot->replot(); //new
+        //     p_yAxis2Widget->p_yAxisPlot->replot();
+        //     p_candlesWidget->financialPlot->replot();
+        //     p_horizontalVolumeWidget->p_volumePlot->replot(); //new
 
-            m_syncing = false;
-        }
+        //     m_syncing = false;
+        // }
 
         //меняем
         mouseMoveEvent(obj, event);
@@ -534,8 +555,8 @@ bool PlotsDrawer::eventFilter(QObject *obj, QEvent *event)
 
 bool PlotsDrawer::mouseMoveEvent(QObject *obj, QEvent *event)
 {
-    if (obj == p_xAxisWidget->p_xAxisPlot || obj == p_yAxis2Widget->p_yAxisPlot)
-        return false;
+    // if (obj == p_xAxisWidget->p_xAxisPlot || obj == p_yAxis2Widget->p_yAxisPlot)
+    //     return false;
 
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
 
@@ -566,15 +587,15 @@ bool PlotsDrawer::mouseMoveEvent(QObject *obj, QEvent *event)
 
     double minDiff = INT_MAX;
     int currVolIndex = 0;
-    for (int i = 0; i < p_horizontalVolumeWidget->m_price.size(); ++i)
-    {
-        if (abs(p_horizontalVolumeWidget->m_price[i] - price) < minDiff)
-        {
-            minDiff = abs(p_horizontalVolumeWidget->m_price[i] - price);
-            currVolIndex = i;
-        }
-    }
-    horizontalVolume = p_horizontalVolumeWidget->m_volume[currVolIndex];
+    // for (int i = 0; i < p_horizontalVolumeWidget->m_price.size(); ++i)
+    // {
+    //     if (abs(p_horizontalVolumeWidget->m_price[i] - price) < minDiff)
+    //     {
+    //         minDiff = abs(p_horizontalVolumeWidget->m_price[i] - price);
+    //         currVolIndex = i;
+    //     }
+    // }
+    // horizontalVolume = p_horizontalVolumeWidget->m_volume[currVolIndex];
 
     QString styleSheetString;
     if (priceOpen < priceClose)
@@ -584,27 +605,27 @@ bool PlotsDrawer::mouseMoveEvent(QObject *obj, QEvent *event)
     else
         styleSheetString = "color: rgb(128, 128, 128);";
 
-    getLabelOpen()->setStyleSheet(styleSheetString);
-    getLabelClose()->setStyleSheet(styleSheetString);
-    getLabelHigh()->setStyleSheet(styleSheetString);
-    getLabelLow()->setStyleSheet(styleSheetString);
-    getLabelChange()->setStyleSheet(styleSheetString);
-    getLabelVolumeVertical()->setStyleSheet(styleSheetString);
-    getLabelVolumeHorizontal()->setStyleSheet(styleSheetString);
+    p_labelOpen->setStyleSheet(styleSheetString);
+    p_labelClose->setStyleSheet(styleSheetString);
+    p_labelHigh->setStyleSheet(styleSheetString);
+    p_labelLow->setStyleSheet(styleSheetString);
+    p_labelChange->setStyleSheet(styleSheetString);
+    p_labelVerticalVolume->setStyleSheet(styleSheetString);
+    p_labelHorizontalVolume->setStyleSheet(styleSheetString);
 
-    getLabelOpen()->setText(QString("O: ") + QString::number(priceOpen, 'g', 8));
-    getLabelClose()->setText(QString("C: ") + QString::number(priceClose, 'g', 8));
-    getLabelHigh()->setText(QString("H: ") + QString::number(priceHigh, 'g', 8));
-    getLabelLow()->setText(QString("L: ") + QString::number(priceLow, 'g', 8));
+    p_labelOpen->setText(QString("Open: ") + QString::number(priceOpen, 'g', 8));
+    p_labelClose->setText(QString("Clost: ") + QString::number(priceClose, 'g', 8));
+    p_labelHigh->setText(QString("High: ") + QString::number(priceHigh, 'g', 8));
+    p_labelLow->setText(QString("Low: ") + QString::number(priceLow, 'g', 8));
 
     if (priceOpen < priceClose)
-        getLabelChange()->setText("+" + QString::number(priceClose - priceOpen, 'f', 4) + " (+" + QString::number((priceClose - priceOpen)/priceOpen*100, 'f', 2) + "%)");
+        p_labelChange->setText("+" + QString::number(priceClose - priceOpen, 'f', 4) + " (+" + QString::number((priceClose - priceOpen)/priceOpen*100, 'f', 2) + "%)");
     else
-        getLabelChange()->setText(QString::number(priceClose - priceOpen, 'f', 4) + " (" + QString::number((priceClose - priceOpen)/priceOpen*100, 'f', 2) + "%)");
+        p_labelChange->setText(QString::number(priceClose - priceOpen, 'f', 4) + " (" + QString::number((priceClose - priceOpen)/priceOpen*100, 'f', 2) + "%)");
 
 
-    getLabelVolumeVertical()->setText(QString("V. Volume: ") + QString::number(verticalVolume, 'g', 8));
-    getLabelVolumeHorizontal()->setText(QString("H. Volume: ") + QString::number(horizontalVolume, 'g', 8));
+    p_labelVerticalVolume->setText(QString("V. Volume: ") + QString::number(verticalVolume, 'g', 8));
+    p_labelHorizontalVolume->setText(QString("H. Volume: ") + QString::number(horizontalVolume, 'g', 8));
 
 
     //горизонтальная и вертикальная линии
@@ -631,13 +652,13 @@ bool PlotsDrawer::mouseMoveEvent(QObject *obj, QEvent *event)
 
         // Обновляем текст метки
         QDateTime dateTimeUtc = QDateTime::fromSecsSinceEpoch(static_cast<qint64>(xValue), Qt::UTC);
-        p_xAxisWidget->xCoordLabel->setText(dateTimeUtc.toString("dd. MM. yyyy\n hh:mm:ss"));
-        p_yAxis2Widget->yCoordLabel->setText(QString::number(yValue));
+        // p_xAxisWidget->xCoordLabel->setText(dateTimeUtc.toString("dd. MM. yyyy\n hh:mm:ss"));
+        // p_yAxis2Widget->yCoordLabel->setText(QString::number(yValue));
 
         // Устанавливаем позицию меток
 
-        p_xAxisWidget->xCoordLabel->move(mouseEvent->pos().x() - p_xAxisWidget->xCoordLabel->geometry().width()/2, 0);
-        p_yAxis2Widget->yCoordLabel->move(0, mouseEvent->pos().y() - p_yAxis2Widget->yCoordLabel->geometry().height()/2);
+        // p_xAxisWidget->xCoordLabel->move(mouseEvent->pos().x() - p_xAxisWidget->xCoordLabel->geometry().width()/2, 0);
+        // p_yAxis2Widget->yCoordLabel->move(0, mouseEvent->pos().y() - p_yAxis2Widget->yCoordLabel->geometry().height()/2);
     }
     else
     {
@@ -653,26 +674,26 @@ bool PlotsDrawer::mouseMoveEvent(QObject *obj, QEvent *event)
 void PlotsDrawer::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event); // Вызов базового класса
-    p_verticalVolumeWidget->volumePlot->rescaleAxes();
-    p_horizontalVolumeWidget->p_volumePlot->rescaleAxes();
-    p_candlesWidget->financialPlot->rescaleAxes();
-    p_xAxisWidget->p_xAxisPlot->rescaleAxes();
-    p_yAxis2Widget->p_yAxisPlot->rescaleAxes();
+    // p_verticalVolumeWidget->volumePlot->rescaleAxes();
+    // p_horizontalVolumeWidget->p_volumePlot->rescaleAxes();
+    // p_candlesWidget->financialPlot->rescaleAxes();
+    // p_xAxisWidget->p_xAxisPlot->rescaleAxes();
+    // p_yAxis2Widget->p_yAxisPlot->rescaleAxes();
 
-    // Обязательно вызываем перерисовку
-    p_candlesWidget->financialPlot->replot();
-    p_xAxisWidget->p_xAxisPlot->replot();
-    p_yAxis2Widget->p_yAxisPlot->replot();
+    // // Обязательно вызываем перерисовку
+    // p_candlesWidget->financialPlot->replot();
+    // p_xAxisWidget->p_xAxisPlot->replot();
+    // p_yAxis2Widget->p_yAxisPlot->replot();
 
-    //делаем так, чтоб график объемов занимал 20%
-    QCPRange autoRangeVertical = p_verticalVolumeWidget->volumePlot->yAxis2->range();
-    p_verticalVolumeWidget->volumePlot->yAxis2->setRange(autoRangeVertical.lower, autoRangeVertical.upper * 5);
-    p_verticalVolumeWidget->volumePlot->replot();
+    // //делаем так, чтоб график объемов занимал 20%
+    // QCPRange autoRangeVertical = p_verticalVolumeWidget->volumePlot->yAxis2->range();
+    // p_verticalVolumeWidget->volumePlot->yAxis2->setRange(autoRangeVertical.lower, autoRangeVertical.upper * 5);
+    // p_verticalVolumeWidget->volumePlot->replot();
 
-    //делаем так, чтоб график объемов занимал 20%
-    QCPRange autoRangeHorizontalX = p_horizontalVolumeWidget->p_volumePlot->xAxis->range();
-    p_horizontalVolumeWidget->p_volumePlot->xAxis->setRange(autoRangeHorizontalX.lower, autoRangeHorizontalX.upper * 5);
-    p_horizontalVolumeWidget->p_volumeBars->setWidth((yAxis2MaxValue-yAxis2MinValue)/HORIZONTAL_BARS_NUMBER*0.8);
-    p_horizontalVolumeWidget->p_volumePlot->replot();
+    // //делаем так, чтоб график объемов занимал 20%
+    // QCPRange autoRangeHorizontalX = p_horizontalVolumeWidget->p_volumePlot->xAxis->range();
+    // p_horizontalVolumeWidget->p_volumePlot->xAxis->setRange(autoRangeHorizontalX.lower, autoRangeHorizontalX.upper * 5);
+    // p_horizontalVolumeWidget->p_volumeBars->setWidth((yAxis2MaxValue-yAxis2MinValue)/HORIZONTAL_BARS_NUMBER*0.8);
+    // p_horizontalVolumeWidget->p_volumePlot->replot();
 }
 

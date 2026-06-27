@@ -155,8 +155,8 @@ void Client::redrawPlotBySecurityChange_slot()
     sqlSelector->selectData(currentSec);
     plotsDrawer->collectCandleInfo();
     plotsDrawer->p_candlesWidget->setCandlesData();
-    plotsDrawer->p_verticalVolumeWidget->setCandlesData();
-    plotsDrawer->p_horizontalVolumeWidget->setCandlesData();
+    // plotsDrawer->p_verticalVolumeWidget->setCandlesData();
+    // plotsDrawer->p_horizontalVolumeWidget->setCandlesData();
 
     plotsDrawer->drawPlot();
 }
