@@ -27,6 +27,7 @@ PlotsDrawer::PlotsDrawer(QWidget *parent)
     p_labelChange = new QLabel("5");
     p_labelVerticalVolume = new QLabel("6");
     p_labelHorizontalVolume = new QLabel("7");
+
     p_horizontalLayout->addWidget(p_labelOpen);
     p_horizontalLayout->addWidget(p_labelHigh);
     p_horizontalLayout->addWidget(p_labelLow);
@@ -62,8 +63,8 @@ PlotsDrawer::PlotsDrawer(QWidget *parent)
     p_verticalLayout->addLayout(p_gridLayout);
 
     p_plotsWidget->setMinimumSize(WINDOW_WIDTH - Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
-    // p_xWidget->setMinimumSize(Y_AXIS_WIDTH, WINDOW_HEIGHT - X_AXIS_HEIGHT);
-    // p_yWidget->setMinimumSize(WINDOW_WIDTH - Y_AXIS_WIDTH, X_AXIS_HEIGHT);
+    p_xWidget->setMinimumSize(WINDOW_WIDTH - Y_AXIS_WIDTH, X_AXIS_HEIGHT);
+    p_yWidget->setMinimumSize(Y_AXIS_WIDTH, WINDOW_WIDTH - X_AXIS_HEIGHT);
 
     m_palette = new QPalette;
     m_palette->setColor(QPalette::Window, Qt::white);
@@ -674,6 +675,27 @@ bool PlotsDrawer::mouseMoveEvent(QObject *obj, QEvent *event)
 void PlotsDrawer::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event); // Вызов базового класса
+    qDebug() << "resize event";
+
+    // p_candlesWidget->financialPlot->setFixedWidth(size().width() - Y_AXIS_WIDTH);
+    p_candlesWidget->financialPlot->setFixedSize(size().width() - Y_AXIS_WIDTH, size().height() - X_AXIS_HEIGHT);
+    p_candlesWidget->setFixedSize(p_candlesWidget->financialPlot->size());
+    p_yAxis2Widget->p_yAxisPlot->setFixedSize(Y_AXIS_WIDTH, p_candlesWidget->height());
+    p_yAxis2Widget->setFixedSize(p_yAxis2Widget->p_yAxisPlot->size());
+
+    // p_candlesWidget->setFixedSize();
+
+    qDebug() << p_plotsWidget->size();
+    qDebug() << p_candlesWidget->geometry();
+    qDebug() << p_candlesWidget->financialPlot->geometry();
+    qDebug() << p_yAxis2Widget->geometry();
+
+// #define WINDOW_WIDTH            800
+// #define WINDOW_HEIGHT           600
+// #define X_AXIS_HEIGHT           40
+// #define Y_AXIS_WIDTH            50
+// #define HORIZONTAL_BARS_NUMBER  50
+// #define EPSILON                 std::numeric_limits<double>::epsilon()
     // p_verticalVolumeWidget->volumePlot->rescaleAxes();
     // p_horizontalVolumeWidget->p_volumePlot->rescaleAxes();
     // p_candlesWidget->financialPlot->rescaleAxes();
